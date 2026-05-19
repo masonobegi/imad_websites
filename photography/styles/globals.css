@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;1,300&family=Open+Sans:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Open Sans', system-ui, sans-serif;
+  background-color: #F5F0E8;
+  color: #2C1F14;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Merriweather', Georgia, serif;
+}
+
+::selection {
+  background-color: #C17F5240;
+}
