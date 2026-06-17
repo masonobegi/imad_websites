@@ -1,21 +1,33 @@
 import fs from 'fs'
 import path from 'path'
+import { useState } from 'react'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
-
-interface Photo { id: string; filename: string; title: string; category: string }
+import PhotoModal from '../components/PhotoModal'
+import CartPopup from '../components/CartPopup'
+import { Photo } from '../lib/photos'
 
 interface Props {
   heroPhoto: Photo
   previewPhotos: Photo[]
+  allPhotos: Record<string, Photo[]>
 }
 
-export default function Home({ heroPhoto, previewPhotos }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos }: Props) {
+  const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
+  const [cartOpen, setCartOpen] = useState(false)
+
+  const openPhoto = (photo: Photo) => {
+    const arr: Photo[] = allPhotos[photo.category] || []
+    const idx = arr.findIndex(p => p.id === photo.id)
+    setModalState({ photos: arr, index: idx >= 0 ? idx : 0 })
+  }
+
   return (
     <Layout>
 
-      {/* ── HERO ── full-bleed photo */}
+      {/* ── HERO ── */}
       <section className="relative h-[65vh] sm:h-[78vh] overflow-hidden photo-wrapper">
         <img
           src={`/photos/${heroPhoto.category}/${heroPhoto.filename}`}
@@ -34,7 +46,7 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
       {/* ── PHOTOGRAPHY ── */}
       <section className="border-b border-edge">
 
-        {/* Label row — plain div, full width, no link wrapper so text never squishes */}
+        {/* Label row */}
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Available now</p>
@@ -47,35 +59,39 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
             href="/shop"
             className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
           >
-            <span className="hidden sm:inline">Browse prints</span>
+            <span className="hidden sm:inline">Browse all</span>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
         </div>
 
-        {/* Photo strip — each image links to its own category gallery */}
+        {/* Photo strip — click opens purchase modal */}
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-0.5 bg-darkroom">
           {previewPhotos.map(photo => (
-            <Link
+            <button
               key={photo.id}
-              href={`/photos/${photo.category}`}
-              className="group/photo flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper block relative"
+              onClick={() => openPhoto(photo)}
+              className="group/photo flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper block relative text-left focus:outline-none touch-manipulation"
+              aria-label={`View ${photo.title}`}
             >
               <img
                 src={`/photos/${photo.category}/${photo.filename}`}
                 alt={photo.title}
                 className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 photo-protected"
               />
-              {/* Subtle hover tint */}
-              <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/30 transition-colors duration-300" />
-            </Link>
+              <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/35 transition-colors duration-300 flex items-end">
+                <p className="opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
+                  {photo.title}
+                </p>
+              </div>
+            </button>
           ))}
         </div>
 
         {/* Mobile bottom row */}
         <div className="sm:hidden px-6 py-3 flex items-center justify-between">
-          <p className="text-mist text-xs">Nature · San Francisco Bay</p>
+          <p className="text-mist text-xs">Tap a photo to order a print</p>
           <Link href="/shop" className="text-copper text-xs">Browse all →</Link>
         </div>
       </section>
@@ -83,7 +99,6 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
       {/* ── FINE ART + STICKERS ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2">
 
-        {/* Fine Art */}
         <Link href="/fine-art" className="group border-b sm:border-b-0 sm:border-r border-edge block">
           <div className="relative h-48 sm:h-60 overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #C8956A 0%, #B8743E 50%, #7A4A20 100%)' }}>
@@ -103,7 +118,6 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
           </div>
         </Link>
 
-        {/* AI Stickers */}
         <Link href="/stickers" className="group block">
           <div className="relative h-48 sm:h-60 overflow-hidden"
             style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A843 50%, #9A7420 100%)' }}>
@@ -124,6 +138,17 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
         </Link>
 
       </div>
+
+      {/* Modal */}
+      {modalState && (
+        <PhotoModal
+          photos={modalState.photos}
+          initialIndex={modalState.index}
+          onClose={() => setModalState(null)}
+          onAddedToCart={() => { setModalState(null); setCartOpen(true) }}
+        />
+      )}
+      {cartOpen && <CartPopup onClose={() => setCartOpen(false)} />}
     </Layout>
   )
 }
@@ -138,7 +163,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const heroPhoto =
     nature.find((p: Photo) => p.filename.includes('milky-way-over-joshua-tree')) || nature[0]
 
-  // Pick 6 visually diverse shots for the strip
   const wantedNature = ['delicate-arch-at-dawn', 'dahlia-symphony', 'the-lone-cypress', 'milky-way-over-hidden-valley']
   const wantedSF    = ['golden-gate-in-the-mist', 'bay-of-gold']
 
@@ -156,5 +180,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
     picked.push(...rest.slice(0, 6 - picked.length))
   }
 
-  return { props: { heroPhoto, previewPhotos: picked.slice(0, 6) } }
+  return {
+    props: {
+      heroPhoto,
+      previewPhotos: picked.slice(0, 6),
+      allPhotos: { nature, 'san-francisco': sf },
+    },
+  }
 }
