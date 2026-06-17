@@ -2,12 +2,17 @@ import Header from './Header'
 import Footer from './Footer'
 import { ReactNode } from 'react'
 
-export default function Layout({ children }: { children: ReactNode }) {
+interface LayoutProps {
+  children: ReactNode
+  dark?: boolean
+}
+
+export default function Layout({ children, dark = false }: LayoutProps) {
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
-      <Header />
+    <div className={`min-h-screen flex flex-col ${dark ? 'bg-darkroom' : 'bg-canvas'}`}>
+      <Header dark={dark} />
       <main className="flex-1">{children}</main>
-      <Footer />
+      <Footer dark={dark} />
     </div>
   )
 }

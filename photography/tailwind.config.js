@@ -8,10 +8,12 @@ module.exports = {
     extend: {
       colors: {
         canvas:   '#F5F0E8',
-        darkroom: '#3A2E26',
-        copper:   '#C17F52',
+        darkroom: '#181410',
+        panel:    '#221E1A',
+        copper:   '#B8743E',
         ink:      '#2C1F14',
         edge:     '#DDD0BE',
+        mist:     '#9A8878',
         shadow:   '#4A3728',
       },
       fontFamily: {

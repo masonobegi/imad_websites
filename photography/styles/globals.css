@@ -1,23 +1,52 @@
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;1,300&family=Open+Sans:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;1,300&family=Open+Sans:wght@300;400;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Open Sans', system-ui, sans-serif;
   background-color: #F5F0E8;
   color: #2C1F14;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
   font-family: 'Merriweather', Georgia, serif;
 }
 
-::selection {
-  background-color: #C17F5240;
+/* Masonry gallery grid */
+.photo-grid {
+  columns: 2;
+  column-gap: 12px;
 }
+@media (min-width: 640px) {
+  .photo-grid { columns: 3; }
+}
+@media (min-width: 1024px) {
+  .photo-grid { columns: 4; column-gap: 14px; }
+}
+
+.photo-item {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  @media (min-width: 1024px) { margin-bottom: 14px; }
+}
+
+/* No right-click on photos */
+.photo-protected {
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: none;
+}
+.photo-wrapper { position: relative; }
+.photo-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+::selection { background-color: #B8743E33; }
