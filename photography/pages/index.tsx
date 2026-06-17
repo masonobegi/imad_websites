@@ -14,108 +14,109 @@ interface Props {
 export default function Home({ heroPhoto, previewPhotos }: Props) {
   return (
     <Layout>
-      {/* HERO — full-bleed photo with name over it */}
-      <section className="relative h-[70vh] sm:h-[80vh] overflow-hidden photo-wrapper">
+
+      {/* ── HERO ── full-bleed photo */}
+      <section className="relative h-[65vh] sm:h-[78vh] overflow-hidden photo-wrapper">
         <img
           src={`/photos/${heroPhoto.category}/${heroPhoto.filename}`}
           alt="Imad Photography"
           className="absolute inset-0 w-full h-full object-cover photo-protected"
         />
-        {/* Dark gradient so text is readable */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-
-        {/* Title */}
-        <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-10 sm:pb-14">
-          <h1 className="font-serif text-5xl sm:text-7xl text-white mb-2 leading-none">Imad</h1>
-          <p className="text-white/70 text-sm sm:text-base tracking-wide">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-8 sm:pb-14">
+          <h1 className="font-serif text-5xl sm:text-7xl text-white leading-none mb-2">Imad</h1>
+          <p className="text-white/65 text-sm sm:text-base tracking-wide">
             Artist · Photographer · OBGillustrator.com
           </p>
         </div>
       </section>
 
-      {/* PHOTOGRAPHY — real photo strip */}
-      <section className="border-b border-edge">
-        <Link href="/shop" className="group block">
-          <div className="flex flex-col sm:flex-row">
+      {/* ── PHOTOGRAPHY ── label row then photo strip */}
+      <Link href="/shop" className="group block border-b border-edge">
 
-            {/* Label column */}
-            <div className="sm:w-64 flex-shrink-0 px-6 sm:px-10 py-7 sm:py-10 flex flex-col justify-between border-b sm:border-b-0 sm:border-r border-edge">
-              <div>
-                <p className="text-xs text-copper uppercase tracking-widest mb-3">Available now</p>
-                <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-3 leading-tight">Photography</h2>
-                <p className="text-mist text-sm leading-relaxed">
-                  Nature, wildlife, and the San Francisco Bay. Metal and canvas prints, made to order.
-                </p>
-              </div>
-              <div className="mt-6 flex items-center gap-2 text-copper text-sm group-hover:gap-3 transition-all">
-                <span>Browse prints</span>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Photo strip */}
-            <div className="flex-1 flex overflow-x-auto sm:overflow-hidden gap-1 p-1 sm:p-0 bg-darkroom/5">
-              {previewPhotos.map(photo => (
-                <div key={photo.id} className="flex-shrink-0 w-44 sm:flex-1 h-52 sm:h-64 overflow-hidden photo-wrapper">
-                  <img
-                    src={`/photos/${photo.category}/${photo.filename}`}
-                    alt={photo.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 photo-protected"
-                  />
-                </div>
-              ))}
-            </div>
+        {/* Label row — full width so "Photography" never squishes */}
+        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Available now</p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink">Photography</h2>
+            <p className="text-mist text-sm mt-1 hidden sm:block">
+              Nature, wildlife, and the San Francisco Bay · Metal &amp; canvas prints
+            </p>
           </div>
-        </Link>
-      </section>
+          <div className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 group-hover:gap-3 transition-all duration-200">
+            <span className="hidden sm:inline">Browse prints</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        </div>
 
-      {/* FINE ART + STICKERS — side by side placeholders */}
+        {/* Photo strip — scrollable on mobile, fills width on desktop */}
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-0.5 bg-darkroom">
+          {previewPhotos.map(photo => (
+            <div
+              key={photo.id}
+              className="flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper"
+            >
+              <img
+                src={`/photos/${photo.category}/${photo.filename}`}
+                alt={photo.title}
+                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 photo-protected"
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile-only bottom label */}
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between bg-canvas/80">
+          <p className="text-mist text-xs">Nature · San Francisco Bay</p>
+          <p className="text-copper text-xs">Browse →</p>
+        </div>
+      </Link>
+
+      {/* ── FINE ART + STICKERS ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2">
 
         {/* Fine Art */}
-        <Link href="/fine-art" className="group relative overflow-hidden border-b sm:border-b-0 sm:border-r border-edge">
-          {/* Warm textured background */}
-          <div className="h-52 sm:h-64 bg-gradient-to-br from-[#C8956A] via-[#B8743E] to-[#8B5430] flex items-end p-6 sm:p-8">
-            {/* Faint pattern overlay for texture */}
-            <div className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '8px 8px' }}
-            />
-            <div className="relative z-10">
-              <p className="text-xs text-white/60 uppercase tracking-widest mb-2">Coming soon</p>
-              <h2 className="font-serif text-3xl sm:text-4xl text-white mb-1 leading-tight">Fine Art</h2>
-              <p className="text-white/70 text-sm">Oil &amp; encaustic paintings</p>
+        <Link href="/fine-art" className="group border-b sm:border-b-0 sm:border-r border-edge block">
+          <div className="relative h-48 sm:h-60 overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #C8956A 0%, #B8743E 50%, #7A4A20 100%)' }}>
+            <div className="absolute inset-0 opacity-[0.07]"
+              style={{ backgroundImage: 'repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '10px 10px' }} />
+            <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-8 pb-6">
+              <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mb-1.5">Coming soon</p>
+              <h2 className="font-serif text-3xl sm:text-4xl text-white leading-tight">Fine Art</h2>
+              <p className="text-white/60 text-sm mt-1">Oil &amp; encaustic paintings</p>
             </div>
           </div>
-          <div className="px-6 sm:px-8 py-5 flex items-center justify-between bg-canvas">
+          <div className="px-6 sm:px-8 py-4 flex items-center justify-between">
             <p className="text-mist text-sm">Original works and limited prints</p>
-            <svg className="w-4 h-4 text-mist group-hover:text-copper transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-mist group-hover:text-copper transition-colors flex-shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
           </div>
         </Link>
 
         {/* AI Stickers */}
-        <Link href="/stickers" className="group relative overflow-hidden">
-          {/* Warmer, lighter background */}
-          <div className="h-52 sm:h-64 bg-gradient-to-br from-[#E8C97A] via-[#D4A843] to-[#A07830] flex items-end p-6 sm:p-8">
-            <div className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '8px 8px' }}
-            />
-            <div className="relative z-10">
-              <p className="text-xs text-white/60 uppercase tracking-widest mb-2">Coming soon</p>
-              <h2 className="font-serif text-3xl sm:text-4xl text-white mb-1 leading-tight">AI Stickers</h2>
-              <p className="text-white/70 text-sm">Original character designs</p>
+        <Link href="/stickers" className="group block">
+          <div className="relative h-48 sm:h-60 overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, #E8C97A 0%, #D4A843 50%, #9A7420 100%)' }}>
+            <div className="absolute inset-0 opacity-[0.07]"
+              style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '10px 10px' }} />
+            <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-8 pb-6">
+              <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mb-1.5">Coming soon</p>
+              <h2 className="font-serif text-3xl sm:text-4xl text-white leading-tight">AI Stickers</h2>
+              <p className="text-white/60 text-sm mt-1">Original character designs</p>
             </div>
           </div>
-          <div className="px-6 sm:px-8 py-5 flex items-center justify-between bg-canvas">
+          <div className="px-6 sm:px-8 py-4 flex items-center justify-between">
             <p className="text-mist text-sm">Packs and singles</p>
-            <svg className="w-4 h-4 text-mist group-hover:text-copper transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4 text-mist group-hover:text-copper transition-colors flex-shrink-0 ml-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
           </div>
         </Link>
+
       </div>
     </Layout>
   )
@@ -128,13 +129,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const nature: Photo[] = data.photos.nature || []
   const sf: Photo[] = data.photos['san-francisco'] || []
 
-  // Hero: use a dramatic nature shot (Milky Way)
-  const heroPhoto = nature.find((p: Photo) => p.filename.includes('milky-way-over-joshua-tree'))
-    || nature[0]
+  const heroPhoto =
+    nature.find((p: Photo) => p.filename.includes('milky-way-over-joshua-tree')) || nature[0]
 
-  // Preview strip: mix of both categories, pick visually diverse shots
-  const wantedNature = ['delicate-arch-at-dawn', 'dahlia-symphony', 'the-lone-cypress', 'gondolas-of-venice']
-  const wantedSF = ['golden-gate-in-the-mist', 'bay-of-gold']
+  // Pick 6 visually diverse shots for the strip
+  const wantedNature = ['delicate-arch-at-dawn', 'dahlia-symphony', 'the-lone-cypress', 'milky-way-over-hidden-valley']
+  const wantedSF    = ['golden-gate-in-the-mist', 'bay-of-gold']
 
   const picked: Photo[] = []
   for (const id of wantedNature) {
@@ -145,13 +145,10 @@ export const getServerSideProps: GetServerSideProps = async () => {
     const found = sf.find((p: Photo) => p.id === id)
     if (found) picked.push(found)
   }
-  // Fill up to 6 if we didn't find all the wanted ones
-  if (picked.length < 4) {
-    const all = [...nature, ...sf].filter((p: Photo) => !picked.find(x => x.id === p.id))
-    picked.push(...all.slice(0, 6 - picked.length))
+  if (picked.length < 6) {
+    const rest = [...nature, ...sf].filter((p: Photo) => !picked.find(x => x.id === p.id))
+    picked.push(...rest.slice(0, 6 - picked.length))
   }
 
-  return {
-    props: { heroPhoto, previewPhotos: picked.slice(0, 6) },
-  }
+  return { props: { heroPhoto, previewPhotos: picked.slice(0, 6) } }
 }

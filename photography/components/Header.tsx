@@ -33,9 +33,10 @@ export default function Header({ dark = false }: HeaderProps) {
           </div>
 
           {/* Desktop nav */}
-          <nav className="hidden sm:flex items-center gap-8">
-            <Link href="/" className={`text-sm ${text} ${hover} transition-colors`}>All Work</Link>
+          <nav className="hidden sm:flex items-center gap-6">
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
+            <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
+            <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>AI Stickers</Link>
             <button
               onClick={() => setCartOpen(true)}
               className={`relative p-1 ${text} ${hover} transition-colors`}
