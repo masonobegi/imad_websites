@@ -1,0 +1,11 @@
+{
+  "name": "imad-websites",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "cd photography && npm install && npm run build",
+    "start": "cd photography && npm start"
+  }
+}
