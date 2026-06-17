@@ -31,10 +31,10 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
         </div>
       </section>
 
-      {/* ── PHOTOGRAPHY ── label row then photo strip */}
-      <Link href="/shop" className="group block border-b border-edge">
+      {/* ── PHOTOGRAPHY ── */}
+      <section className="border-b border-edge">
 
-        {/* Label row — full width so "Photography" never squishes */}
+        {/* Label row — plain div, full width, no link wrapper so text never squishes */}
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Available now</p>
@@ -43,36 +43,42 @@ export default function Home({ heroPhoto, previewPhotos }: Props) {
               Nature, wildlife, and the San Francisco Bay · Metal &amp; canvas prints
             </p>
           </div>
-          <div className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 group-hover:gap-3 transition-all duration-200">
+          <Link
+            href="/shop"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
             <span className="hidden sm:inline">Browse prints</span>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
-          </div>
+          </Link>
         </div>
 
-        {/* Photo strip — scrollable on mobile, fills width on desktop */}
+        {/* Photo strip — each image links to its own category gallery */}
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-0.5 bg-darkroom">
           {previewPhotos.map(photo => (
-            <div
+            <Link
               key={photo.id}
-              className="flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper"
+              href={`/photos/${photo.category}`}
+              className="group/photo flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper block relative"
             >
               <img
                 src={`/photos/${photo.category}/${photo.filename}`}
                 alt={photo.title}
-                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 photo-protected"
+                className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 photo-protected"
               />
-            </div>
+              {/* Subtle hover tint */}
+              <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/30 transition-colors duration-300" />
+            </Link>
           ))}
         </div>
 
-        {/* Mobile-only bottom label */}
-        <div className="sm:hidden px-6 py-3 flex items-center justify-between bg-canvas/80">
+        {/* Mobile bottom row */}
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
           <p className="text-mist text-xs">Nature · San Francisco Bay</p>
-          <p className="text-copper text-xs">Browse →</p>
+          <Link href="/shop" className="text-copper text-xs">Browse all →</Link>
         </div>
-      </Link>
+      </section>
 
       {/* ── FINE ART + STICKERS ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2">
