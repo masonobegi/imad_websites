@@ -1,10 +1,12 @@
+import fs from 'fs'
+import path from 'path'
 import { useState } from 'react'
-import { GetStaticPaths, GetStaticProps } from 'next'
+import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import Layout from '../../components/Layout'
 import PhotoModal from '../../components/PhotoModal'
 import CartPopup from '../../components/CartPopup'
-import { photos, CATEGORIES, Photo } from '../../lib/photos'
+import { Photo } from '../../lib/photos'
 
 interface Props {
   category: string
@@ -35,7 +37,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
         {/* Masonry grid */}
         {items.length === 0 ? (
           <div className="py-20 text-center text-mist text-sm">
-            Images are being processed — refresh in a minute.
+            No photos found in this collection.
           </div>
         ) : (
           <div className="photo-grid">
@@ -79,22 +81,18 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
   )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => ({
-  paths: Object.keys(CATEGORIES).map(category => ({ params: { category } })),
-  fallback: false,
-})
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const category = params?.category as string
-  const cat = CATEGORIES[category]
+  const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
+  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const cat = data.categories[category]
   if (!cat) return { notFound: true }
-
   return {
     props: {
       category,
       categoryLabel: cat.label,
       categoryDescription: cat.description,
-      items: photos[category] || [],
+      items: data.photos[category] || [],
     },
   }
 }

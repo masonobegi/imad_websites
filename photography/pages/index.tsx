@@ -1,8 +1,19 @@
+import fs from 'fs'
+import path from 'path'
 import Link from 'next/link'
+import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
-import { CATEGORIES, photos } from '../lib/photos'
 
-export default function Home() {
+interface CategoryMeta { label: string; description: string }
+interface Photo { id: string; filename: string; title: string; description: string; category: string }
+
+interface Props {
+  categories: Record<string, CategoryMeta>
+  previews: Record<string, Photo | null>
+  counts: Record<string, number>
+}
+
+export default function Home({ categories, previews, counts }: Props) {
   return (
     <Layout>
       {/* Hero */}
@@ -29,8 +40,8 @@ export default function Home() {
       {/* Categories */}
       <section className="py-16 px-6">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
-          {Object.entries(CATEGORIES).map(([slug, cat]) => {
-            const preview = photos[slug]?.[0]
+          {Object.entries(categories).map(([slug, cat]) => {
+            const preview = previews[slug]
             return (
               <Link key={slug} href={`/photos/${slug}`} className="group block">
                 <div className="bg-darkroom aspect-[4/3] mb-4 overflow-hidden relative photo-wrapper">
@@ -42,7 +53,7 @@ export default function Home() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-5xl opacity-30">{slug === 'nature' ? '🌿' : '🌉'}</span>
+                      <span className="text-mist text-sm">Loading...</span>
                     </div>
                   )}
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
@@ -50,7 +61,7 @@ export default function Home() {
                 <h2 className="font-serif text-2xl text-ink mb-1">{cat.label}</h2>
                 <p className="text-mist text-sm leading-relaxed">{cat.description}</p>
                 <p className="text-copper text-xs mt-2 uppercase tracking-wider">
-                  {photos[slug]?.length || 0} photographs →
+                  {counts[slug] || 0} photographs →
                 </p>
               </Link>
             )
@@ -77,4 +88,20 @@ export default function Home() {
       </section>
     </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
+  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  return {
+    props: {
+      categories: data.categories,
+      previews: Object.fromEntries(
+        Object.entries(data.photos as Record<string, Photo[]>).map(([slug, items]) => [slug, items[0] ?? null])
+      ),
+      counts: Object.fromEntries(
+        Object.entries(data.photos as Record<string, Photo[]>).map(([slug, items]) => [slug, items.length])
+      ),
+    },
+  }
 }
