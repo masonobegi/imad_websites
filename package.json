@@ -5,7 +5,7 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "cd photography && npm install && npm run build && cp -r public .next/standalone/public && cp -r .next/static .next/standalone/.next/static",
-    "start": "cd photography && node .next/standalone/server.js"
+    "build": "cd photography && npm install && npm run build",
+    "start": "cd photography && npm start"
   }
 }
