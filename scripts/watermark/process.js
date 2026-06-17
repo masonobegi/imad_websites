@@ -102,13 +102,13 @@ async function getExifDescription(filepath) {
 }
 
 function buildWatermarkSvg(width, height) {
-  const fontSize = Math.max(22, Math.round(width * 0.016))
-  const y = height - Math.round(height * 0.038)
+  const fontSize = Math.max(28, Math.round(width * 0.022))
+  const y = height - Math.round(height * 0.042)
   return Buffer.from(`
     <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <defs>
         <filter id="dropshadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
+          <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
         </filter>
       </defs>
       <text
@@ -118,9 +118,9 @@ function buildWatermarkSvg(width, height) {
         font-family="Georgia, Times New Roman, serif"
         font-size="${fontSize}px"
         font-style="italic"
-        fill="rgba(255,255,255,0.70)"
+        fill="rgba(255,255,255,0.80)"
         filter="url(#dropshadow)"
-        letter-spacing="${Math.round(fontSize * 0.12)}"
+        letter-spacing="${Math.round(fontSize * 0.14)}"
       >OBGillustrator.com</text>
     </svg>
   `)
@@ -131,11 +131,6 @@ async function processImage(srcPath, outDir, filename) {
   const baseName = path.basename(filename, ext)
   const outName = slugify(baseName) + '.jpg'
   const outPath = path.join(outDir, outName)
-
-  if (fs.existsSync(outPath)) {
-    console.log(`  ✓ already done: ${outName}`)
-    return { outName, baseName }
-  }
 
   console.log(`  → processing: ${filename}`)
   const img = sharp(srcPath, { limitInputPixels: false })

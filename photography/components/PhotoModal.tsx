@@ -1,27 +1,44 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Photo, PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
 interface PhotoModalProps {
-  photo: Photo
+  photos: Photo[]
+  initialIndex: number
   onClose: () => void
   onAddedToCart: () => void
 }
 
-export default function PhotoModal({ photo, onClose, onAddedToCart }: PhotoModalProps) {
+export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart }: PhotoModalProps) {
+  const [idx, setIdx] = useState(initialIndex)
   const [sizeIdx, setSizeIdx] = useState(0)
   const [medium, setMedium] = useState<PrintMedium>('Metal')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const { addItem } = useCart()
 
+  const photo = photos[idx]
   const selectedSize = PRINT_SIZES[sizeIdx]
+  const hasPrev = idx > 0
+  const hasNext = idx < photos.length - 1
+
+  const goPrev = useCallback(() => {
+    if (hasPrev) { setIdx(i => i - 1); setAdded(false) }
+  }, [hasPrev])
+
+  const goNext = useCallback(() => {
+    if (hasNext) { setIdx(i => i + 1); setAdded(false) }
+  }, [hasNext])
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') goPrev()
+      if (e.key === 'ArrowRight') goNext()
+    }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [onClose])
+  }, [onClose, goPrev, goNext])
 
   const handleAdd = () => {
     addItem({
@@ -47,7 +64,7 @@ export default function PhotoModal({ photo, onClose, onAddedToCart }: PhotoModal
 
       <div className="relative z-10 w-full max-w-5xl mx-4 bg-panel shadow-2xl flex flex-col md:flex-row max-h-[90vh]">
 
-        {/* Photo */}
+        {/* Photo + nav arrows */}
         <div className="md:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative photo-wrapper">
           <img
             src={`/photos/${photo.category}/${photo.filename}`}
@@ -55,6 +72,39 @@ export default function PhotoModal({ photo, onClose, onAddedToCart }: PhotoModal
             className="w-full h-full object-contain max-h-[55vh] md:max-h-[90vh] photo-protected"
             draggable={false}
           />
+
+          {/* Prev button */}
+          {hasPrev && (
+            <button
+              onClick={e => { e.stopPropagation(); goPrev() }}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/75 text-white flex items-center justify-center transition-colors z-10"
+              aria-label="Previous photo"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Next button */}
+          {hasNext && (
+            <button
+              onClick={e => { e.stopPropagation(); goNext() }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/75 text-white flex items-center justify-center transition-colors z-10"
+              aria-label="Next photo"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Counter */}
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center">
+            <span className="text-xs text-white/50 bg-black/40 px-2 py-0.5">
+              {idx + 1} / {photos.length}
+            </span>
+          </div>
         </div>
 
         {/* Info panel */}

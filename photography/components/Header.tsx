@@ -23,9 +23,9 @@ export default function Header({ dark = false }: HeaderProps) {
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <Link href="/" className={`font-serif text-2xl ${text} tracking-wide ${hover} transition-colors`}>
-              Imad Photography
+              Imad
             </Link>
-            <p className={`text-xs ${sub} tracking-[0.2em] uppercase mt-0.5`}>Fine Art Prints</p>
+            <p className={`text-xs ${sub} tracking-[0.15em] mt-0.5`}>OBGillustrator.com</p>
           </div>
           <nav className="flex items-center gap-8">
             <Link href="/" className={`text-sm ${text} ${hover} transition-colors`}>Home</Link>
