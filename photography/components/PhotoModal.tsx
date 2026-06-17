@@ -22,13 +22,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const hasPrev = idx > 0
   const hasNext = idx < photos.length - 1
 
-  const goPrev = useCallback(() => {
-    if (hasPrev) { setIdx(i => i - 1); setAdded(false) }
-  }, [hasPrev])
-
-  const goNext = useCallback(() => {
-    if (hasNext) { setIdx(i => i + 1); setAdded(false) }
-  }, [hasNext])
+  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false) } }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false) } }, [hasNext])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -37,7 +32,12 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
       if (e.key === 'ArrowRight') goNext()
     }
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    // Prevent body scroll while modal open
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
   }, [onClose, goPrev, goNext])
 
   const handleAdd = () => {
@@ -52,24 +52,37 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
       image: photo.filename,
     })
     setAdded(true)
-    setTimeout(() => {
-      onClose()
-      onAddedToCart()
-    }, 600)
+    setTimeout(() => { onClose(); onAddedToCart() }, 600)
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-5xl mx-4 bg-panel shadow-2xl flex flex-col md:flex-row max-h-[90vh]">
+      {/* Modal — full-screen on mobile, max-w constrained on desktop */}
+      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row
+                      h-[92vh] sm:h-auto sm:max-h-[90vh]
+                      rounded-t-2xl sm:rounded-none">
 
-        {/* Photo + nav arrows */}
-        <div className="md:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative photo-wrapper">
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1"
+          aria-label="Close"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Photo area */}
+        <div className="sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative photo-wrapper
+                        h-[42vh] sm:h-auto sm:max-h-[90vh]">
           <img
             src={`/photos/${photo.category}/${photo.filename}`}
             alt={photo.title}
-            className="w-full h-full object-contain max-h-[55vh] md:max-h-[90vh] photo-protected"
+            className="w-full h-full object-contain photo-protected"
             draggable={false}
           />
 
@@ -77,10 +90,10 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
           {hasPrev && (
             <button
               onClick={e => { e.stopPropagation(); goPrev() }}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/75 text-white flex items-center justify-center transition-colors z-10"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               aria-label="Previous photo"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -90,50 +103,40 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
           {hasNext && (
             <button
               onClick={e => { e.stopPropagation(); goNext() }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/50 hover:bg-black/75 text-white flex items-center justify-center transition-colors z-10"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               aria-label="Next photo"
             >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           )}
 
           {/* Counter */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center">
-            <span className="text-xs text-white/50 bg-black/40 px-2 py-0.5">
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+            <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
               {idx + 1} / {photos.length}
             </span>
           </div>
         </div>
 
-        {/* Info panel */}
-        <div className="md:w-[38%] flex flex-col overflow-y-auto">
-          <div className="p-7 flex-1">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-mist hover:text-edge transition-colors z-20"
-              aria-label="Close"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
+        {/* Info panel — scrollable */}
+        <div className="sm:w-[38%] flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-5 sm:px-7 pt-5 sm:pt-7 pb-2">
             <p className="text-xs text-copper uppercase tracking-widest mb-2">Fine Art Print</p>
-            <h2 className="font-serif text-xl text-edge leading-snug mb-4">{photo.title}</h2>
-            <p className="text-mist text-sm leading-relaxed mb-6">{photo.description}</p>
-            <p className="text-xs text-mist mb-6">Archival pigment print. Shipping included in the US.</p>
+            <h2 className="font-serif text-lg sm:text-xl text-edge leading-snug mb-3">{photo.title}</h2>
+            <p className="text-mist text-sm leading-relaxed mb-5">{photo.description}</p>
+            <p className="text-xs text-mist mb-5">Archival pigment print. Shipping included in the US.</p>
 
             {/* Size */}
-            <div className="mb-5">
-              <p className="text-xs text-mist uppercase tracking-widest mb-3">Size</p>
-              <div className="space-y-1.5">
+            <div className="mb-4">
+              <p className="text-xs text-mist uppercase tracking-widest mb-2">Size</p>
+              <div className="grid grid-cols-2 sm:grid-cols-1 gap-1.5">
                 {PRINT_SIZES.map((s, i) => (
                   <button
                     key={i}
                     onClick={() => setSizeIdx(i)}
-                    className={`w-full flex justify-between items-center px-3 py-2.5 text-sm transition-colors ${
+                    className={`flex justify-between items-center px-3 py-2.5 text-sm transition-colors touch-manipulation ${
                       sizeIdx === i
                         ? 'bg-copper/15 border border-copper text-edge'
                         : 'border border-panel text-mist hover:border-mist'
@@ -147,14 +150,14 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             </div>
 
             {/* Medium */}
-            <div className="mb-5">
-              <p className="text-xs text-mist uppercase tracking-widest mb-3">Medium</p>
+            <div className="mb-4">
+              <p className="text-xs text-mist uppercase tracking-widest mb-2">Medium</p>
               <div className="flex gap-2">
                 {PRINT_MEDIUMS.map(m => (
                   <button
                     key={m}
                     onClick={() => setMedium(m)}
-                    className={`flex-1 py-2.5 text-sm border transition-colors ${
+                    className={`flex-1 py-3 text-sm border transition-colors touch-manipulation ${
                       medium === m
                         ? 'border-copper bg-copper/15 text-edge'
                         : 'border-panel text-mist hover:border-mist'
@@ -167,19 +170,19 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             </div>
 
             {/* Quantity */}
-            <div className="mb-6">
-              <p className="text-xs text-mist uppercase tracking-widest mb-3">Quantity</p>
+            <div className="mb-4">
+              <p className="text-xs text-mist uppercase tracking-widest mb-2">Quantity</p>
               <div className="flex items-center gap-3">
-                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-8 h-8 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors">−</button>
+                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors touch-manipulation">−</button>
                 <span className="text-edge w-6 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(q => q + 1)} className="w-8 h-8 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors">+</button>
+                <button onClick={() => setQuantity(q => q + 1)} className="w-10 h-10 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors touch-manipulation">+</button>
               </div>
             </div>
           </div>
 
-          {/* Add to cart footer */}
-          <div className="p-7 pt-0">
-            <div className="flex items-center justify-between mb-4 pt-4 border-t border-darkroom">
+          {/* Sticky add-to-cart footer */}
+          <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
+            <div className="flex items-center justify-between mb-3">
               <p className="text-edge">
                 <span className="text-mist text-sm">Total </span>
                 <span className="font-serif text-xl">${(selectedSize.price * quantity).toFixed(2)}</span>
@@ -188,10 +191,10 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             <button
               onClick={handleAdd}
               disabled={added}
-              className={`w-full py-3 text-sm tracking-wider uppercase transition-all ${
+              className={`w-full py-4 sm:py-3 text-sm tracking-wider uppercase transition-all touch-manipulation ${
                 added
                   ? 'bg-copper/60 text-darkroom cursor-default'
-                  : 'bg-copper text-darkroom hover:bg-amber-600'
+                  : 'bg-copper text-darkroom hover:bg-amber-600 active:bg-amber-700'
               }`}
             >
               {added ? 'Added ✓' : 'Add to Cart'}

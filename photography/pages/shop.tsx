@@ -16,13 +16,13 @@ interface Props {
 export default function Shop({ categories, previews, counts }: Props) {
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <div className="mb-10 pb-6 border-b border-edge">
-          <h1 className="font-serif text-4xl text-ink">Shop</h1>
+      <div className="max-w-4xl mx-auto px-5 py-10 sm:py-12">
+        <div className="mb-8 sm:mb-10 pb-6 border-b border-edge">
+          <h1 className="font-serif text-3xl sm:text-4xl text-ink">Photography</h1>
           <p className="text-mist mt-2 text-sm">Choose a collection to browse prints.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10">
           {Object.entries(categories).map(([slug, cat]) => {
             const preview = previews[slug]
             return (

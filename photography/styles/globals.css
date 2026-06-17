@@ -19,10 +19,13 @@ h1, h2, h3 {
 
 /* Masonry gallery grid */
 .photo-grid {
-  columns: 2;
-  column-gap: 12px;
+  columns: 1;
+  column-gap: 10px;
 }
-@media (min-width: 640px) {
+@media (min-width: 480px) {
+  .photo-grid { columns: 2; column-gap: 12px; }
+}
+@media (min-width: 768px) {
   .photo-grid { columns: 3; }
 }
 @media (min-width: 1024px) {
@@ -31,22 +34,32 @@ h1, h2, h3 {
 
 .photo-item {
   break-inside: avoid;
-  margin-bottom: 12px;
-  @media (min-width: 1024px) { margin-bottom: 14px; }
+  margin-bottom: 10px;
+}
+@media (min-width: 1024px) {
+  .photo-item { margin-bottom: 14px; }
 }
 
-/* No right-click on photos */
+/* No right-click / drag on photos */
 .photo-protected {
   -webkit-user-select: none;
   user-select: none;
   pointer-events: none;
 }
+
+/* Overlay blocks casual right-click saving but must not block button clicks */
 .photo-wrapper { position: relative; }
 .photo-wrapper::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
+  pointer-events: none; /* let button clicks pass through on mobile */
+}
+
+/* Ensure touch targets are large enough */
+button, a {
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::selection { background-color: #B8743E33; }
