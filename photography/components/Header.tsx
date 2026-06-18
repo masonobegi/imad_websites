@@ -37,6 +37,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>AI Stickers</Link>
+            <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
             <button
               onClick={() => setCartOpen(true)}
               className={`relative p-1 ${text} ${hover} transition-colors`}
@@ -94,6 +95,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>AI Stickers</Link>
+            <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
           </div>
         )}
       </header>

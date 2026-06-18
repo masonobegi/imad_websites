@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { useState } from 'react'
+import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
@@ -26,6 +27,13 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos }: Props) {
 
   return (
     <Layout>
+      <Head>
+        <title>Imad | Fine Art Photography Prints | OBGillustrator.com</title>
+        <meta name="description" content="Photography prints by Imad Obegi — nature, wildlife, and the San Francisco Bay. Printed on archival metal or canvas. Made to order, ships flat." />
+        <meta property="og:title" content="Imad | Fine Art Photography Prints" />
+        <meta property="og:description" content="Nature, wildlife, and the San Francisco Bay — fine art prints on metal or canvas by Imad Obegi." />
+        <meta property="og:image" content="/photos/nature/milky-way-over-joshua-tree.jpg" />
+      </Head>
 
       {/* ── HERO ── */}
       <section className="relative h-[65vh] sm:h-[78vh] overflow-hidden photo-wrapper">

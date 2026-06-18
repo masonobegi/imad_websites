@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { useState } from 'react'
+import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
 import Layout from '../../components/Layout'
@@ -21,6 +22,13 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
 
   return (
     <Layout dark>
+      <Head>
+        <title>{categoryLabel} Photography | OBGillustrator.com</title>
+        <meta name="description" content={categoryDescription} />
+        <meta property="og:title" content={`${categoryLabel} Photography Prints | OBGillustrator.com`} />
+        <meta property="og:description" content={categoryDescription} />
+        {items[0] && <meta property="og:image" content={`/photos/${category}/${items[0].filename}`} />}
+      </Head>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16">
 
         <div className="mb-8">

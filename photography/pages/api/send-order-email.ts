@@ -114,6 +114,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       resend.emails.send({
         from: FROM,
         to: customerEmail,
+        replyTo: IMAD_EMAIL,
         subject: 'Your order from OBGillustrator.com',
         html: customerHtml,
       }),
