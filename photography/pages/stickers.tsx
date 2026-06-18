@@ -9,15 +9,24 @@ export default function Stickers() {
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-6 leading-tight">
           Original Character<br />Designs
         </h1>
-        <p className="text-mist leading-relaxed mb-3 max-w-sm mx-auto">
-          Imad's AI sticker packs — original character designs as singles and sets — will be available here soon.
+        <p className="text-mist leading-relaxed mb-10 max-w-sm mx-auto">
+          Imad's original character sticker designs — available as singles and sets.
         </p>
-        <p className="text-mist text-sm leading-relaxed mb-10 max-w-sm mx-auto">
-          In the meantime, explore the photography collection or check back soon.
-        </p>
-        <Link href="/" className="inline-block border border-ink text-ink px-8 py-3 text-sm tracking-wider uppercase hover:bg-ink hover:text-canvas transition-colors">
-          ← Back
-        </Link>
+
+        {/* Stickermule CTA */}
+        <a
+          href="https://www.stickermule.com/obgillustrator"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-3 border border-ink text-ink px-8 py-3 text-sm tracking-wider uppercase hover:bg-ink hover:text-canvas transition-colors"
+        >
+          Shop Stickers
+          <svg className="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+
+        <p className="text-xs text-mist mt-5 opacity-60">via Sticker Mule</p>
       </div>
     </Layout>
   )
