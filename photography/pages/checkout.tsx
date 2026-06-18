@@ -47,7 +47,26 @@ export default function Checkout() {
     if (!form.email || !form.name) { setError('Please fill in all required fields.'); return }
 
     setProcessing(true)
-    await new Promise(r => setTimeout(r, 2200))
+    await new Promise(r => setTimeout(r, 1500))
+
+    // Send order emails (customer + Imad) — non-blocking if it fails
+    try {
+      await fetch('/api/send-order-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: form.name,
+          customerEmail: form.email,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+          items,
+          total,
+        }),
+      })
+    } catch { /* email failure should not block the order */ }
+
     clearCart()
     router.push('/success')
   }
