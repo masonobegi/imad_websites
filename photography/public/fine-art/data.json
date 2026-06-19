@@ -1,0 +1,96 @@
+{
+  "categories": {
+    "watercolors": {
+      "label": "Watercolors",
+      "description": "Original watercolor paintings by Imad Obegi — landscapes, botanicals, still life, and coastal scenes."
+    }
+  },
+  "works": {
+    "watercolors": [
+      {
+        "id": "atlantic-crossing",
+        "filename": "atlantic-crossing.jpg",
+        "title": "Atlantic Crossing",
+        "originalSize": "9\" × 12\"",
+        "description": "Muted blues and grays carry the weight of open water — the Atlantic in all its restless breadth, painted with loose, confident washes that capture the feeling of being far from shore."
+      },
+      {
+        "id": "autumn-arrival-engine-no-3",
+        "filename": "autumn-arrival-engine-no-3.jpg",
+        "title": "Autumn Arrival — Engine No. 3",
+        "originalSize": null,
+        "description": "A vintage locomotive arrives through autumn color, warm ochres and rust bleeding into the surrounding foliage. History and movement, rendered in layered watercolor washes."
+      },
+      {
+        "id": "crimson-canna",
+        "filename": "crimson-canna.jpg",
+        "title": "Crimson Canna",
+        "originalSize": "5.5\" × 7.5\"",
+        "description": "A close study of canna lilies, their petals unfolding in vivid reds and burnt oranges. The transparency of watercolor suits the luminous quality of the blooms — light seems to come from within."
+      },
+      {
+        "id": "emerald-isle-bevereley-waves",
+        "filename": "emerald-isle-bevereley-waves.jpg",
+        "title": "Emerald Isle — Beverly Waves",
+        "originalSize": "9\" × 12\"",
+        "description": "Crashing surf along a coastline painted in layers of emerald, teal, and seafoam white. The painting holds the particular quality of Atlantic coastal light — bright and slightly cold, even in summer."
+      },
+      {
+        "id": "flame-lily-radiance",
+        "filename": "flame-lily-radiance.jpg",
+        "title": "Flame Lily Radiance",
+        "originalSize": "6\" × 5\"",
+        "description": "The flame lily's reflexed petals — crimson fading to gold at the edges — are captured in confident watercolor strokes. A botanical study that doesn't sacrifice life for accuracy."
+      },
+      {
+        "id": "morning-light-on-majolica",
+        "filename": "morning-light-on-majolica.jpg",
+        "title": "Morning Light on Majolica",
+        "originalSize": "9\" × 12\"",
+        "description": "Soft morning light falls across ornate majolica pottery, the rich glazes catching warmth and shadow. A quiet still life painted with the unhurried attention of early hours."
+      },
+      {
+        "id": "sentinel-of-the-high-desert",
+        "filename": "sentinel-of-the-high-desert.jpg",
+        "title": "Sentinel of the High Desert",
+        "originalSize": "5\" × 7\"",
+        "description": "A lone saguaro stands against a wide desert sky, quiet and monumental. The painting captures the particular stillness of the high desert — the sense that something ancient is simply watching."
+      },
+      {
+        "id": "the-crab-shack-salter-path",
+        "filename": "the-crab-shack-salter-path.jpg",
+        "title": "The Crab Shack, Salter Path",
+        "originalSize": "9\" × 12\"",
+        "description": "A weathered coastal shack in the fishing village of Salter Path, North Carolina, painted with the loose, direct strokes of plein air watercolor. Salt air and sun-bleached wood, caught before the light changed."
+      },
+      {
+        "id": "the-spirit-of-santa-monica",
+        "filename": "the-spirit-of-santa-monica.jpg",
+        "title": "The Spirit of Santa Monica",
+        "originalSize": "9\" × 12\"",
+        "description": "The Santa Monica Pier at golden hour — the Ferris wheel, the Pacific, the particular glow of a California afternoon. Painted with warmth and a light hand, the way the place actually feels."
+      },
+      {
+        "id": "the-view-from-home",
+        "filename": "the-view-from-home.jpg",
+        "title": "The View from Home",
+        "originalSize": "6\" × 9\"",
+        "description": "A familiar landscape seen from a place of belonging — the kind of view you stop noticing until you paint it. Rendered with quiet affection and the economy of someone who knows exactly what matters."
+      },
+      {
+        "id": "the-vision-returns",
+        "filename": "the-vision-returns.jpg",
+        "title": "The Vision Returns",
+        "originalSize": "11\" × 14\"",
+        "description": "A richly layered composition where color and form do the work of language. The title suggests a return — something seen before, now seen again differently. One of the larger pieces in this collection."
+      },
+      {
+        "id": "wedgwood-jasperware-pitcher",
+        "filename": "wedgwood-jasperware-pitcher.jpg",
+        "title": "Wedgwood Jasperware Pitcher",
+        "originalSize": "5\" × 7\"",
+        "description": "A careful still life study of a classic Wedgwood jasperware pitcher — its pale blue ground and white relief ornament rendered with attention to the subtle interplay of matte surface and ambient light."
+      }
+    ]
+  }
+}
