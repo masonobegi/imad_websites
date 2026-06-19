@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -21,8 +21,123 @@ interface Props {
   works: Work[]
 }
 
+function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialIndex: number; onClose: () => void }) {
+  const [idx, setIdx] = useState(initialIndex)
+  const work = works[idx]
+  const hasPrev = idx > 0
+  const hasNext = idx < works.length - 1
+
+  const goPrev = useCallback(() => { if (hasPrev) setIdx(i => i - 1) }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) setIdx(i => i + 1) }, [hasNext])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') goPrev()
+      if (e.key === 'ArrowRight') goNext()
+    }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [onClose, goPrev, goNext])
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      <div className="fixed inset-0 bg-black/85" onClick={onClose} />
+
+      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none">
+
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1"
+          aria-label="Close"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* Image area */}
+        <div className="sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative h-[42vh] sm:h-auto sm:max-h-[90vh]">
+          <img
+            src={`/fine-art/watercolors/${work.filename}`}
+            alt={work.title}
+            className="w-full h-full object-contain"
+            draggable={false}
+          />
+
+          {hasPrev && (
+            <button
+              onClick={e => { e.stopPropagation(); goPrev() }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              aria-label="Previous"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+
+          {hasNext && (
+            <button
+              onClick={e => { e.stopPropagation(); goNext() }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              aria-label="Next"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+            <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
+              {idx + 1} / {works.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Info panel */}
+        <div className="sm:w-[38%] flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 overflow-y-auto px-5 sm:px-7 pt-5 sm:pt-7 pb-4">
+            <p className="text-xs text-copper uppercase tracking-widest mb-2">Watercolor</p>
+            <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
+            <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
+
+            <div className="space-y-3 pt-4 border-t border-darkroom text-sm">
+              {work.originalSize && (
+                <div className="flex justify-between text-mist">
+                  <span>Original size</span>
+                  <span>{work.originalSize}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-mist">
+                <span>Price</span>
+                <span>Contact for pricing</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
+            <a
+              href={`mailto:imadobegi@gmail.com?subject=Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in "${work.title}". Could you share more details on availability and pricing?%0A%0AThank you`}
+              className="block text-center bg-copper text-darkroom py-4 sm:py-3 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+            >
+              Inquire about this piece
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function FineArtCategory({ category, categoryLabel, categoryDescription, works }: Props) {
-  const [selected, setSelected] = useState<Work | null>(null)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   return (
     <Layout>
@@ -45,12 +160,11 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
           <p className="text-mist text-sm mt-1 max-w-md">{categoryDescription}</p>
         </div>
 
-        {/* Masonry grid */}
         <div className="photo-grid">
-          {works.map(work => (
+          {works.map((work, i) => (
             <div key={work.id} className="photo-item">
               <button
-                onClick={() => setSelected(work)}
+                onClick={() => setSelectedIndex(i)}
                 className="group block w-full text-left focus:outline-none"
               >
                 <div className="relative overflow-hidden bg-edge">
@@ -75,62 +189,12 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
         </div>
       </div>
 
-      {/* Detail overlay */}
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 sm:p-8"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="bg-canvas max-w-4xl w-full max-h-[90vh] overflow-y-auto flex flex-col sm:flex-row"
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Image */}
-            <div className="sm:w-3/5 bg-edge flex-shrink-0">
-              <img
-                src={`/fine-art/${category}/${selected.filename}`}
-                alt={selected.title}
-                className="w-full h-full object-contain"
-              />
-            </div>
-
-            {/* Info */}
-            <div className="flex-1 p-6 sm:p-8 flex flex-col">
-              <button
-                onClick={() => setSelected(null)}
-                className="self-end text-mist hover:text-ink transition-colors mb-6 text-lg leading-none"
-                aria-label="Close"
-              >
-                ×
-              </button>
-
-              <p className="text-xs text-copper uppercase tracking-widest mb-2">{categoryLabel}</p>
-              <h2 className="font-serif text-2xl sm:text-3xl text-ink mb-4 leading-tight">{selected.title}</h2>
-
-              <p className="text-mist text-sm leading-relaxed mb-6">{selected.description}</p>
-
-              <div className="mt-auto space-y-3 pt-4 border-t border-edge text-sm">
-                {selected.originalSize && (
-                  <div className="flex justify-between text-mist">
-                    <span>Original size</span>
-                    <span>{selected.originalSize}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-mist">
-                  <span>Price</span>
-                  <span>Contact for pricing</span>
-                </div>
-              </div>
-
-              <a
-                href={`mailto:imadobegi@gmail.com?subject=Inquiry: ${encodeURIComponent(selected.title)}&body=Hi Imad,%0A%0AI'm interested in "${selected.title}". Could you share more details on availability and pricing?%0A%0AThank you`}
-                className="mt-6 block text-center border border-ink text-ink px-6 py-3 text-sm tracking-wider uppercase hover:bg-ink hover:text-canvas transition-colors"
-              >
-                Inquire about this piece
-              </a>
-            </div>
-          </div>
-        </div>
+      {selectedIndex !== null && (
+        <WorkModal
+          works={works}
+          initialIndex={selectedIndex}
+          onClose={() => setSelectedIndex(null)}
+        />
       )}
     </Layout>
   )
