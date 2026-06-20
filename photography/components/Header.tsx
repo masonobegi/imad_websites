@@ -38,6 +38,12 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>AI Stickers</Link>
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
+            <Link
+              href="/commissions"
+              className="text-sm px-3 py-1.5 bg-copper text-darkroom hover:bg-amber-600 transition-colors tracking-wide"
+            >
+              Commission
+            </Link>
             <button
               onClick={() => setCartOpen(true)}
               className={`relative p-1 ${text} ${hover} transition-colors`}
@@ -96,6 +102,13 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>AI Stickers</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
+            <Link
+              href="/commissions"
+              onClick={() => setMenuOpen(false)}
+              className="text-base px-4 py-2 bg-copper text-darkroom hover:bg-amber-600 transition-colors tracking-wide inline-block text-center"
+            >
+              Commission a Piece
+            </Link>
           </div>
         )}
       </header>

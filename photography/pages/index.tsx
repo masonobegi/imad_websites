@@ -251,6 +251,22 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
 
       </div>
 
+      {/* ── COMMISSION CTA ── */}
+      <section className="px-6 sm:px-10 py-14 sm:py-20 text-center border-b border-edge">
+        <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-3">Custom Work</p>
+        <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-4">Have something in mind?</h2>
+        <p className="text-mist text-sm sm:text-base max-w-md mx-auto mb-8 leading-relaxed">
+          Imad takes commissions — watercolors, encaustics, prints, and custom designs.
+          Tell him what you're envisioning and he'll be in touch.
+        </p>
+        <Link
+          href="/commissions"
+          className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+        >
+          Commission a Piece
+        </Link>
+      </section>
+
       {/* Modal */}
       {modalState && (
         <PhotoModal
