@@ -6,31 +6,34 @@ import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 import PhotoModal from '../components/PhotoModal'
+import WorkModal, { Work } from '../components/WorkModal'
 import CartPopup from '../components/CartPopup'
 import { Photo } from '../lib/photos'
-
-interface FineArtWork {
-  id: string
-  filename: string
-  title: string
-}
 
 interface Props {
   heroPhoto: Photo
   previewPhotos: Photo[]
   allPhotos: Record<string, Photo[]>
-  previewWatercolors: FineArtWork[]
-  previewEncaustics: FineArtWork[]
+  previewWatercolors: Work[]
+  allWatercolors: Work[]
+  previewEncaustics: Work[]
+  allEncaustics: Work[]
 }
 
-export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWatercolors, previewEncaustics }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWatercolors, allWatercolors, previewEncaustics, allEncaustics }: Props) {
   const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
+  const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
   const [cartOpen, setCartOpen] = useState(false)
 
   const openPhoto = (photo: Photo) => {
     const arr: Photo[] = allPhotos[photo.category] || []
     const idx = arr.findIndex(p => p.id === photo.id)
     setModalState({ photos: arr, index: idx >= 0 ? idx : 0 })
+  }
+
+  const openWork = (work: Work, allWorks: Work[], category: string, categoryLabel: string) => {
+    const idx = allWorks.findIndex(w => w.id === work.id)
+    setWorkModalState({ works: allWorks, index: idx >= 0 ? idx : 0, category, categoryLabel })
   }
 
   return (
@@ -135,10 +138,11 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-0.5 bg-edge">
           {previewWatercolors.map(work => (
-            <Link
+            <button
               key={work.id}
-              href="/fine-art/watercolors"
-              className="group/wc flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative"
+              onClick={() => openWork(work, allWatercolors, 'watercolors', 'Watercolors')}
+              className="group/wc flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative text-left focus:outline-none touch-manipulation"
+              aria-label={`View ${work.title}`}
             >
               <img
                 src={`/fine-art/watercolors/${work.filename}`}
@@ -150,12 +154,12 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
                   {work.title}
                 </p>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
 
         <div className="sm:hidden px-6 py-3 flex items-center justify-between">
-          <p className="text-mist text-xs">Original watercolor paintings</p>
+          <p className="text-mist text-xs">Tap to view · Original watercolor paintings</p>
           <Link href="/fine-art/watercolors" className="text-copper text-xs">Browse all →</Link>
         </div>
       </section>
@@ -183,10 +187,11 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-0.5 bg-edge">
           {previewEncaustics.map(work => (
-            <Link
+            <button
               key={work.id}
-              href="/fine-art/encaustics"
-              className="group/enc flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative"
+              onClick={() => openWork(work, allEncaustics, 'encaustics', 'Encaustics')}
+              className="group/enc flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative text-left focus:outline-none touch-manipulation"
+              aria-label={`View ${work.title}`}
             >
               <img
                 src={`/fine-art/encaustics/${work.filename}`}
@@ -198,12 +203,12 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
                   {work.title}
                 </p>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
 
         <div className="sm:hidden px-6 py-3 flex items-center justify-between">
-          <p className="text-mist text-xs">Original encaustic paintings</p>
+          <p className="text-mist text-xs">Tap to view · Original encaustic paintings</p>
           <Link href="/fine-art/encaustics" className="text-copper text-xs">Browse all →</Link>
         </div>
       </section>
@@ -267,13 +272,21 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
         </Link>
       </section>
 
-      {/* Modal */}
       {modalState && (
         <PhotoModal
           photos={modalState.photos}
           initialIndex={modalState.index}
           onClose={() => setModalState(null)}
           onAddedToCart={() => { setModalState(null); setCartOpen(true) }}
+        />
+      )}
+      {workModalState && (
+        <WorkModal
+          works={workModalState.works}
+          initialIndex={workModalState.index}
+          category={workModalState.category}
+          categoryLabel={workModalState.categoryLabel}
+          onClose={() => setWorkModalState(null)}
         />
       )}
       {cartOpen && <CartPopup onClose={() => setCartOpen(false)} />}
@@ -311,12 +324,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const fineArtDataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
   const fineArtData = JSON.parse(fs.readFileSync(fineArtDataPath, 'utf-8'))
 
-  const allWatercolors: FineArtWork[] = fineArtData.works.watercolors || []
+  const allWatercolors: Work[] = fineArtData.works.watercolors || []
   const wantedWatercolors = [
     'the-crab-shack-salter-path', 'atlantic-crossing', 'crimson-canna',
     'morning-light-on-majolica', 'the-spirit-of-santa-monica', 'sentinel-of-the-high-desert',
   ]
-  const pickedWatercolors: FineArtWork[] = []
+  const pickedWatercolors: Work[] = []
   for (const id of wantedWatercolors) {
     const found = allWatercolors.find(w => w.id === id)
     if (found) pickedWatercolors.push(found)
@@ -326,10 +339,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
     pickedWatercolors.push(...rest.slice(0, 6 - pickedWatercolors.length))
   }
 
-  const allEncaustics: FineArtWork[] = fineArtData.works.encaustics || []
-  // Prefer available pieces for the homepage strip
-  const availableEnc = allEncaustics.filter((w: any) => w.available)
-  const pickedEncaustics: FineArtWork[] = availableEnc.slice(0, 6)
+  const allEncaustics: Work[] = fineArtData.works.encaustics || []
+  const availableEnc = allEncaustics.filter(w => w.available)
+  const pickedEncaustics: Work[] = availableEnc.slice(0, 6)
   if (pickedEncaustics.length < 6) {
     const rest = allEncaustics.filter(w => !pickedEncaustics.find(x => x.id === w.id))
     pickedEncaustics.push(...rest.slice(0, 6 - pickedEncaustics.length))
@@ -341,7 +353,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
       previewPhotos: picked.slice(0, 6),
       allPhotos: { nature, 'san-francisco': sf },
       previewWatercolors: pickedWatercolors.slice(0, 6),
+      allWatercolors,
       previewEncaustics: pickedEncaustics.slice(0, 6),
+      allEncaustics,
     },
   }
 }
