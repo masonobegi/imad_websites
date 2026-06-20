@@ -6,7 +6,8 @@
     "process": "node process.js"
   },
   "dependencies": {
-    "sharp": "^0.33.4",
-    "exifr": "^7.1.3"
+    "exifr": "^7.1.3",
+    "heic-convert": "^2.1.0",
+    "sharp": "^0.33.4"
   }
 }
