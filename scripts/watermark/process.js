@@ -12,7 +12,7 @@ const SOURCES = {
 }
 
 const OUT_BASE = 'c:/Users/mason/OneDrive/Desktop/Imad_website/photography/public/photos'
-const MAX_WIDTH = 1600
+const MAX_WIDTH = 1920
 const QUALITY = 88
 
 // Fallback descriptions keyed by cleaned title
@@ -102,26 +102,24 @@ async function getExifDescription(filepath) {
 }
 
 function buildWatermarkSvg(width, height) {
-  const fontSize = Math.max(28, Math.round(width * 0.022))
-  const y = height - Math.round(height * 0.042)
+  // Tiling diagonal pattern — impossible to crop out, 30% opacity
   return Buffer.from(`
     <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
       <defs>
-        <filter id="dropshadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="rgba(0,0,0,1)" flood-opacity="1"/>
-        </filter>
+        <pattern id="wm" x="0" y="0" width="340" height="190"
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(35 ${Math.round(width / 2)} ${Math.round(height / 2)})">
+          <text
+            x="10" y="110"
+            font-family="Georgia, Times New Roman, serif"
+            font-size="22px"
+            font-style="italic"
+            fill="rgba(255,255,255,0.30)"
+            letter-spacing="3"
+          >OBGillustrator.com</text>
+        </pattern>
       </defs>
-      <text
-        x="${Math.round(width / 2)}"
-        y="${y}"
-        text-anchor="middle"
-        font-family="Georgia, Times New Roman, serif"
-        font-size="${fontSize}px"
-        font-style="italic"
-        fill="rgba(255,255,255,0.80)"
-        filter="url(#dropshadow)"
-        letter-spacing="${Math.round(fontSize * 0.14)}"
-      >OBGillustrator.com</text>
+      <rect width="${width}" height="${height}" fill="url(#wm)" />
     </svg>
   `)
 }

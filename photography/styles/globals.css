@@ -57,6 +57,10 @@ h1, h2, h3 {
   pointer-events: none; /* let button clicks pass through on mobile */
 }
 
+/* Zoom cursors for fine-art modal image area */
+.cursor-zoom-in  { cursor: zoom-in; }
+.cursor-zoom-out { cursor: zoom-out; }
+
 /* Ensure touch targets are large enough */
 button, a {
   -webkit-tap-highlight-color: transparent;

@@ -67,17 +67,15 @@ export default function FineArt({ categories }: Props) {
             </Link>
           ))}
 
-          {/* Placeholder cards for upcoming media */}
-          {[{ label: 'Oil Paintings', note: 'Coming soon' }, { label: 'Encaustic', note: 'Coming soon' }].map(p => (
-            <div key={p.label} className="border border-edge opacity-40">
-              <div className="aspect-[4/3] bg-edge/30 flex items-center justify-center">
-                <p className="text-mist text-xs uppercase tracking-widest">{p.note}</p>
-              </div>
-              <div className="px-5 py-4">
-                <p className="text-ink text-base font-medium">{p.label}</p>
-              </div>
+            {/* Oil Paintings placeholder */}
+          <div className="border border-edge opacity-40">
+            <div className="aspect-[4/3] bg-edge/30 flex items-center justify-center">
+              <p className="text-mist text-xs uppercase tracking-widest">Coming soon</p>
             </div>
-          ))}
+            <div className="px-5 py-4">
+              <p className="text-ink text-base font-medium">Oil Paintings</p>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

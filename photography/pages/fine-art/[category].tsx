@@ -11,6 +11,7 @@ interface Work {
   filename: string
   title: string
   originalSize: string | null
+  available: boolean
   description: string
 }
 
@@ -21,14 +22,31 @@ interface Props {
   works: Work[]
 }
 
-function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialIndex: number; onClose: () => void }) {
+function WorkModal({
+  works,
+  initialIndex,
+  onClose,
+  category,
+  categoryLabel,
+}: {
+  works: Work[]
+  initialIndex: number
+  onClose: () => void
+  category: string
+  categoryLabel: string
+}) {
   const [idx, setIdx] = useState(initialIndex)
+  const [zoomed, setZoomed] = useState(false)
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
 
-  const goPrev = useCallback(() => { if (hasPrev) setIdx(i => i - 1) }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) setIdx(i => i + 1) }, [hasNext])
+  const goPrev = useCallback(() => {
+    if (hasPrev) { setIdx(i => i - 1); setZoomed(false) }
+  }, [hasPrev])
+  const goNext = useCallback(() => {
+    if (hasNext) { setIdx(i => i + 1); setZoomed(false) }
+  }, [hasNext])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -61,14 +79,24 @@ function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialInd
           </svg>
         </button>
 
-        {/* Image area */}
-        <div className="sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative h-[42vh] sm:h-auto sm:max-h-[90vh]">
+        {/* Image area — click to zoom/unzoom */}
+        <div
+          className={`sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative h-[42vh] sm:h-auto sm:max-h-[90vh] ${zoomed ? 'overflow-auto cursor-zoom-out' : 'overflow-hidden cursor-zoom-in'}`}
+          onClick={() => setZoomed(z => !z)}
+        >
           <img
-            src={`/fine-art/watercolors/${work.filename}`}
+            src={`/fine-art/${category}/${work.filename}`}
             alt={work.title}
-            className="w-full h-full object-contain"
+            className={`block transition-transform duration-300 select-none ${zoomed ? 'w-auto h-auto max-w-none scale-[2] origin-center' : 'w-full h-full object-contain'}`}
             draggable={false}
           />
+
+          {/* Zoom hint */}
+          {!zoomed && (
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center pointer-events-none">
+              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">click to zoom</span>
+            </div>
+          )}
 
           {hasPrev && (
             <button
@@ -94,7 +122,7 @@ function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialInd
             </button>
           )}
 
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
             <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
               {idx + 1} / {works.length}
             </span>
@@ -104,7 +132,14 @@ function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialInd
         {/* Info panel */}
         <div className="sm:w-[38%] flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto px-5 sm:px-7 pt-5 sm:pt-7 pb-4">
-            <p className="text-xs text-copper uppercase tracking-widest mb-2">Watercolor</p>
+            <div className="flex items-center gap-2 mb-2">
+              <p className="text-xs text-copper uppercase tracking-widest">{categoryLabel}</p>
+              {work.available && (
+                <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
+                  Available
+                </span>
+              )}
+            </div>
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
 
@@ -117,18 +152,27 @@ function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialInd
               )}
               <div className="flex justify-between text-mist">
                 <span>Price</span>
-                <span>Contact for pricing</span>
+                <span>{work.available ? 'Inquire for price' : 'Not for sale'}</span>
               </div>
             </div>
           </div>
 
           <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
-            <a
-              href={`mailto:imadobegi@gmail.com?subject=Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in "${work.title}". Could you share more details on availability and pricing?%0A%0AThank you`}
-              className="block text-center bg-copper text-darkroom py-4 sm:py-3 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
-            >
-              Inquire about this piece
-            </a>
+            {work.available ? (
+              <a
+                href={`mailto:imadobegi@gmail.com?subject=Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in "${work.title}". Could you share more details on availability and pricing?%0A%0AThank you`}
+                className="block text-center bg-copper text-darkroom py-4 sm:py-3 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+              >
+                Inquire about this piece
+              </a>
+            ) : (
+              <a
+                href={`mailto:imadobegi@gmail.com?subject=Question about: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI admired "${work.title}" on your site. I'd love to learn more about your work.%0A%0AThank you`}
+                className="block text-center border border-mist text-mist py-4 sm:py-3 text-sm tracking-wider uppercase hover:border-edge hover:text-edge transition-colors"
+              >
+                Ask about this work
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -138,6 +182,10 @@ function WorkModal({ works, initialIndex, onClose }: { works: Work[]; initialInd
 
 export default function FineArtCategory({ category, categoryLabel, categoryDescription, works }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [filter, setFilter] = useState<'all' | 'available'>('all')
+
+  const availableCount = works.filter(w => w.available).length
+  const displayed = filter === 'available' ? works.filter(w => w.available) : works
 
   return (
     <Layout>
@@ -150,42 +198,73 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16">
-        <div className="mb-8">
+        <div className="mb-6">
           <p className="text-xs text-mist mb-3">
             <Link href="/fine-art" className="hover:text-copper transition-colors">Fine Art</Link>
             <span className="mx-2 opacity-40">›</span>
             {categoryLabel}
           </p>
-          <h1 className="font-serif text-3xl text-ink">{categoryLabel}</h1>
-          <p className="text-mist text-sm mt-1 max-w-md">{categoryDescription}</p>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <h1 className="font-serif text-3xl text-ink">{categoryLabel}</h1>
+              <p className="text-mist text-sm mt-1 max-w-md">{categoryDescription}</p>
+            </div>
+            {availableCount > 0 && (
+              <div className="flex gap-2 flex-shrink-0">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`text-xs px-3 py-1.5 border transition-colors ${filter === 'all' ? 'border-copper text-copper' : 'border-edge text-mist hover:border-shadow'}`}
+                >
+                  All ({works.length})
+                </button>
+                <button
+                  onClick={() => setFilter('available')}
+                  className={`text-xs px-3 py-1.5 border transition-colors ${filter === 'available' ? 'border-copper text-copper' : 'border-edge text-mist hover:border-shadow'}`}
+                >
+                  Available ({availableCount})
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="photo-grid">
-          {works.map((work, i) => (
-            <div key={work.id} className="photo-item">
-              <button
-                onClick={() => setSelectedIndex(i)}
-                className="group block w-full text-left focus:outline-none"
-              >
-                <div className="relative overflow-hidden bg-edge">
-                  <img
-                    src={`/fine-art/${category}/${work.filename}`}
-                    alt={work.title}
-                    className="w-full block transition-transform duration-500 group-hover:scale-[1.03]"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-colors duration-300 flex items-end">
-                    <div className="p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      <p className="text-white text-sm font-medium leading-snug">{work.title}</p>
-                      {work.originalSize && (
-                        <p className="text-white/60 text-xs mt-0.5">{work.originalSize} original</p>
-                      )}
+          {displayed.map((work) => {
+            const realIndex = works.findIndex(w => w.id === work.id)
+            return (
+              <div key={work.id} className="photo-item">
+                <button
+                  onClick={() => setSelectedIndex(realIndex)}
+                  className="group block w-full text-left focus:outline-none"
+                >
+                  <div className="relative overflow-hidden bg-edge">
+                    <img
+                      src={`/fine-art/${category}/${work.filename}`}
+                      alt={work.title}
+                      className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                      draggable={false}
+                      loading="lazy"
+                    />
+                    {work.available && (
+                      <div className="absolute top-2 left-2">
+                        <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
+                          Available
+                        </span>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-colors duration-300 flex items-end">
+                      <div className="p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <p className="text-white text-sm font-medium leading-snug">{work.title}</p>
+                        {work.originalSize && (
+                          <p className="text-white/60 text-xs mt-0.5">{work.originalSize} original</p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
-            </div>
-          ))}
+                </button>
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -194,6 +273,8 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
           works={works}
           initialIndex={selectedIndex}
           onClose={() => setSelectedIndex(null)}
+          category={category}
+          categoryLabel={categoryLabel}
         />
       )}
     </Layout>

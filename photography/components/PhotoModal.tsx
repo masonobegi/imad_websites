@@ -15,6 +15,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const [medium, setMedium] = useState<PrintMedium>('Metal')
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
+  const [zoomed, setZoomed] = useState(false)
   const { addItem } = useCart()
 
   const photo = photos[idx]
@@ -22,8 +23,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const hasPrev = idx > 0
   const hasNext = idx < photos.length - 1
 
-  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false) } }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false) } }, [hasNext])
+  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false); setZoomed(false) } }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false); setZoomed(false) } }, [hasNext])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -76,15 +77,22 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
           </svg>
         </button>
 
-        {/* Photo area */}
-        <div className="sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative photo-wrapper
-                        h-[42vh] sm:h-auto sm:max-h-[90vh]">
+        {/* Photo area — click to zoom */}
+        <div
+          className={`sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative photo-wrapper h-[42vh] sm:h-auto sm:max-h-[90vh] ${zoomed ? 'overflow-auto cursor-zoom-out' : 'overflow-hidden cursor-zoom-in'}`}
+          onClick={() => setZoomed(z => !z)}
+        >
           <img
             src={`/photos/${photo.category}/${photo.filename}`}
             alt={photo.title}
-            className="w-full h-full object-contain photo-protected"
+            className={`block select-none transition-transform duration-300 photo-protected ${zoomed ? 'w-auto h-auto max-w-none scale-[2] origin-center' : 'w-full h-full object-contain'}`}
             draggable={false}
           />
+          {!zoomed && (
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center pointer-events-none">
+              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">click to zoom</span>
+            </div>
+          )}
 
           {/* Prev button */}
           {hasPrev && (
