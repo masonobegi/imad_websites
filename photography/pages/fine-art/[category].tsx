@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -41,6 +41,7 @@ function WorkModal({
   const containerRef = useRef<HTMLDivElement>(null)
   const zoomOrigin = useRef({ x: 0.5, y: 0.5 })
   const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 })
+  const nativeScrolled = useRef(false)
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
@@ -52,19 +53,16 @@ function WorkModal({
     if (hasNext) { setIdx(i => i + 1); setZoomed(false) }
   }, [hasNext])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!zoomed || !containerRef.current) return
     const c = containerRef.current
-    const frame = requestAnimationFrame(() => {
-      if (!c) return
-      c.scrollLeft = c.scrollWidth * zoomOrigin.current.x - c.clientWidth / 2
-      c.scrollTop  = c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2
-    })
-    return () => cancelAnimationFrame(frame)
+    nativeScrolled.current = false
+    c.scrollLeft = Math.max(0, c.scrollWidth  * zoomOrigin.current.x - c.clientWidth  / 2)
+    c.scrollTop  = Math.max(0, c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2)
   }, [zoomed])
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!zoomed) return
+    if (!zoomed || e.pointerType !== 'mouse') return
     dragRef.current = {
       active: true, moved: false,
       startX: e.clientX, startY: e.clientY,
@@ -88,7 +86,11 @@ function WorkModal({
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (zoomed) {
-      if (dragRef.current.moved) { dragRef.current.moved = false; return }
+      if (dragRef.current.moved || nativeScrolled.current) {
+        dragRef.current.moved = false
+        nativeScrolled.current = false
+        return
+      }
       setZoomed(false)
       return
     }
@@ -131,17 +133,19 @@ function WorkModal({
           </svg>
         </button>
 
-        {/* Image area — click to zoom at position, drag to pan */}
+        {/* Image area — click to zoom at position, drag/scroll to pan */}
         <div
           ref={containerRef}
           className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative h-[42vh] sm:h-auto sm:max-h-[90vh] select-none
             ${zoomed
               ? `overflow-auto ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`
               : 'overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
+          style={zoomed ? { WebkitOverflowScrolling: 'touch' } as React.CSSProperties : undefined}
           onClick={handleContainerClick}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
+          onScroll={() => { if (zoomed) nativeScrolled.current = true }}
         >
           <img
             src={`/fine-art/${category}/${work.filename}`}

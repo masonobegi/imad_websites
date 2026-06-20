@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
 import { Photo, PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
@@ -20,6 +20,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const containerRef = useRef<HTMLDivElement>(null)
   const zoomOrigin = useRef({ x: 0.5, y: 0.5 })
   const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 })
+  const nativeScrolled = useRef(false)
   const { addItem } = useCart()
 
   const photo = photos[idx]
@@ -30,20 +31,18 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false); setZoomed(false) } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false); setZoomed(false) } }, [hasNext])
 
-  // After entering zoom, scroll so the clicked point is centered
-  useEffect(() => {
+  // useLayoutEffect fires after DOM is committed + layout is computed — scrollWidth/Height are reliable here
+  useLayoutEffect(() => {
     if (!zoomed || !containerRef.current) return
     const c = containerRef.current
-    const frame = requestAnimationFrame(() => {
-      if (!c) return
-      c.scrollLeft = c.scrollWidth * zoomOrigin.current.x - c.clientWidth / 2
-      c.scrollTop  = c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2
-    })
-    return () => cancelAnimationFrame(frame)
+    nativeScrolled.current = false
+    c.scrollLeft = Math.max(0, c.scrollWidth  * zoomOrigin.current.x - c.clientWidth  / 2)
+    c.scrollTop  = Math.max(0, c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2)
   }, [zoomed])
 
+  // Mouse-only drag pan (setPointerCapture kills native touch scroll on mobile)
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!zoomed) return
+    if (!zoomed || e.pointerType !== 'mouse') return
     dragRef.current = {
       active: true, moved: false,
       startX: e.clientX, startY: e.clientY,
@@ -67,7 +66,12 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
   const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (zoomed) {
-      if (dragRef.current.moved) { dragRef.current.moved = false; return }
+      // Don't zoom out if user was dragging (desktop) or scrolling (mobile)
+      if (dragRef.current.moved || nativeScrolled.current) {
+        dragRef.current.moved = false
+        nativeScrolled.current = false
+        return
+      }
       setZoomed(false)
       return
     }
@@ -130,17 +134,19 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
           </svg>
         </button>
 
-        {/* Photo area — click to zoom, drag to pan */}
+        {/* Photo area — click to zoom, drag/scroll to pan */}
         <div
           ref={containerRef}
           className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative photo-wrapper h-[42vh] sm:h-auto sm:max-h-[90vh] select-none
             ${zoomed
               ? `overflow-auto ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`
               : 'overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
+          style={zoomed ? { WebkitOverflowScrolling: 'touch' } as React.CSSProperties : undefined}
           onClick={handleContainerClick}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
+          onScroll={() => { if (zoomed) nativeScrolled.current = true }}
         >
           <img
             src={`/photos/${photo.category}/${photo.filename}`}
