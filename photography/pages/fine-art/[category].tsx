@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -37,6 +37,10 @@ function WorkModal({
 }) {
   const [idx, setIdx] = useState(initialIndex)
   const [zoomed, setZoomed] = useState(false)
+  const [dragging, setDragging] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const zoomOrigin = useRef({ x: 0.5, y: 0.5 })
+  const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 })
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
@@ -47,6 +51,54 @@ function WorkModal({
   const goNext = useCallback(() => {
     if (hasNext) { setIdx(i => i + 1); setZoomed(false) }
   }, [hasNext])
+
+  useEffect(() => {
+    if (!zoomed || !containerRef.current) return
+    const c = containerRef.current
+    const frame = requestAnimationFrame(() => {
+      if (!c) return
+      c.scrollLeft = c.scrollWidth * zoomOrigin.current.x - c.clientWidth / 2
+      c.scrollTop  = c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [zoomed])
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!zoomed) return
+    dragRef.current = {
+      active: true, moved: false,
+      startX: e.clientX, startY: e.clientY,
+      scrollLeft: containerRef.current?.scrollLeft ?? 0,
+      scrollTop:  containerRef.current?.scrollTop  ?? 0,
+    }
+    setDragging(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active || !containerRef.current) return
+    const dx = e.clientX - dragRef.current.startX
+    const dy = e.clientY - dragRef.current.startY
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragRef.current.moved = true
+    containerRef.current.scrollLeft = dragRef.current.scrollLeft - dx
+    containerRef.current.scrollTop  = dragRef.current.scrollTop  - dy
+  }
+
+  const handlePointerUp = () => { dragRef.current.active = false; setDragging(false) }
+
+  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (zoomed) {
+      if (dragRef.current.moved) { dragRef.current.moved = false; return }
+      setZoomed(false)
+      return
+    }
+    const rect = e.currentTarget.getBoundingClientRect()
+    zoomOrigin.current = {
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top)  / rect.height,
+    }
+    setZoomed(true)
+  }
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -79,15 +131,22 @@ function WorkModal({
           </svg>
         </button>
 
-        {/* Image area — click to zoom/unzoom */}
+        {/* Image area — click to zoom at position, drag to pan */}
         <div
-          className={`sm:w-[62%] flex-shrink-0 bg-darkroom flex items-center justify-center relative h-[42vh] sm:h-auto sm:max-h-[90vh] ${zoomed ? 'overflow-auto cursor-zoom-out' : 'overflow-hidden cursor-zoom-in'}`}
-          onClick={() => setZoomed(z => !z)}
+          ref={containerRef}
+          className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative h-[42vh] sm:h-auto sm:max-h-[90vh] select-none
+            ${zoomed
+              ? `overflow-auto ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`
+              : 'overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
+          onClick={handleContainerClick}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
         >
           <img
             src={`/fine-art/${category}/${work.filename}`}
             alt={work.title}
-            className={`block transition-transform duration-300 select-none ${zoomed ? 'w-auto h-auto max-w-none scale-[2] origin-center' : 'w-full h-full object-contain'}`}
+            className={`block select-none ${zoomed ? 'w-[200%] h-auto' : 'w-full h-full object-contain'}`}
             draggable={false}
           />
 
@@ -101,6 +160,7 @@ function WorkModal({
           {hasPrev && (
             <button
               onClick={e => { e.stopPropagation(); goPrev() }}
+              onPointerDown={e => e.stopPropagation()}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               aria-label="Previous"
             >
@@ -113,6 +173,7 @@ function WorkModal({
           {hasNext && (
             <button
               onClick={e => { e.stopPropagation(); goNext() }}
+              onPointerDown={e => e.stopPropagation()}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               aria-label="Next"
             >

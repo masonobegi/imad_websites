@@ -124,6 +124,30 @@ function parseFilename(raw) {
   return { title: s, available, originalSize }
 }
 
+function buildWatermarkSvg(width, height) {
+  const cx = Math.round(width / 2)
+  const cy = Math.round(height / 2)
+  const diag = Math.ceil(Math.sqrt(width * width + height * height))
+  const stepX = 320
+  const stepY = 185
+  const texts = []
+  for (let y = -diag; y <= diag; y += stepY) {
+    for (let x = -diag; x <= diag; x += stepX) {
+      texts.push(
+        `<text x="${cx + x}" y="${cy + y}" ` +
+        `font-family="Georgia, Times New Roman, serif" font-size="22" ` +
+        `font-style="italic" fill="rgba(255,255,255,0.30)" letter-spacing="3">OBGillustrator.com</text>`
+      )
+    }
+  }
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">` +
+    `<g transform="rotate(35 ${cx} ${cy})">` +
+    texts.join('') +
+    `</g></svg>`
+  )
+}
+
 async function main() {
   fs.mkdirSync(OUT, { recursive: true })
 
@@ -148,10 +172,13 @@ async function main() {
       const img = sharp(srcPath, { limitInputPixels: false })
       const meta = await img.metadata()
       const w = Math.min(meta.width, MAX)
+      const h = Math.round((meta.height / meta.width) * w)
+      const watermark = buildWatermarkSvg(w, h)
 
       await sharp(srcPath, { limitInputPixels: false })
         .rotate()
         .resize({ width: w, withoutEnlargement: true })
+        .composite([{ input: watermark, blend: 'over' }])
         .jpeg({ quality: QUALITY, mozjpeg: true })
         .toFile(outPath)
 
