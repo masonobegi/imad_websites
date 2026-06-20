@@ -39,6 +39,7 @@ function WorkModal({
   const [zoomed, setZoomed] = useState(false)
   const [dragging, setDragging] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const containerSize = useRef({ w: 0, h: 0 })
   const zoomOrigin = useRef({ x: 0.5, y: 0.5 })
   const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 })
   const nativeScrolled = useRef(false)
@@ -95,6 +96,7 @@ function WorkModal({
       return
     }
     const rect = e.currentTarget.getBoundingClientRect()
+    containerSize.current = { w: rect.width, h: rect.height }
     zoomOrigin.current = {
       x: (e.clientX - rect.left) / rect.width,
       y: (e.clientY - rect.top)  / rect.height,
@@ -136,23 +138,37 @@ function WorkModal({
         {/* Image area — click to zoom at position, drag/scroll to pan */}
         <div
           ref={containerRef}
-          className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative h-[42vh] sm:h-auto sm:max-h-[90vh] select-none
+          className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none
             ${zoomed
               ? `overflow-auto ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`
-              : 'overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
-          style={zoomed ? { WebkitOverflowScrolling: 'touch' } as React.CSSProperties : undefined}
+              : 'h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
+          style={zoomed ? {
+            height: containerSize.current.h,
+            WebkitOverflowScrolling: 'touch',
+          } as React.CSSProperties : undefined}
           onClick={handleContainerClick}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onScroll={() => { if (zoomed) nativeScrolled.current = true }}
         >
-          <img
-            src={`/fine-art/${category}/${work.filename}`}
-            alt={work.title}
-            className={`block select-none ${zoomed ? 'w-[200%] h-auto' : 'w-full h-full object-contain'}`}
-            draggable={false}
-          />
+          {zoomed ? (
+            <div style={{ width: containerSize.current.w * 2, height: containerSize.current.h * 2, flexShrink: 0 }}>
+              <img
+                src={`/fine-art/${category}/${work.filename}`}
+                alt={work.title}
+                className="w-full h-full object-contain block select-none"
+                draggable={false}
+              />
+            </div>
+          ) : (
+            <img
+              src={`/fine-art/${category}/${work.filename}`}
+              alt={work.title}
+              className="w-full h-full object-contain block select-none"
+              draggable={false}
+            />
+          )}
 
           {/* Zoom hint */}
           {!zoomed && (
