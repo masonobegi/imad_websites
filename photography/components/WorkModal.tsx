@@ -106,7 +106,9 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
 
           {hasPrev && (
             <button onClick={goPrev}
+              onMouseEnter={() => setLens(null)} onMouseMove={e => e.stopPropagation()}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              style={{ cursor: 'pointer' }}
               aria-label="Previous">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -115,7 +117,9 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
           )}
           {hasNext && (
             <button onClick={goNext}
+              onMouseEnter={() => setLens(null)} onMouseMove={e => e.stopPropagation()}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              style={{ cursor: 'pointer' }}
               aria-label="Next">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
