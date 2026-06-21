@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+
 interface FooterProps { dark?: boolean }
 
 const SECTIONS = [
@@ -69,6 +70,11 @@ export default function Footer({ dark = false }: FooterProps) {
             </svg>
           </a>
           <a href="/contact" className={`text-xs text-mist hover:text-copper transition-colors uppercase tracking-wider`}>Contact</a>
+        </div>
+        <div className="flex items-center gap-4 mt-1">
+          <Link href="/privacy" className="text-xs text-mist/50 hover:text-mist transition-colors">Privacy Policy</Link>
+          <span className="text-mist/30 text-xs">·</span>
+          <Link href="/tos" className="text-xs text-mist/50 hover:text-mist transition-colors">Terms of Service</Link>
         </div>
       </div>
     </footer>
