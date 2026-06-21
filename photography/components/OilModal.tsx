@@ -40,7 +40,7 @@ function MagnifierImage({
 }) {
   const [lens, setLens] = useState<LensState | null>(null)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
     setLens({
       x: e.clientX - r.left,
@@ -52,9 +52,10 @@ function MagnifierImage({
 
   return (
     <div
-      className="w-full h-full relative select-none"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setLens(null)}
+      className="w-full h-full relative select-none touch-none"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={() => setLens(null)}
+      onPointerUp={() => setLens(null)}
       style={{ cursor: lens ? 'none' : 'crosshair' }}
     >
       <img src={src} alt={alt} className="w-full h-full object-contain block select-none" draggable={false} />
@@ -89,7 +90,8 @@ function MagnifierImage({
 
       {!lens && (
         <div className="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
-          <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">hover to magnify</span>
+          <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider sm:hidden">drag to magnify</span>
+          <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider hidden sm:inline">hover to magnify</span>
         </div>
       )}
     </div>

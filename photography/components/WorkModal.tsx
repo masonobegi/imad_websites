@@ -32,7 +32,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null) } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null) } }, [hasNext])
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
     setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight })
   }
@@ -68,10 +68,11 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
 
         {/* Image area */}
         <div
-          className="sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
+          className="sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
           style={{ cursor: lens ? 'none' : 'crosshair' }}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={() => setLens(null)}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => setLens(null)}
+          onPointerUp={() => setLens(null)}
         >
           <img src={imgSrc} alt={work.title}
             className="w-full h-full object-contain block select-none" draggable={false} />
@@ -99,14 +100,15 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
           )}
 
           {!lens && (
-            <div className="absolute bottom-10 left-0 right-0 hidden sm:flex justify-center pointer-events-none">
-              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">hover to magnify</span>
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center pointer-events-none">
+              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider sm:hidden">drag to magnify</span>
+              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider hidden sm:inline">hover to magnify</span>
             </div>
           )}
 
           {hasPrev && (
             <button onClick={goPrev}
-              onMouseEnter={() => setLens(null)} onMouseMove={e => e.stopPropagation()}
+              onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               style={{ cursor: 'pointer' }}
               aria-label="Previous">
@@ -117,7 +119,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
           )}
           {hasNext && (
             <button onClick={goNext}
-              onMouseEnter={() => setLens(null)} onMouseMove={e => e.stopPropagation()}
+              onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
               style={{ cursor: 'pointer' }}
               aria-label="Next">
