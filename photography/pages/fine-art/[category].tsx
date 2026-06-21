@@ -66,7 +66,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
           {displayed.map((work, i) => (
               <div key={work.id} className="photo-item">
                 <button
-                  onClick={() => setSelectedIndex(i)}>
+                  onClick={() => setSelectedIndex(i)}
                   className="group block w-full text-left focus:outline-none"
                 >
                   <div className="relative overflow-hidden bg-edge">
