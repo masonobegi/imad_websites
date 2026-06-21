@@ -25,7 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="twitter:description" content="Fine art photography prints — nature, the San Francisco Bay, and beyond." />
         <meta name="twitter:image" content="/photos/nature/milky-way-over-joshua-tree.jpg" />
 
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>
       <Component {...pageProps} />
     </CartProvider>
