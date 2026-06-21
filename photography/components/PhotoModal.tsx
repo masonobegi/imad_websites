@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Photo, PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
@@ -12,7 +12,7 @@ interface PhotoModalProps {
 const LENS = 170
 const ZOOM = 2.8
 
-interface LensState { x: number; y: number; cw: number; ch: number; isTouch: boolean }
+interface LensState { x: number; y: number; cw: number; ch: number }
 
 export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart }: PhotoModalProps) {
   const [idx, setIdx] = useState(initialIndex)
@@ -31,17 +31,10 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false); setLens(null) } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false); setLens(null) } }, [hasNext])
 
-  const swipeStart = useRef<{x: number; y: number}>({x: 0, y: 0})
-  const onTouchStart = (e: React.TouchEvent) => { swipeStart.current = {x: e.touches[0].clientX, y: e.touches[0].clientY} }
-  const onTouchEnd = (e: React.TouchEvent) => {
-    const dx = e.changedTouches[0].clientX - swipeStart.current.x
-    const dy = e.changedTouches[0].clientY - swipeStart.current.y
-    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx > 0 ? goPrev() : goNext() }
-  }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
-    setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight, isTouch: e.pointerType === 'touch' })
+    setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight })
   }
 
   useEffect(() => {
@@ -83,7 +76,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
       <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row
                       h-[92vh] sm:h-auto sm:max-h-[90vh]
                       rounded-t-2xl sm:rounded-none"
-        onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+>
 
         {/* Close button */}
         <button
@@ -117,8 +110,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
               className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
               style={{
                 width: LENS, height: LENS, borderRadius: '50%',
-                left: lens.x - LENS / 2 - (lens.isTouch ? 120 : 0),
-                top: lens.y - LENS / 2 - (lens.isTouch ? 120 : 0),
+                left: lens.x - LENS / 2,
+                top: lens.y - LENS / 2,
                 overflow: 'hidden',
               }}
             >
