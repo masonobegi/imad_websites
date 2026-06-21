@@ -9,7 +9,7 @@ import { checkAdminCookie } from '../../lib/admin'
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface PrintSize { label: string; price: number }
-interface BasicWork { id: string; filename: string; title: string; originalSize: string | null; available: boolean; description: string }
+interface BasicWork { id: string; filename: string; title: string; originalSize: string | null; available: boolean; description: string; price: number | null }
 interface PleinAirImage { id: string; filename: string; title: string }
 interface OilWork extends BasicWork {
   originalPrice: number | null
@@ -31,12 +31,14 @@ type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker'
 
 interface Draft {
   title: string; description: string; originalSize: string; available: boolean
+  price: string
   originalPrice: string; reprintAvailable: boolean; reprintPrice: string
   awardTitle: string; awardUrl: string; photoCategory: string
 }
 
 const emptyDraft: Draft = {
   title: '', description: '', originalSize: '', available: false,
+  price: '',
   originalPrice: '', reprintAvailable: false, reprintPrice: '',
   awardTitle: '', awardUrl: '', photoCategory: 'nature',
 }
@@ -115,6 +117,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       description: item.description,
       originalSize: (item as BasicWork).originalSize || '',
       available: (item as BasicWork).available || false,
+      price: (item as BasicWork).price?.toString() || '',
       originalPrice: oil.originalPrice?.toString() || '',
       reprintAvailable: oil.reprintAvailable || false,
       reprintPrice: oil.reprintPrice?.toString() || '',
@@ -219,7 +222,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       if (editKind === 'photo') {
         itemData = { id, filename, title: draft.title, description: draft.description, category: draft.photoCategory }
       } else if (editKind === 'watercolor' || editKind === 'encaustic') {
-        itemData = { id, filename, title: draft.title, originalSize: draft.originalSize || null, available: draft.available, description: draft.description }
+        itemData = { id, filename, title: draft.title, originalSize: draft.originalSize || null, available: draft.available, description: draft.description, price: draft.price ? parseFloat(draft.price) : null }
       } else if (editKind === 'oil') {
         itemData = {
           id, filename,
@@ -445,7 +448,11 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                 )}
               </div>
               <p className="text-xs text-gray-700 mt-1.5 font-medium truncate">{work.title}</p>
-              {work.originalSize && <p className="text-[11px] text-gray-400">{work.originalSize}</p>}
+              <p className="text-[11px] text-gray-400">
+                {work.originalSize && <span>{work.originalSize}</span>}
+                {work.price ? <span className={work.originalSize ? ' · ' : ''}>${work.price}</span> : null}
+                {!work.price && work.available ? <span className={work.originalSize ? ' · ' : ''}>Inquire</span> : null}
+              </p>
               <div className="flex gap-1.5 mt-1">
                 <button onClick={() => openEdit(kind, work)} className="text-xs text-amber-600 hover:text-amber-700">Edit</button>
                 <span className="text-gray-300 text-xs">·</span>
@@ -669,6 +676,25 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                       <span className="text-sm text-gray-700">
                         {draft.available ? 'Available for sale' : 'Not currently for sale'}
                       </span>
+                    </div>
+                  )}
+
+                  {/* Price for watercolors / encaustics */}
+                  {(editKind === 'watercolor' || editKind === 'encaustic') && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        Price <span className="font-normal text-gray-400">(leave blank to show "Inquire for price")</span>
+                      </label>
+                      <div className="relative w-36">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                        <input
+                          type="number"
+                          value={draft.price}
+                          onChange={e => setDraft(d => ({ ...d, price: e.target.value }))}
+                          placeholder="e.g. 450"
+                          className="w-full border border-gray-200 rounded-xl pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        />
+                      </div>
                     </div>
                   )}
 

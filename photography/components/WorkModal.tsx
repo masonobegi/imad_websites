@@ -7,6 +7,7 @@ export interface Work {
   originalSize: string | null
   available: boolean
   description: string
+  price: number | null
 }
 
 interface Props {
@@ -179,7 +180,13 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
               )}
               <div className="flex justify-between text-mist">
                 <span>Price</span>
-                <span>{work.available ? 'Inquire for price' : 'Not for sale'}</span>
+                <span>
+                  {!work.available
+                    ? 'Not for sale'
+                    : work.price
+                    ? `$${work.price.toLocaleString()}`
+                    : 'Inquire for price'}
+                </span>
               </div>
             </div>
           </div>
