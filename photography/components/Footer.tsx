@@ -5,7 +5,7 @@ interface FooterProps { dark?: boolean }
 const SECTIONS = [
   { href: '/shop',        label: 'Photography',  sub: 'Fine art prints' },
   { href: '/fine-art',   label: 'Fine Art',      sub: 'Watercolors & encaustics' },
-  { href: '/stickers',   label: 'AI Stickers',   sub: 'via Sticker Mule' },
+  { href: '/stickers',   label: 'Stickers',   sub: 'via Sticker Mule' },
 ]
 
 export default function Footer({ dark = false }: FooterProps) {

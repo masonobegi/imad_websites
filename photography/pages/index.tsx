@@ -309,7 +309,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
               style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)', backgroundSize: '10px 10px' }} />
             <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-8 pb-6">
               <p className="text-[10px] text-white/50 uppercase tracking-[0.2em] mb-1.5">Coming soon</p>
-              <h2 className="font-serif text-3xl sm:text-4xl text-white leading-tight">AI Stickers</h2>
+              <h2 className="font-serif text-3xl sm:text-4xl text-white leading-tight">Stickers</h2>
               <p className="text-white/60 text-sm mt-1">Original character designs</p>
             </div>
           </div>

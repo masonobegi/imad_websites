@@ -36,7 +36,7 @@ export default function Header({ dark = false }: HeaderProps) {
           <nav className="hidden sm:flex items-center gap-6">
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
-            <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>AI Stickers</Link>
+            <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>Stickers</Link>
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
             <Link
               href="/commissions"
@@ -100,7 +100,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>All Work</Link>
             <Link href="/shop" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
-            <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>AI Stickers</Link>
+            <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Stickers</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
             <Link
               href="/commissions"

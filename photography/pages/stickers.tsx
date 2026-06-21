@@ -22,12 +22,12 @@ export default function Stickers() {
     <Layout>
       {/* Header */}
       <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10 text-center">
-        <p className="text-xs text-copper uppercase tracking-widest mb-4">AI Stickers</p>
+        <p className="text-xs text-copper uppercase tracking-widest mb-4">Stickers</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           Original Character Designs
         </h1>
         <p className="text-mist leading-relaxed mb-8 max-w-sm mx-auto">
-          Imad's original AI-assisted character sticker designs — Sasquatch in every situation imaginable.
+          Imad's original character sticker designs — Sasquatch in every situation imaginable.
           Available as singles and sets on Sticker Mule.
         </p>
         <a
@@ -70,20 +70,7 @@ export default function Stickers() {
           ))}
         </div>
 
-        <div className="mt-10 text-center">
-          <p className="text-xs text-mist mb-4 opacity-70">More designs available on Sticker Mule</p>
-          <a
-            href={STICKER_MULE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 border border-edge text-mist px-6 py-2.5 text-xs tracking-wider uppercase hover:border-shadow hover:text-edge transition-colors"
-          >
-            View All Stickers
-            <svg className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
-        </div>
+        <p className="mt-8 text-xs text-mist opacity-60 text-center">More designs available on Sticker Mule</p>
       </div>
     </Layout>
   )
