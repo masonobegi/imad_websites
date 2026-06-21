@@ -63,12 +63,10 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
         </div>
 
         <div className="photo-grid">
-          {displayed.map((work) => {
-            const realIndex = works.findIndex(w => w.id === work.id)
-            return (
+          {displayed.map((work, i) => (
               <div key={work.id} className="photo-item">
                 <button
-                  onClick={() => setSelectedIndex(realIndex)}
+                  onClick={() => setSelectedIndex(i)}>
                   className="group block w-full text-left focus:outline-none"
                 >
                   <div className="relative overflow-hidden bg-edge">
@@ -97,14 +95,13 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                   </div>
                 </button>
               </div>
-            )
-          })}
+          ))}
         </div>
       </div>
 
       {selectedIndex !== null && (
         <WorkModal
-          works={works}
+          works={displayed}
           initialIndex={selectedIndex}
           onClose={() => setSelectedIndex(null)}
           category={category}
