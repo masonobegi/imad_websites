@@ -21,7 +21,7 @@ export default function OilPaintings({ works }: Props) {
         <meta name="description" content="Original oil paintings by Imad Obegi — plein air landscapes and studio works. Select originals available; archival reprints at $95." />
         <meta property="og:title" content="Oil Paintings by Imad Obegi" />
         <meta property="og:description" content="Plein air oils and studio paintings. Original oils available from $950; archival watercolor paper reprints $95." />
-        {works[0] && <meta property="og:image" content={`/fine-art/oils/${works[0].filename}`} />}
+        {works[0] && <meta property="og:image" content={`https://obgillustrator.com/fine-art/oils/${works[0].filename}`} />}
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16">

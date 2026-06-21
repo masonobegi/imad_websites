@@ -10,7 +10,7 @@ export default function About() {
         <meta name="description" content="Imad Obegi is a fine art photographer, painter, and illustrator whose work spans encaustic painting, oils, pastels, watercolor, and photography." />
         <meta property="og:title" content="About Imad | OBGillustrator.com" />
         <meta property="og:description" content="Artist, photographer, and illustrator. Thirty years across painting, photography, and illustration." />
-        <meta property="og:image" content="/imad-portrait.jpg" />
+        <meta property="og:image" content="https://obgillustrator.com/imad-portrait.jpg" />
       </Head>
 
       {/* Hero — one of his photos as backdrop */}

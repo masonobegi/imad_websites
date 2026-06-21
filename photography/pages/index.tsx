@@ -46,7 +46,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
         <meta name="description" content="Photography prints by Imad Obegi — nature, wildlife, and the San Francisco Bay. Printed on archival metal or canvas. Made to order, ships flat." />
         <meta property="og:title" content="Imad | Fine Art Photography Prints" />
         <meta property="og:description" content="Nature, wildlife, and the San Francisco Bay — fine art prints on metal or canvas by Imad Obegi." />
-        <meta property="og:image" content="/photos/nature/milky-way-over-joshua-tree.jpg" />
+        <meta property="og:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg" />
       </Head>
 
       {/* ── HERO ── */}

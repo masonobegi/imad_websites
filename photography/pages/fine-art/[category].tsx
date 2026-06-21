@@ -28,7 +28,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
         <meta name="description" content={categoryDescription} />
         <meta property="og:title" content={`${categoryLabel} by Imad Obegi`} />
         <meta property="og:description" content={categoryDescription} />
-        {works[0] && <meta property="og:image" content={`/fine-art/${category}/${works[0].filename}`} />}
+        {works[0] && <meta property="og:image" content={`https://obgillustrator.com/fine-art/${category}/${works[0].filename}`} />}
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16">

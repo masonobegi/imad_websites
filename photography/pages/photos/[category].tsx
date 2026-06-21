@@ -30,7 +30,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
         <meta name="description" content={categoryDescription} />
         <meta property="og:title" content={`${categoryLabel} Photography Prints | OBGillustrator.com`} />
         <meta property="og:description" content={categoryDescription} />
-        {items[0] && <meta property="og:image" content={`/photos/${category}/${items[0].filename}`} />}
+        {items[0] && <meta property="og:image" content={`https://obgillustrator.com/photos/${category}/${items[0].filename}`} />}
       </Head>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-16">
 

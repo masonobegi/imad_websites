@@ -56,7 +56,7 @@ export const photos: Record<string, Photo[]> = {
     {
       "id": "blue-morpho-s-secret-eyes",
       "filename": "blue-morpho-s-secret-eyes.jpg",
-      "title": "Blue Morpho — s Secret Eyes",
+      "title": "Blue Morpho's Secret Eyes",
       "description": "A stunning close-up revealing the intricate eyespot patterns on a Blue Morpho butterfly's wing undersides. Captured in natural light, these hidden eyes serve as the butterfly's first line of defense against predators.",
       "category": "nature"
     },
@@ -289,7 +289,7 @@ export const photos: Record<string, Photo[]> = {
     {
       "id": "dsc03766-101217-fire-suns",
       "filename": "dsc03766-101217-fire-suns.jpg",
-      "title": "DSC03766 — 101217 Fire — suns",
+      "title": "Fire Suns",
       "description": "During the devastating 2017 North Bay fires, smoke turned the Bay Area sun blood-red for days — an eerie, apocalyptic light unlike anything most residents had ever seen. This image was made in the middle of the afternoon.",
       "category": "san-francisco"
     },
