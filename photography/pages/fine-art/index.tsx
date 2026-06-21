@@ -67,15 +67,6 @@ export default function FineArt({ categories }: Props) {
             </Link>
           ))}
 
-            {/* Oil Paintings placeholder */}
-          <div className="border border-edge opacity-40">
-            <div className="aspect-[4/3] bg-edge/30 flex items-center justify-center">
-              <p className="text-mist text-xs uppercase tracking-widest">Coming soon</p>
-            </div>
-            <div className="px-5 py-4">
-              <p className="text-ink text-base font-medium">Oil Paintings</p>
-            </div>
-          </div>
         </div>
       </div>
     </Layout>
@@ -86,18 +77,23 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const dataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
   const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
 
-  const categories: Category[] = Object.entries(data.categories as Record<string, { label: string; description: string }>).map(
-    ([key, meta]) => {
-      const works: { filename: string }[] = data.works[key] || []
-      return {
-        key,
-        label: meta.label,
-        description: meta.description,
-        previewImages: works.slice(0, 4).map(w => `/fine-art/${key}/${w.filename}`),
-        count: works.length,
-      }
+  // Show oils first so they appear at the top
+  const ORDER = ['oils', 'watercolors', 'encaustics']
+  const allKeys = Object.keys(data.categories as Record<string, unknown>)
+  const sortedKeys = [...ORDER.filter(k => allKeys.includes(k)), ...allKeys.filter(k => !ORDER.includes(k))]
+
+  const categories: Category[] = sortedKeys.map(key => {
+    const meta = (data.categories as Record<string, { label: string; description: string }>)[key]
+    const works: { filename: string }[] = data.works[key] || []
+    // Oils are in /fine-art/oils/, plein air images in plein-air subfolder — only show main paintings
+    return {
+      key,
+      label: meta.label,
+      description: meta.description,
+      previewImages: works.slice(0, 4).map(w => `/fine-art/${key}/${w.filename}`),
+      count: works.length,
     }
-  )
+  })
 
   return { props: { categories } }
 }

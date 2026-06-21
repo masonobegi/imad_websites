@@ -7,6 +7,7 @@ import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 import PhotoModal from '../components/PhotoModal'
 import WorkModal, { Work } from '../components/WorkModal'
+import OilModal, { OilWork } from '../components/OilModal'
 import CartPopup from '../components/CartPopup'
 import { Photo } from '../lib/photos'
 
@@ -14,15 +15,17 @@ interface Props {
   heroPhoto: Photo
   previewPhotos: Photo[]
   allPhotos: Record<string, Photo[]>
+  allOils: OilWork[]
   previewWatercolors: Work[]
   allWatercolors: Work[]
   previewEncaustics: Work[]
   allEncaustics: Work[]
 }
 
-export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWatercolors, allWatercolors, previewEncaustics, allEncaustics }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, previewWatercolors, allWatercolors, previewEncaustics, allEncaustics }: Props) {
   const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
   const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
+  const [oilModalIndex, setOilModalIndex] = useState<number | null>(null)
   const [cartOpen, setCartOpen] = useState(false)
 
   const openPhoto = (photo: Photo) => {
@@ -112,6 +115,70 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
         <div className="sm:hidden px-6 py-3 flex items-center justify-between">
           <p className="text-mist text-xs">Tap a photo to order a print</p>
           <Link href="/shop" className="text-copper text-xs">Browse all →</Link>
+        </div>
+      </section>
+
+      {/* ── OIL PAINTINGS ── */}
+      <section className="border-b border-edge">
+        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Fine Art · Award Winner</p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink">Oil Paintings</h2>
+            <p className="text-mist text-sm mt-1 hidden sm:block">
+              Plein air &amp; studio oils · Originals from $950 · Reprints $95
+            </p>
+          </div>
+          <Link
+            href="/fine-art/oils"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
+            <span className="hidden sm:inline">Browse all</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-4 gap-0.5 bg-edge">
+          {allOils.map((work, i) => (
+            <button
+              key={work.id}
+              onClick={() => setOilModalIndex(i)}
+              className="group/oil flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative text-left focus:outline-none touch-manipulation"
+              aria-label={`View ${work.title}`}
+            >
+              <img
+                src={`/fine-art/oils/${work.filename}`}
+                alt={work.title}
+                className="w-full h-full object-cover group-hover/oil:scale-105 transition-transform duration-500"
+              />
+              {work.award && (
+                <div className="absolute top-2 left-2">
+                  <span className="flex items-center gap-1 bg-copper text-darkroom text-[10px] px-1.5 py-0.5 uppercase tracking-wider font-medium">
+                    <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    Winner
+                  </span>
+                </div>
+              )}
+              {work.available && !work.award && (
+                <div className="absolute top-2 left-2">
+                  <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">Available</span>
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/0 group-hover/oil:bg-black/35 transition-colors duration-300 flex items-end">
+                <p className="opacity-0 group-hover/oil:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
+                  {work.title}
+                </p>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
+          <p className="text-mist text-xs">Tap to view · Original oil paintings</p>
+          <Link href="/fine-art/oils" className="text-copper text-xs">Browse all →</Link>
         </div>
       </section>
 
@@ -289,6 +356,13 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, previewWater
           onClose={() => setWorkModalState(null)}
         />
       )}
+      {oilModalIndex !== null && (
+        <OilModal
+          works={allOils}
+          initialIndex={oilModalIndex}
+          onClose={() => setOilModalIndex(null)}
+        />
+      )}
       {cartOpen && <CartPopup onClose={() => setCartOpen(false)} />}
     </Layout>
   )
@@ -324,6 +398,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const fineArtDataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
   const fineArtData = JSON.parse(fs.readFileSync(fineArtDataPath, 'utf-8'))
 
+  const allOils = fineArtData.works.oils || []
+
   const allWatercolors: Work[] = fineArtData.works.watercolors || []
   const wantedWatercolors = [
     'the-crab-shack-salter-path', 'atlantic-crossing', 'crimson-canna',
@@ -352,6 +428,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
       heroPhoto,
       previewPhotos: picked.slice(0, 6),
       allPhotos: { nature, 'san-francisco': sf },
+      allOils,
       previewWatercolors: pickedWatercolors.slice(0, 6),
       allWatercolors,
       previewEncaustics: pickedEncaustics.slice(0, 6),

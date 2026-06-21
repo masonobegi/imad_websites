@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 export interface Work {
   id: string
@@ -17,70 +17,24 @@ interface Props {
   onClose: () => void
 }
 
+const LENS = 170
+const ZOOM = 2.8
+
+interface LensState { x: number; y: number; cw: number; ch: number }
+
 export default function WorkModal({ works, initialIndex, category, categoryLabel, onClose }: Props) {
   const [idx, setIdx] = useState(initialIndex)
-  const [zoomed, setZoomed] = useState(false)
-  const [dragging, setDragging] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const containerSize = useRef({ w: 0, h: 0 })
-  const zoomOrigin = useRef({ x: 0.5, y: 0.5 })
-  const dragRef = useRef({ active: false, moved: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 })
-  const nativeScrolled = useRef(false)
+  const [lens, setLens] = useState<LensState | null>(null)
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
 
-  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setZoomed(false) } }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setZoomed(false) } }, [hasNext])
+  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null) } }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null) } }, [hasNext])
 
-  useLayoutEffect(() => {
-    if (!zoomed || !containerRef.current) return
-    const c = containerRef.current
-    nativeScrolled.current = false
-    c.scrollLeft = Math.max(0, c.scrollWidth  * zoomOrigin.current.x - c.clientWidth  / 2)
-    c.scrollTop  = Math.max(0, c.scrollHeight * zoomOrigin.current.y - c.clientHeight / 2)
-  }, [zoomed])
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!zoomed || e.pointerType !== 'mouse') return
-    dragRef.current = {
-      active: true, moved: false,
-      startX: e.clientX, startY: e.clientY,
-      scrollLeft: containerRef.current?.scrollLeft ?? 0,
-      scrollTop:  containerRef.current?.scrollTop  ?? 0,
-    }
-    setDragging(true)
-    e.currentTarget.setPointerCapture(e.pointerId)
-  }
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!dragRef.current.active || !containerRef.current) return
-    const dx = e.clientX - dragRef.current.startX
-    const dy = e.clientY - dragRef.current.startY
-    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) dragRef.current.moved = true
-    containerRef.current.scrollLeft = dragRef.current.scrollLeft - dx
-    containerRef.current.scrollTop  = dragRef.current.scrollTop  - dy
-  }
-
-  const handlePointerUp = () => { dragRef.current.active = false; setDragging(false) }
-
-  const handleContainerClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (zoomed) {
-      if (dragRef.current.moved || nativeScrolled.current) {
-        dragRef.current.moved = false
-        nativeScrolled.current = false
-        return
-      }
-      setZoomed(false)
-      return
-    }
-    const rect = e.currentTarget.getBoundingClientRect()
-    containerSize.current = { w: rect.width, h: rect.height }
-    zoomOrigin.current = {
-      x: (e.clientX - rect.left) / rect.width,
-      y: (e.clientY - rect.top)  / rect.height,
-    }
-    setZoomed(true)
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight })
   }
 
   useEffect(() => {
@@ -97,17 +51,16 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
     }
   }, [onClose, goPrev, goNext])
 
+  const imgSrc = `/fine-art/${category}/${work.filename}`
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
       <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none">
 
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1"
-          aria-label="Close"
-        >
+        <button onClick={onClose}
+          className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1" aria-label="Close">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -115,58 +68,65 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
 
         {/* Image area */}
         <div
-          ref={containerRef}
-          className={`sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none
-            ${zoomed
-              ? `overflow-auto ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`
-              : 'h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center cursor-zoom-in'}`}
-          style={zoomed ? { height: containerSize.current.h, WebkitOverflowScrolling: 'touch' } as React.CSSProperties : undefined}
-          onClick={handleContainerClick}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onScroll={() => { if (zoomed) nativeScrolled.current = true }}
+          className="sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
+          style={{ cursor: lens ? 'none' : 'crosshair' }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={() => setLens(null)}
         >
-          {zoomed ? (
-            <div style={{ width: containerSize.current.w * 2, height: containerSize.current.h * 2, flexShrink: 0 }}>
-              <img src={`/fine-art/${category}/${work.filename}`} alt={work.title}
-                className="w-full h-full object-contain block select-none" draggable={false} />
+          <img src={imgSrc} alt={work.title}
+            className="w-full h-full object-contain block select-none" draggable={false} />
+
+          {/* Magnifier lens (desktop hover) */}
+          {lens && (
+            <div
+              className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
+              style={{
+                width: LENS, height: LENS, borderRadius: '50%',
+                left: lens.x - LENS / 2, top: lens.y - LENS / 2,
+                overflow: 'hidden',
+              }}
+            >
+              <img src={imgSrc} alt="" draggable={false} className="absolute select-none"
+                style={{
+                  width: lens.cw * ZOOM, height: lens.ch * ZOOM,
+                  objectFit: 'contain',
+                  left: LENS / 2 - lens.x * ZOOM,
+                  top: LENS / 2 - lens.y * ZOOM,
+                  maxWidth: 'none', maxHeight: 'none',
+                }}
+              />
             </div>
-          ) : (
-            <img src={`/fine-art/${category}/${work.filename}`} alt={work.title}
-              className="w-full h-full object-contain block select-none" draggable={false} />
           )}
 
-          {!zoomed && (
-            <>
-              <div className="absolute bottom-10 left-0 right-0 flex justify-center pointer-events-none">
-                <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">click to zoom</span>
-              </div>
-              {hasPrev && (
-                <button onClick={e => { e.stopPropagation(); goPrev() }} onPointerDown={e => e.stopPropagation()}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
-                  aria-label="Previous">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-              )}
-              {hasNext && (
-                <button onClick={e => { e.stopPropagation(); goNext() }} onPointerDown={e => e.stopPropagation()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
-                  aria-label="Next">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              )}
-              <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
-                <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
-                  {idx + 1} / {works.length}
-                </span>
-              </div>
-            </>
+          {!lens && (
+            <div className="absolute bottom-10 left-0 right-0 hidden sm:flex justify-center pointer-events-none">
+              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider">hover to magnify</span>
+            </div>
           )}
+
+          {hasPrev && (
+            <button onClick={goPrev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              aria-label="Previous">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          {hasNext && (
+            <button onClick={goNext}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              aria-label="Next">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+          <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
+            <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
+              {idx + 1} / {works.length}
+            </span>
+          </div>
         </div>
 
         {/* Info panel */}
