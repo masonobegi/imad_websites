@@ -140,7 +140,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             <button
               onClick={goPrev}
               onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-30 touch-manipulation"
               style={{ cursor: 'pointer' }}
               aria-label="Previous photo"
             >
@@ -153,7 +153,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             <button
               onClick={goNext}
               onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-10 touch-manipulation"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-30 touch-manipulation"
               style={{ cursor: 'pointer' }}
               aria-label="Next photo"
             >
