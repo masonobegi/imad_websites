@@ -9,14 +9,17 @@ import PhotoModal from '../../components/PhotoModal'
 import CartPopup from '../../components/CartPopup'
 import { Photo } from '../../lib/photos'
 
+interface PrintSize { label: string; price: number }
+
 interface Props {
   category: string
   categoryLabel: string
   categoryDescription: string
   items: Photo[]
+  printSizes: PrintSize[]
 }
 
-export default function GalleryPage({ category, categoryLabel, categoryDescription, items }: Props) {
+export default function GalleryPage({ category, categoryLabel, categoryDescription, items, printSizes }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [cartOpen, setCartOpen] = useState(false)
 
@@ -80,6 +83,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
           initialIndex={selectedIndex}
           onClose={() => setSelectedIndex(null)}
           onAddedToCart={() => { setSelectedIndex(null); setCartOpen(true) }}
+          printSizes={printSizes}
         />
       )}
       {cartOpen && <CartPopup onClose={() => setCartOpen(false)} dark />}
@@ -90,7 +94,9 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const category = params?.category as string
   const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
+  const configPath = path.join(process.cwd(), 'public', 'photos', 'config.json')
   const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
   const cat = data.categories[category]
   if (!cat) return { notFound: true }
   return {
@@ -99,6 +105,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       categoryLabel: cat.label,
       categoryDescription: cat.description,
       items: data.photos[category] || [],
+      printSizes: config.printSizes,
     },
   }
 }

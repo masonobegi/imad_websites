@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Photo, PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
+import { Photo, PRINT_SIZES as DEFAULT_PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
+
+interface PrintSize { label: string; price: number }
 
 interface PhotoModalProps {
   photos: Photo[]
   initialIndex: number
   onClose: () => void
   onAddedToCart: () => void
+  printSizes?: PrintSize[]
 }
 
 const LENS = 170
@@ -14,7 +17,7 @@ const ZOOM = 2.8
 
 interface LensState { x: number; y: number; cw: number; ch: number }
 
-export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart }: PhotoModalProps) {
+export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart, printSizes }: PhotoModalProps) {
   const [idx, setIdx] = useState(initialIndex)
   const [sizeIdx, setSizeIdx] = useState(0)
   const [medium, setMedium] = useState<PrintMedium>('Metal')
@@ -23,6 +26,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const [lens, setLens] = useState<LensState | null>(null)
   const { addItem } = useCart()
 
+  const PRINT_SIZES = printSizes || DEFAULT_PRINT_SIZES
   const photo = photos[idx]
   const selectedSize = PRINT_SIZES[sizeIdx]
   const hasPrev = idx > 0
