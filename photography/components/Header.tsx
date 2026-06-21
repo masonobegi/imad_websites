@@ -38,6 +38,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>Stickers</Link>
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
+            <Link href="/contact" className={`text-sm ${text} ${hover} transition-colors`}>Contact</Link>
             <Link
               href="/commissions"
               className="text-sm px-3 py-1.5 bg-copper text-darkroom hover:bg-amber-600 transition-colors tracking-wide"
@@ -102,6 +103,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Stickers</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
+            <Link href="/contact" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Contact</Link>
             <Link
               href="/commissions"
               onClick={() => setMenuOpen(false)}

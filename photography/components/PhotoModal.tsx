@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Photo, PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
@@ -30,6 +30,14 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false); setLens(null) } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false); setLens(null) } }, [hasNext])
+
+  const swipeStart = useRef<{x: number; y: number}>({x: 0, y: 0})
+  const onTouchStart = (e: React.TouchEvent) => { swipeStart.current = {x: e.touches[0].clientX, y: e.touches[0].clientY} }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - swipeStart.current.x
+    const dy = e.changedTouches[0].clientY - swipeStart.current.y
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx > 0 ? goPrev() : goNext() }
+  }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -74,7 +82,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
       {/* Modal — full-screen on mobile, max-w constrained on desktop */}
       <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row
                       h-[92vh] sm:h-auto sm:max-h-[90vh]
-                      rounded-t-2xl sm:rounded-none">
+                      rounded-t-2xl sm:rounded-none"
+        onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
 
         {/* Close button */}
         <button

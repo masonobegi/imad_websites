@@ -101,6 +101,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
                 src={`/photos/${photo.category}/${photo.filename}`}
                 alt={photo.title}
                 className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 photo-protected"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/0 group-hover/photo:bg-black/35 transition-colors duration-300 flex items-end">
                 <p className="opacity-0 group-hover/photo:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
@@ -151,6 +152,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
                 src={`/fine-art/oils/${work.filename}`}
                 alt={work.title}
                 className="w-full h-full object-cover group-hover/oil:scale-105 transition-transform duration-500"
+                loading="lazy"
               />
               {work.award && (
                 <div className="absolute top-2 left-2">
@@ -215,6 +217,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
                 src={`/fine-art/watercolors/${work.filename}`}
                 alt={work.title}
                 className="w-full h-full object-cover group-hover/wc:scale-105 transition-transform duration-500"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/0 group-hover/wc:bg-black/35 transition-colors duration-300 flex items-end">
                 <p className="opacity-0 group-hover/wc:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
@@ -264,6 +267,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, pre
                 src={`/fine-art/encaustics/${work.filename}`}
                 alt={work.title}
                 className="w-full h-full object-cover group-hover/enc:scale-105 transition-transform duration-500"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/0 group-hover/enc:bg-black/35 transition-colors duration-300 flex items-end">
                 <p className="opacity-0 group-hover/enc:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 export interface Work {
   id: string
@@ -34,6 +34,14 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
 
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null); setStatus('idle') } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null); setStatus('idle') } }, [hasNext])
+
+  const swipeStart = useRef<{x: number; y: number}>({x: 0, y: 0})
+  const onTouchStart = (e: React.TouchEvent) => { swipeStart.current = {x: e.touches[0].clientX, y: e.touches[0].clientY} }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - swipeStart.current.x
+    const dy = e.changedTouches[0].clientY - swipeStart.current.y
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx > 0 ? goPrev() : goNext() }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -75,7 +83,8 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
-      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none">
+      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none"
+        onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
 
         <button onClick={onClose}
           className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1" aria-label="Close">
