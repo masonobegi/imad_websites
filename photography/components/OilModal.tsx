@@ -29,7 +29,7 @@ interface Props {
 const LENS = 170
 const ZOOM = 2.8
 
-interface LensState { x: number; y: number; cw: number; ch: number }
+interface LensState { x: number; y: number; cw: number; ch: number; isTouch: boolean }
 
 function MagnifierImage({
   src,
@@ -47,6 +47,7 @@ function MagnifierImage({
       y: e.clientY - r.top,
       cw: e.currentTarget.offsetWidth,
       ch: e.currentTarget.offsetHeight,
+      isTouch: e.pointerType === 'touch',
     })
   }
 
@@ -54,8 +55,8 @@ function MagnifierImage({
     <div
       className="w-full h-full relative select-none touch-none"
       onPointerMove={handlePointerMove}
-      onPointerLeave={() => setLens(null)}
-      onPointerUp={() => setLens(null)}
+      onPointerLeave={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
+      onPointerUp={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
       style={{ cursor: lens ? 'none' : 'crosshair' }}
     >
       <img src={src} alt={alt} className="w-full h-full object-contain block select-none" draggable={false} />
@@ -65,8 +66,8 @@ function MagnifierImage({
           className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
           style={{
             width: LENS, height: LENS, borderRadius: '50%',
-            left: lens.x - LENS / 2,
-            top: lens.y - LENS / 2,
+            left: lens.x - LENS / 2 - (lens.isTouch ? 120 : 0),
+            top: lens.y - LENS / 2 - (lens.isTouch ? 120 : 0),
             overflow: 'hidden',
           }}
         >

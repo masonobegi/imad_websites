@@ -12,7 +12,7 @@ interface PhotoModalProps {
 const LENS = 170
 const ZOOM = 2.8
 
-interface LensState { x: number; y: number; cw: number; ch: number }
+interface LensState { x: number; y: number; cw: number; ch: number; isTouch: boolean }
 
 export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart }: PhotoModalProps) {
   const [idx, setIdx] = useState(initialIndex)
@@ -33,7 +33,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
-    setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight })
+    setLens({ x: e.clientX - r.left, y: e.clientY - r.top, cw: e.currentTarget.offsetWidth, ch: e.currentTarget.offsetHeight, isTouch: e.pointerType === 'touch' })
   }
 
   useEffect(() => {
@@ -92,8 +92,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
           className="sm:w-[62%] flex-shrink-0 bg-darkroom relative photo-wrapper select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
           style={{ cursor: lens ? 'none' : 'crosshair' }}
           onPointerMove={handlePointerMove}
-          onPointerLeave={() => setLens(null)}
-          onPointerUp={() => setLens(null)}
+          onPointerLeave={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
+          onPointerUp={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
         >
           <img
             src={`/photos/${photo.category}/${photo.filename}`}
@@ -108,7 +108,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
               className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
               style={{
                 width: LENS, height: LENS, borderRadius: '50%',
-                left: lens.x - LENS / 2, top: lens.y - LENS / 2,
+                left: lens.x - LENS / 2 - (lens.isTouch ? 120 : 0),
+                top: lens.y - LENS / 2 - (lens.isTouch ? 120 : 0),
                 overflow: 'hidden',
               }}
             >
