@@ -2,15 +2,15 @@
   "categories": {
     "watercolors": {
       "label": "Watercolors",
-      "description": "Original watercolor paintings by Imad Obegi \u00e2\u20ac\u201d landscapes, botanicals, still life, and coastal scenes."
+      "description": "Original watercolor paintings by Imad Obegi "
     },
     "encaustics": {
       "label": "Encaustics",
-      "description": "Paintings built up in layers of pigmented beeswax, fused with heat \u00e2\u20ac\u201d an ancient medium that gives color an unusual depth and luminosity. Each piece is an original."
+      "description": "Paintings built up in layers of pigmented beeswax, fused with heat "
     },
     "oils": {
       "label": "Oil Paintings",
-      "description": "Original oil paintings by Imad Obegi \u2014 plein air landscapes and studio works. Select originals available; archival watercolor paper reprints available for all paintings at $95."
+      "description": "Original oil paintings by Imad Obegi - plein air landscapes and studio works. Select originals available; archival watercolor paper reprints available for all paintings at $95."
     }
   },
   "works": {
@@ -19,14 +19,14 @@
         "id": "atlantic-crossing",
         "filename": "atlantic-crossing.jpg",
         "title": "Atlantic Crossing",
-        "originalSize": "9\" \u00c3\u2014 12\"",
+        "originalSize": "9\" x 12\"",
         "available": false,
-        "description": "Muted blues and grays carry the weight of open water \u00e2\u20ac\u201d the Atlantic in all its restless breadth, painted with loose, confident washes that capture the feeling of being far from shore."
+        "description": "Muted blues and grays carry the weight of open water "
       },
       {
         "id": "autumn-arrival-engine-no-3",
         "filename": "autumn-arrival-engine-no-3.jpg",
-        "title": "Autumn Arrival \u00e2\u20ac\u201d Engine No. 3",
+        "title": "Autumn Arrival ",
         "originalSize": null,
         "available": false,
         "description": "A vintage locomotive arrives through autumn color, warm ochres and rust bleeding into the surrounding foliage. History and movement, rendered in layered watercolor washes."
@@ -35,31 +35,31 @@
         "id": "crimson-canna",
         "filename": "crimson-canna.jpg",
         "title": "Crimson Canna",
-        "originalSize": "5.5\" \u00c3\u2014 7.5\"",
+        "originalSize": "5.5\" x 7.5\"",
         "available": false,
-        "description": "A close study of canna lilies, their petals unfolding in vivid reds and burnt oranges. The transparency of watercolor suits the luminous quality of the blooms \u00e2\u20ac\u201d light seems to come from within."
+        "description": "A close study of canna lilies, their petals unfolding in vivid reds and burnt oranges. The transparency of watercolor suits the luminous quality of the blooms "
       },
       {
         "id": "emerald-isle-bevereley-waves",
         "filename": "emerald-isle-bevereley-waves.jpg",
-        "title": "Emerald Isle \u00e2\u20ac\u201d Beverly Waves",
-        "originalSize": "9\" \u00c3\u2014 12\"",
+        "title": "Emerald Isle ",
+        "originalSize": "9\" x 12\"",
         "available": false,
-        "description": "Crashing surf along a coastline painted in layers of emerald, teal, and seafoam white. The painting holds the particular quality of Atlantic coastal light \u00e2\u20ac\u201d bright and slightly cold, even in summer."
+        "description": "Crashing surf along a coastline painted in layers of emerald, teal, and seafoam white. The painting holds the particular quality of Atlantic coastal light "
       },
       {
         "id": "flame-lily-radiance",
         "filename": "flame-lily-radiance.jpg",
         "title": "Flame Lily Radiance",
-        "originalSize": "6\" \u00c3\u2014 5\"",
+        "originalSize": "6\" x 5\"",
         "available": false,
-        "description": "The flame lily's reflexed petals \u00e2\u20ac\u201d crimson fading to gold at the edges \u00e2\u20ac\u201d are captured in confident watercolor strokes. A botanical study that doesn't sacrifice life for accuracy."
+        "description": "The flame lily's reflexed petals "
       },
       {
         "id": "morning-light-on-majolica",
         "filename": "morning-light-on-majolica.jpg",
         "title": "Morning Light on Majolica",
-        "originalSize": "9\" \u00c3\u2014 12\"",
+        "originalSize": "9\" x 12\"",
         "available": false,
         "description": "Soft morning light falls across ornate majolica pottery, the rich glazes catching warmth and shadow. A quiet still life painted with the unhurried attention of early hours."
       },
@@ -67,15 +67,15 @@
         "id": "sentinel-of-the-high-desert",
         "filename": "sentinel-of-the-high-desert.jpg",
         "title": "Sentinel of the High Desert",
-        "originalSize": "5\" \u00c3\u2014 7\"",
+        "originalSize": "5\" x 7\"",
         "available": false,
-        "description": "A lone saguaro stands against a wide desert sky, quiet and monumental. The painting captures the particular stillness of the high desert \u00e2\u20ac\u201d the sense that something ancient is simply watching."
+        "description": "A lone saguaro stands against a wide desert sky, quiet and monumental. The painting captures the particular stillness of the high desert "
       },
       {
         "id": "the-crab-shack-salter-path",
         "filename": "the-crab-shack-salter-path.jpg",
         "title": "The Crab Shack, Salter Path",
-        "originalSize": "9\" \u00c3\u2014 12\"",
+        "originalSize": "9\" x 12\"",
         "available": false,
         "description": "A weathered coastal shack in the fishing village of Salter Path, North Carolina, painted with the loose, direct strokes of plein air watercolor. Salt air and sun-bleached wood, caught before the light changed."
       },
@@ -83,33 +83,33 @@
         "id": "the-spirit-of-santa-monica",
         "filename": "the-spirit-of-santa-monica.jpg",
         "title": "The Spirit of Santa Monica",
-        "originalSize": "9\" \u00c3\u2014 12\"",
+        "originalSize": "9\" x 12\"",
         "available": false,
-        "description": "The Santa Monica Pier at golden hour \u00e2\u20ac\u201d the Ferris wheel, the Pacific, the particular glow of a California afternoon. Painted with warmth and a light hand, the way the place actually feels."
+        "description": "The Santa Monica Pier at golden hour "
       },
       {
         "id": "the-view-from-home",
         "filename": "the-view-from-home.jpg",
         "title": "The View from Home",
-        "originalSize": "6\" \u00c3\u2014 9\"",
+        "originalSize": "6\" x 9\"",
         "available": false,
-        "description": "A familiar landscape seen from a place of belonging \u00e2\u20ac\u201d the kind of view you stop noticing until you paint it. Rendered with quiet affection and the economy of someone who knows exactly what matters."
+        "description": "A familiar landscape seen from a place of belonging "
       },
       {
         "id": "the-vision-returns",
         "filename": "the-vision-returns.jpg",
         "title": "The Vision Returns",
-        "originalSize": "11\" \u00c3\u2014 14\"",
+        "originalSize": "11\" x 14\"",
         "available": false,
-        "description": "A richly layered composition where color and form do the work of language. The title suggests a return \u00e2\u20ac\u201d something seen before, now seen again differently. One of the larger pieces in this collection."
+        "description": "A richly layered composition where color and form do the work of language. The title suggests a return "
       },
       {
         "id": "wedgwood-jasperware-pitcher",
         "filename": "wedgwood-jasperware-pitcher.jpg",
         "title": "Wedgwood Jasperware Pitcher",
-        "originalSize": "5\" \u00c3\u2014 7\"",
+        "originalSize": "5\" x 7\"",
         "available": false,
-        "description": "A careful still life study of a classic Wedgwood jasperware pitcher \u00e2\u20ac\u201d its pale blue ground and white relief ornament rendered with attention to the subtle interplay of matte surface and ambient light."
+        "description": "A careful still life study of a classic Wedgwood jasperware pitcher "
       }
     ],
     "encaustics": [
@@ -117,7 +117,7 @@
         "id": "alone-in-the-forest-sunrise",
         "filename": "alone-in-the-forest-sunrise.jpg",
         "title": "Alone in the Forest Sunrise",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": false,
         "description": "First light filters through a dense forest canopy, its warmth captured in translucent encaustic layers that seem to glow from within. The trees emerge slowly from morning shadow, the way the eye adjusts."
       },
@@ -125,7 +125,7 @@
         "id": "aurora-imagined",
         "filename": "aurora-imagined.jpg",
         "title": "Aurora Imagined",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": true,
         "description": "An imagined aurora fills the sky in radiant ribbons of green and violet, built up in encaustic layers that give the light an almost physical presence. What the eye cannot hold, the wax does."
       },
@@ -133,7 +133,7 @@
         "id": "bleeding-hearts",
         "filename": "bleeding-hearts.jpg",
         "title": "Bleeding Hearts",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": true,
         "description": "The drooping heart-shaped blooms of bleeding heart, each one a perfect small pendant, rendered in translucent encaustic layers of rose and white. The name is melodramatic; the flower is not."
       },
@@ -141,15 +141,15 @@
         "id": "bouquet-to-go",
         "filename": "bouquet-to-go.jpg",
         "title": "Bouquet to Go",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
-        "description": "A loosely arranged bouquet, bright and informal, caught in the moment before it finds a vase. Encaustic gives the petals a depth that other media rarely achieves \u00e2\u20ac\u201d layers of color visible beneath layers of wax."
+        "description": "A loosely arranged bouquet, bright and informal, caught in the moment before it finds a vase. Encaustic gives the petals a depth that other media rarely achieves "
       },
       {
         "id": "engraved-monarch",
         "filename": "engraved-monarch.jpg",
         "title": "Engraved Monarch",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "A monarch butterfly rendered with an engraving-like precision, its wing patterns drawn into the encaustic surface before being fused. The result is both painting and drawing, both ancient technique and close observation."
       },
@@ -157,15 +157,15 @@
         "id": "fibroblast",
         "filename": "fibroblast.jpg",
         "title": "Fibroblast",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": true,
-        "description": "A microscopic world made visible \u00e2\u20ac\u201d the cellular architecture of biological tissue abstracted into color and texture. Encaustic's layering quality mirrors the way cells build and repair."
+        "description": "A microscopic world made visible "
       },
       {
         "id": "fields-of-mustard",
         "filename": "fields-of-mustard.jpg",
         "title": "Fields of Mustard",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": true,
         "description": "California's winter hills carpeted in wild mustard, their yellow brilliant against the dark green of the wet season. The encaustic surface gives the scene a warmth that the landscape itself also carries, unexpectedly, in January."
       },
@@ -173,23 +173,23 @@
         "id": "fiftieth-anniversary",
         "filename": "fiftieth-anniversary.jpg",
         "title": "Fiftieth Anniversary",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A painting marking fifty years \u00e2\u20ac\u201d the encaustic surface, built layer by patient layer, is itself a metaphor for what accumulates over time. The image holds warmth, depth, and a weight appropriate to the occasion."
+        "description": "A painting marking fifty years "
       },
       {
         "id": "fire-in-the-sky",
         "filename": "fire-in-the-sky.jpg",
         "title": "Fire in The Sky",
-        "originalSize": "4\" \u00c3\u2014 4\"",
+        "originalSize": "4\" x 4\"",
         "available": false,
-        "description": "The sky on fire at sunset, its oranges and magentas captured in fused wax that holds color with a particular luminosity. Encaustic was made for this \u00e2\u20ac\u201d no other medium quite matches the way fire light fills space."
+        "description": "The sky on fire at sunset, its oranges and magentas captured in fused wax that holds color with a particular luminosity. Encaustic was made for this "
       },
       {
         "id": "flower-field-under-mount-hood",
         "filename": "flower-field-under-mount-hood.jpg",
         "title": "Flower Field Under Mount Hood",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "Oregon's wildflower meadows with Mount Hood rising white in the distance, the mountain's permanence set against the seasonal abundance below. Painted in encaustic layers that preserve the scene's depth and spaciousness."
       },
@@ -197,7 +197,7 @@
         "id": "fog-over-oakland",
         "filename": "fog-over-oakland.jpg",
         "title": "Fog Over Oakland",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "Oakland's hills veiled in the marine layer that rolls in off the bay most mornings, the city's edges softened and its light gone silver. Encaustic's semi-translucent layers suit the subject perfectly."
       },
@@ -205,23 +205,23 @@
         "id": "good-luck-birds",
         "filename": "good-luck-birds.jpg",
         "title": "Good Luck Birds",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": false,
-        "description": "A composition of birds understood as symbols of fortune across many cultures \u00e2\u20ac\u201d painted in encaustic with the clarity of folk art and the depth of the medium. Good luck made visible."
+        "description": "A composition of birds understood as symbols of fortune across many cultures "
       },
       {
         "id": "gothic-decorations",
         "filename": "gothic-decorations.jpg",
         "title": "Gothic Decorations",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
-        "description": "Architectural ornament in the Gothic tradition \u00e2\u20ac\u201d pointed arches, tracery, stone-carved flora \u00e2\u20ac\u201d studied closely and translated into encaustic. The ancient building material and the ancient painting medium share an affinity."
+        "description": "Architectural ornament in the Gothic tradition "
       },
       {
         "id": "green-abstract-fabric",
         "filename": "green-abstract-fabric.jpg",
         "title": "Green Abstract Fabric",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": true,
         "description": "The rich folds and drape of green fabric, its movement frozen in encaustic layers that catch the light as actual cloth would. An exercise in pure paint: form, color, and texture without narrative."
       },
@@ -229,15 +229,15 @@
         "id": "heart-rising-over-poppy-field",
         "filename": "heart-rising-over-poppy-field.jpg",
         "title": "Heart Rising Over Poppy Field",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": false,
-        "description": "The artist's recurring heart motif lifts above a field of orange poppies, the encaustic sky luminous around it. Love and California wildflowers \u00e2\u20ac\u201d both are brief, both are brilliant."
+        "description": "The artist's recurring heart motif lifts above a field of orange poppies, the encaustic sky luminous around it. Love and California wildflowers "
       },
       {
         "id": "heart-rising-over-tuscany",
         "filename": "heart-rising-over-tuscany.jpg",
         "title": "Heart Rising Over Tuscany",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": false,
         "description": "The heart motif over the rolling hills of Tuscany, its golden browns and sage greens recognizable to anyone who has seen that landscape. Encaustic gives the hills their dusty, afternoon-light warmth."
       },
@@ -245,15 +245,15 @@
         "id": "heart-rising-over-the-ocean",
         "filename": "heart-rising-over-the-ocean.jpg",
         "title": "Heart Rising Over the Ocean",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "The heart ascends above open water, the ocean rendered in deep encaustic blues and the horizon kept clean. A small painting with simple ambitions \u00e2\u20ac\u201d transcendence above the sea."
+        "description": "The heart ascends above open water, the ocean rendered in deep encaustic blues and the horizon kept clean. A small painting with simple ambitions "
       },
       {
         "id": "heart-rising-over-mount-hood",
         "filename": "heart-rising-over-mount-hood.jpg",
         "title": "Heart Rising over Mount Hood",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "Oregon's dominant peak beneath the ascending heart, the mountain's permanence set in counterpoint to what the heart signifies. Encaustic layers give the snow cap its cold, flat light."
       },
@@ -261,7 +261,7 @@
         "id": "hugged-by-clouds",
         "filename": "hugged-by-clouds.jpg",
         "title": "Hugged by Clouds",
-        "originalSize": "4\" \u00c3\u2014 4\"",
+        "originalSize": "4\" x 4\"",
         "available": true,
         "description": "A form embraced by clouds, the encaustic medium's translucency giving the clouds a softness that feels genuinely atmospheric. To be surrounded by clouds is to be held by something vast and gentle."
       },
@@ -269,31 +269,31 @@
         "id": "lady-bugs-me",
         "filename": "lady-bugs-me.jpg",
         "title": "Lady Bugs Me",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": false,
-        "description": "A close study of a ladybug on branch, encaustic's layering allowing the shell's lacquered red to glow. The title admits what the painting knows \u00e2\u20ac\u201d sometimes the small thing is the whole thing."
+        "description": "A close study of a ladybug on branch, encaustic's layering allowing the shell's lacquered red to glow. The title admits what the painting knows "
       },
       {
         "id": "lavender-field",
         "filename": "lavender-field.jpg",
         "title": "Lavender Field",
-        "originalSize": "4\" \u00c3\u2014 6\"",
+        "originalSize": "4\" x 6\"",
         "available": false,
-        "description": "A field of lavender stretches to the horizon, its purple rows built up in luminous encaustic layers that capture the flower's sun-warmed haze. The ancient medium and the ancient crop share something \u00e2\u20ac\u201d both require time, patience, and heat."
+        "description": "A field of lavender stretches to the horizon, its purple rows built up in luminous encaustic layers that capture the flower's sun-warmed haze. The ancient medium and the ancient crop share something "
       },
       {
         "id": "leaves-are-falling",
         "filename": "leaves-are-falling.jpg",
         "title": "Leaves are Falling",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": false,
-        "description": "Autumn leaves mid-fall, their descent caught and held in encaustic. The turning colors \u00e2\u20ac\u201d ochre, rust, amber \u00e2\u20ac\u201d are what encaustic does best: color with depth, color with warmth built in."
+        "description": "Autumn leaves mid-fall, their descent caught and held in encaustic. The turning colors "
       },
       {
         "id": "lemon-lime-organelles",
         "filename": "lemon-lime-organelles.jpg",
         "title": "Lemon Lime Organelles",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "A microscopic-inspired composition: the cellular structures of citrus, their essential geometry made visible and beautiful. The sour and the sweet of lemon and lime, translated into pigment and wax."
       },
@@ -301,7 +301,7 @@
         "id": "lemon-tree",
         "filename": "lemon-tree.jpg",
         "title": "Lemon Tree",
-        "originalSize": "6\" \u00c3\u2014 12\"",
+        "originalSize": "6\" x 12\"",
         "available": true,
         "description": "A lemon tree laden with fruit, the yellow of the lemons vivid against green leaves. Encaustic's saturated quality suits the painting's sense of abundance."
       },
@@ -309,23 +309,23 @@
         "id": "lone-snow-tree",
         "filename": "lone-snow-tree.jpg",
         "title": "Lone Snow Tree",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": false,
-        "description": "A single tree standing in snow, its bare branches making their own drawing against a white sky. Winter stillness \u00e2\u20ac\u201d the kind that makes you stop."
+        "description": "A single tree standing in snow, its bare branches making their own drawing against a white sky. Winter stillness "
       },
       {
         "id": "milagros-on-green",
         "filename": "milagros-on-green.jpg",
         "title": "Milagros on Green",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "The traditional Mexican milagros \u00e2\u20ac\u201d small metal charms used as votive offerings \u00e2\u20ac\u201d arranged on a ground of deep green encaustic. Faith made portable, devotion made beautiful."
+        "description": "The traditional Mexican milagros "
       },
       {
         "id": "my-butterfly-collection",
         "filename": "my-butterfly-collection.jpg",
         "title": "My Butterfly Collection",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
         "description": "A collector's arrangement of butterfly specimens, each one rendered in precise encaustic detail that captures the wings' patterns and iridescence. The reminder that beauty was once alive."
       },
@@ -333,15 +333,15 @@
         "id": "peacock-on-display",
         "filename": "peacock-on-display.jpg",
         "title": "Peacock on Display",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": true,
-        "description": "A peacock in full display, its iridescent eye-spotted train spread wide. Encaustic is ideal for this \u00e2\u20ac\u201d its layers capture the way peacock feathers seem to contain their own light source."
+        "description": "A peacock in full display, its iridescent eye-spotted train spread wide. Encaustic is ideal for this "
       },
       {
         "id": "poppy-field",
         "filename": "poppy-field.jpg",
         "title": "Poppy Field",
-        "originalSize": "6\" \u00c3\u2014 12\"",
+        "originalSize": "6\" x 12\"",
         "available": true,
         "description": "A field of poppies at their peak, the orange vivid against green stems. One of the larger works, its scale matching the ambition of the subject."
       },
@@ -349,7 +349,7 @@
         "id": "poppy-field-after-monet",
         "filename": "poppy-field-after-monet.jpg",
         "title": "Poppy Field after Monet",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "Homage to Monet's poppy fields: the dappled light, the color pressing in from all sides. Encaustic gives the poppies Monet's luminosity through a different material logic."
       },
@@ -357,23 +357,23 @@
         "id": "red-poppies",
         "filename": "red-poppies.jpg",
         "title": "Red Poppies",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A close study of red poppies \u00e2\u20ac\u201d their tissue-paper petals, their dark centers \u00e2\u20ac\u201d painted in encaustic that gives the reds their full saturation. Not the field, but the flower itself."
+        "description": "A close study of red poppies "
       },
       {
         "id": "red-poppy",
         "filename": "red-poppy.jpg",
         "title": "Red Poppy",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A single red poppy rendered with care, its petals cupped and its center visible. Encaustic's surface invites inspection \u00e2\u20ac\u201d the closer you look, the more the layers reveal."
+        "description": "A single red poppy rendered with care, its petals cupped and its center visible. Encaustic's surface invites inspection "
       },
       {
         "id": "red-siding-in-mexico",
         "filename": "red-siding-in-mexico.jpg",
         "title": "Red Siding in Mexico",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
         "description": "The vivid red exterior walls of a Mexican building, their paint aged and weathered in ways that encaustic can render with surprising accuracy. Color that has lived through decades of sun."
       },
@@ -381,7 +381,7 @@
         "id": "reflected-trees",
         "filename": "reflected-trees.jpg",
         "title": "Reflected Trees",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
         "description": "Trees reflected in still water, the mirrored image as precise as the real one. Encaustic layers give the reflection a depth that makes the boundary between above and below unclear."
       },
@@ -389,7 +389,7 @@
         "id": "san-francisco-panoramic",
         "filename": "san-francisco-panoramic.jpg",
         "title": "San Francisco Panoramic",
-        "originalSize": "6\" \u00c3\u2014 24\"",
+        "originalSize": "6\" x 24\"",
         "available": true,
         "description": "The San Francisco Bay panoramic view: bridge, skyline, water, and light, rendered in encaustic across a long horizontal format. The city has been painted many times; encaustic finds in it something still new."
       },
@@ -397,7 +397,7 @@
         "id": "seed-pods-in-the-dirt",
         "filename": "seed-pods-in-the-dirt.jpg",
         "title": "Seed Pods in the Dirt",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": true,
         "description": "The spent seed pods of various plants lying in bare earth, their architecture intricate and their season over. A quiet study of what remains after bloom, rendered with close attention."
       },
@@ -405,7 +405,7 @@
         "id": "serinic-marsh-land",
         "filename": "serinic-marsh-land.jpg",
         "title": "Serinic Marsh Land",
-        "originalSize": "8\" \u00c3\u2014 8\"",
+        "originalSize": "8\" x 8\"",
         "available": true,
         "description": "A marshland in stillness, the reeds and grasses built up in encaustic layers that give the scene its particular quiet. Tranquility rendered visible."
       },
@@ -413,31 +413,31 @@
         "id": "spiraling-out",
         "filename": "spiraling-out.jpg",
         "title": "Spiraling Out",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "An abstract composition in spiral movement, the forms built up in encaustic layers that give the spiral its physical energy. Things expanding \u00e2\u20ac\u201d or unwinding \u00e2\u20ac\u201d both at once."
+        "description": "An abstract composition in spiral movement, the forms built up in encaustic layers that give the spiral its physical energy. Things expanding "
       },
       {
         "id": "spirited-away",
         "filename": "spirited-away.jpg",
         "title": "Spirited Away",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A world encountered and a self transformed, held in encaustic color and form. The title evokes passage \u00e2\u20ac\u201d arriving somewhere you didn't expect, leaving something behind."
+        "description": "A world encountered and a self transformed, held in encaustic color and form. The title evokes passage "
       },
       {
         "id": "star-papaya",
         "filename": "star-papaya.jpg",
         "title": "Star Papaya",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A cross-section of papaya, its seeds arranged in a perfect natural star, captured in tropical warmth. The fruit's interior \u00e2\u20ac\u201d usually discarded \u00e2\u20ac\u201d is here the entire subject."
+        "description": "A cross-section of papaya, its seeds arranged in a perfect natural star, captured in tropical warmth. The fruit's interior "
       },
       {
         "id": "stella-aurora",
         "filename": "stella-aurora.jpg",
         "title": "Stella Aurora",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
         "description": "Aurora and stars together: the celestial light show rendered in encaustic blues and greens that glow with an inner warmth. Named for the star-born dawn."
       },
@@ -445,7 +445,7 @@
         "id": "sunrise-over-the-ocean",
         "filename": "sunrise-over-the-ocean.jpg",
         "title": "Sunrise Over the Ocean",
-        "originalSize": "8\" \u00c3\u2014 10\"",
+        "originalSize": "8\" x 10\"",
         "available": false,
         "description": "The sun rising over open water, its light building from the horizon in encaustic layers that capture the dawn's particular gradient of color."
       },
@@ -453,23 +453,23 @@
         "id": "taken-away",
         "filename": "taken-away.jpg",
         "title": "Taken Away",
-        "originalSize": "6\" \u00c3\u2014 6\"",
+        "originalSize": "6\" x 6\"",
         "available": false,
-        "description": "A painting about absence \u00e2\u20ac\u201d what is here, and what is not. Encaustic's surface, with its translucent layers, is suited to subjects that are partly about what lies beneath."
+        "description": "A painting about absence "
       },
       {
         "id": "tree-of-persistence",
         "filename": "tree-of-persistence.jpg",
         "title": "Tree of Persistence",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": false,
-        "description": "A tree that has survived \u00e2\u20ac\u201d bent by wind, shaped by time, but upright still. Encaustic layers give the bark its texture and the whole composition its sense of endurance."
+        "description": "A tree that has survived "
       },
       {
         "id": "trees-sunrise",
         "filename": "trees-sunrise.jpg",
         "title": "Trees Sunrise",
-        "originalSize": "4\" \u00c3\u2014 4\"",
+        "originalSize": "4\" x 4\"",
         "available": false,
         "description": "Trees at dawn, their forms silhouetted or lit depending on their angle to the rising light. A small painting that holds a large moment."
       },
@@ -477,7 +477,7 @@
         "id": "windows-on-tuscany",
         "filename": "windows-on-tuscany.jpg",
         "title": "Windows on Tuscany",
-        "originalSize": "6\" \u00c3\u2014 8\"",
+        "originalSize": "6\" x 8\"",
         "available": true,
         "description": "The windows of a Tuscan farmhouse, their shutters and sills and the light they frame rendered in encaustic. The view through a window is always partly about the window itself."
       }
@@ -492,9 +492,9 @@
         "originalPrice": null,
         "reprintAvailable": true,
         "reprintPrice": 95,
-        "description": "Leimert Park in Los Angeles has been the heartbeat of Black arts and culture on the West Coast for decades. This painting captures the energy of an evening in the park \u2014 the way live jazz moves through a crowd, the rhythm of the street. Winner of the 2024 Leimert Park Jazz Festival Art Competition.",
+        "description": "Leimert Park in Los Angeles has been the heartbeat of Black arts and culture on the West Coast for decades. This painting captures the energy of an evening in the park - the way live jazz moves through a crowd, the rhythm of the street. Winner of the 2024 Leimert Park Jazz Festival Art Competition.",
         "award": {
-          "title": "Winner \u2014 2024 Leimert Park Jazz Festival Art Competition",
+          "title": "Winner - 2024 Leimert Park Jazz Festival Art Competition",
           "url": "https://www.leimertparkjazzfestival.org/2024-art-competition"
         },
         "pleinAirImages": []
@@ -508,7 +508,7 @@
         "originalPrice": 950,
         "reprintAvailable": true,
         "reprintPrice": 95,
-        "description": "South Falls at Silver Falls State Park \u2014 Oregon's most visited state park \u2014 painted plein air on a quiet morning before the crowds arrived. The falls drop 177 feet behind a basalt ledge wide enough to walk under. Oil on panel.",
+        "description": "South Falls at Silver Falls State Park - Oregon's most visited state park - painted plein air on a quiet morning before the crowds arrived. The falls drop 177 feet behind a basalt ledge wide enough to walk under. Oil on panel.",
         "award": null,
         "pleinAirImages": [
           {
@@ -519,7 +519,7 @@
           {
             "id": "south-falls-reprint",
             "filename": "south-falls-reprint.jpg",
-            "title": "Archival reprint, 11\"\u00d714\""
+            "title": "Archival reprint, 11\"x14\""
           }
         ]
       },
@@ -532,7 +532,7 @@
         "originalPrice": null,
         "reprintAvailable": true,
         "reprintPrice": 95,
-        "description": "Cascading wisteria in full bloom \u2014 the drooping racemes painted with the same layered translucency the flower itself seems to have. The original is in a private collection.",
+        "description": "Cascading wisteria in full bloom - the drooping racemes painted with the same layered translucency the flower itself seems to have. The original is in a private collection.",
         "award": null,
         "pleinAirImages": []
       },
@@ -545,7 +545,7 @@
         "originalPrice": 950,
         "reprintAvailable": true,
         "reprintPrice": 95,
-        "description": "Every spring the Wooden Shoe Farm in Woodburn, Oregon opens its fields \u2014 40 acres of tulips in every color, Mount Hood visible on clear days. Painted plein air at the festival, the light changing as the morning burned off the haze. Oil on panel.",
+        "description": "Every spring the Wooden Shoe Farm in Woodburn, Oregon opens its fields - 40 acres of tulips in every color, Mount Hood visible on clear days. Painted plein air at the festival, the light changing as the morning burned off the haze. Oil on panel.",
         "award": null,
         "pleinAirImages": [
           {
@@ -556,7 +556,7 @@
           {
             "id": "tulip-festival-reprint",
             "filename": "tulip-festival-reprint.jpg",
-            "title": "Archival reprint, 11\"\u00d714\""
+            "title": "Archival reprint, 11\"x14\""
           }
         ]
       }
