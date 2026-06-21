@@ -102,6 +102,10 @@ function MagnifierImage({
 export default function OilModal({ works, initialIndex, onClose }: Props) {
   const [idx, setIdx] = useState(initialIndex)
   const [subIdx, setSubIdx] = useState<number | null>(null)
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [activeInquiry, setActiveInquiry] = useState<'original' | 'reprint' | null>(null)
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
@@ -111,11 +115,34 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
     : `/fine-art/oils/${work.filename}`
   const activeAlt = subIdx !== null ? work.pleinAirImages[subIdx].title : work.title
 
+  const openInquiry = (type: 'original' | 'reprint') => {
+    setActiveInquiry(type)
+    setStatus('idle')
+    setMessage(type === 'original'
+      ? `Hi Imad,\n\nI'm interested in the original "${work.title}" ($${work.originalPrice?.toLocaleString()}). Is it still available?\n\nThank you`
+      : `Hi Imad,\n\nI'm interested in an archival reprint of "${work.title}" ($${work.reprintPrice}). Could you share more details?\n\nThank you`)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/send-inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, message, workTitle: work.title, workType: 'Oil Painting', inquiryType: activeInquiry ?? 'general' }),
+      })
+      setStatus(res.ok ? 'sent' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
+
   const goPrev = useCallback(() => {
-    if (hasPrev) { setIdx(i => i - 1); setSubIdx(null) }
+    if (hasPrev) { setIdx(i => i - 1); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
   }, [hasPrev])
   const goNext = useCallback(() => {
-    if (hasNext) { setIdx(i => i + 1); setSubIdx(null) }
+    if (hasNext) { setIdx(i => i + 1); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
   }, [hasNext])
 
   useEffect(() => {
@@ -247,12 +274,12 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                     {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize} · Oil on panel</p>}
                   </div>
                   {work.available && (
-                    <a
-                      href={`mailto:imadobegi@gmail.com?subject=Original Oil Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in the original oil painting "${work.title}" ($${work.originalPrice}). Could you let me know if it's still available?%0A%0AThank you`}
+                    <button
+                      onClick={() => openInquiry('original')}
                       className="text-xs bg-copper text-darkroom px-3 py-1.5 uppercase tracking-wider hover:bg-amber-600 transition-colors flex-shrink-0"
                     >
                       Inquire
-                    </a>
+                    </button>
                   )}
                 </div>
               </div>
@@ -266,16 +293,52 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                       <p className="text-edge font-medium">${work.reprintPrice}</p>
                       <p className="text-xs text-mist mt-0.5">Archival watercolor paper · 11"×14"</p>
                     </div>
-                    <a
-                      href={`mailto:imadobegi@gmail.com?subject=Reprint Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in an archival reprint of "${work.title}" ($${work.reprintPrice}). Could you share more details?%0A%0AThank you`}
+                    <button
+                      onClick={() => openInquiry('reprint')}
                       className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0"
                     >
                       Contact
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
             </div>
+
+            {/* Inquiry form */}
+            {activeInquiry && (
+              <div className="mt-4 border-t border-darkroom pt-4">
+                {status === 'sent' ? (
+                  <p className="text-sm text-copper">Message sent — Imad will be in touch soon.</p>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-2">
+                    <p className="text-xs text-mist uppercase tracking-wider mb-1">
+                      {activeInquiry === 'original' ? 'Inquire about the original' : 'Inquire about a reprint'}
+                    </p>
+                    <input
+                      type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                      placeholder="Your email"
+                      className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist"
+                    />
+                    <textarea
+                      required value={message} onChange={e => setMessage(e.target.value)}
+                      rows={4}
+                      className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist resize-none"
+                    />
+                    {status === 'error' && <p className="text-xs text-red-400">Something went wrong — try again.</p>}
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setActiveInquiry(null)}
+                        className="text-xs border border-panel text-mist px-3 py-2 hover:border-mist transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit" disabled={status === 'sending'}
+                        className="flex-1 text-xs bg-copper text-darkroom py-2 uppercase tracking-wider hover:bg-amber-600 transition-colors disabled:opacity-60">
+                        {status === 'sending' ? 'Sending…' : 'Send Message'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
 
             {/* Plein air label */}
             {work.pleinAirImages.length > 0 && (

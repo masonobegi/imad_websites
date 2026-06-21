@@ -25,12 +25,30 @@ interface LensState { x: number; y: number; cw: number; ch: number; isTouch: boo
 export default function WorkModal({ works, initialIndex, category, categoryLabel, onClose }: Props) {
   const [idx, setIdx] = useState(initialIndex)
   const [lens, setLens] = useState<LensState | null>(null)
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
 
-  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null) } }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null) } }, [hasNext])
+  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null); setStatus('idle') } }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null); setStatus('idle') } }, [hasNext])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/send-inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, message, workTitle: work.title, workType: categoryLabel, inquiryType: 'general' }),
+      })
+      setStatus(res.ok ? 'sent' : 'error')
+    } catch {
+      setStatus('error')
+    }
+  }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -165,20 +183,29 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
           </div>
 
           <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
-            {work.available ? (
-              <a
-                href={`mailto:imadobegi@gmail.com?subject=Inquiry: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI'm interested in "${work.title}". Could you share more details on availability and pricing?%0A%0AThank you`}
-                className="block text-center bg-copper text-darkroom py-4 sm:py-3 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
-              >
-                Inquire about this piece
-              </a>
+            {status === 'sent' ? (
+              <p className="text-center text-sm text-copper py-2">Message sent — Imad will be in touch soon.</p>
             ) : (
-              <a
-                href={`mailto:imadobegi@gmail.com?subject=Question about: ${encodeURIComponent(work.title)}&body=Hi Imad,%0A%0AI admired "${work.title}" on your site. I'd love to learn more about your work.%0A%0AThank you`}
-                className="block text-center border border-mist text-mist py-4 sm:py-3 text-sm tracking-wider uppercase hover:border-edge hover:text-edge transition-colors"
-              >
-                Ask about this work
-              </a>
+              <form onSubmit={handleSubmit} className="space-y-2">
+                <input
+                  type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                  placeholder="Your email"
+                  className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist"
+                />
+                <textarea
+                  required value={message} onChange={e => setMessage(e.target.value)}
+                  placeholder={work.available ? `Hi Imad, I'm interested in "${work.title}"…` : `Hi Imad, I admired "${work.title}" on your site…`}
+                  rows={3}
+                  className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist resize-none"
+                />
+                {status === 'error' && <p className="text-xs text-red-400">Something went wrong — try again.</p>}
+                <button
+                  type="submit" disabled={status === 'sending'}
+                  className="w-full py-3 text-sm tracking-wider uppercase transition-colors bg-copper text-darkroom hover:bg-amber-600 disabled:opacity-60"
+                >
+                  {status === 'sending' ? 'Sending…' : 'Send Message'}
+                </button>
+              </form>
             )}
           </div>
         </div>
