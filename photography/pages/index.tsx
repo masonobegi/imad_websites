@@ -261,8 +261,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const { readSiteConfig } = await import('../lib/siteConfig')
   const siteConfig = readSiteConfig()
 
-  const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'data.json'), 'utf-8'))
-  const fineArtData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'fine-art', 'data.json'), 'utf-8'))
+  const { getDataPath, getDataDir } = await import('../lib/dataDir')
+  const data = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
+  const fineArtData = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
 
   // Flatten all photos for lookup
   const allPhotosFlat: Photo[] = Object.entries(
@@ -305,10 +306,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     allPhotos[cat] = photos.map(p => ({ ...p, category: cat }))
   }
 
-  const stickersDir = path.join(process.cwd(), 'public', 'stickers')
-  const previewStickers = fs.existsSync(stickersDir)
-    ? fs.readdirSync(stickersDir).filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort().slice(0, 6)
-    : []
+  const stickersDir = getDataDir('stickers')
+  const previewStickers = fs.readdirSync(stickersDir).filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort().slice(0, 6)
 
   return {
     props: {

@@ -865,10 +865,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!checkAdminCookie(req.headers.cookie || '')) {
     return { redirect: { destination: '/admin/login', permanent: false } }
   }
-  const fineArt = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'fine-art', 'data.json'), 'utf-8'))
-  const photos = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'data.json'), 'utf-8'))
-  const config = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'config.json'), 'utf-8'))
-  const stickers = fs.readdirSync(path.join(process.cwd(), 'public', 'stickers'))
+  const { getDataPath, getDataDir } = await import('../../lib/dataDir')
+  const fineArt = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
+  const photos  = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
+  const config  = JSON.parse(fs.readFileSync(getDataPath('photos/config.json'), 'utf-8'))
+  const stickers = fs.readdirSync(getDataDir('stickers'))
     .filter((f: string) => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort()
   return { props: { initialData: { fineArt, photos, stickers, printConfig: config } } }
 }

@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { getDataPath } from './dataDir'
 
 export interface SiteConfig {
   homepage: {
@@ -54,11 +55,9 @@ export const DEFAULT_CONFIG: SiteConfig = {
   contact: { ownerEmail: 'imadobegi@gmail.com' },
 }
 
-const CONFIG_PATH = path.join(process.cwd(), 'public', 'site-config.json')
-
 export function readSiteConfig(): SiteConfig {
   try {
-    const raw = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
+    const raw = JSON.parse(fs.readFileSync(getDataPath('site-config.json'), 'utf-8'))
     return {
       homepage: { ...DEFAULT_CONFIG.homepage, ...(raw.homepage || {}) },
       featuredPhotos: raw.featuredPhotos ?? DEFAULT_CONFIG.featuredPhotos,
@@ -72,5 +71,5 @@ export function readSiteConfig(): SiteConfig {
 }
 
 export function writeSiteConfig(config: SiteConfig): void {
-  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8')
+  fs.writeFileSync(getDataPath('site-config.json'), JSON.stringify(config, null, 2), 'utf-8')
 }

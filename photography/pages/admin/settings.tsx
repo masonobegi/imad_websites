@@ -430,8 +430,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   const config = readSiteConfig()
 
-  const fineArt = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'fine-art', 'data.json'), 'utf-8'))
-  const photosData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'data.json'), 'utf-8'))
+  const { getDataPath } = await import('../../lib/dataDir')
+  const fineArt    = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
+  const photosData = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
 
   const allPhotos: PhotoItem[] = Object.entries(
     photosData.photos as Record<string, { id: string; filename: string; title: string }[]>

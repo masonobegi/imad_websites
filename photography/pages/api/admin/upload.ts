@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
+import { getDataDir } from '../../../lib/dataDir'
 
 export const config = { api: { bodyParser: { sizeLimit: '20mb' } } }
 
@@ -83,17 +84,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const dirMap: Record<string, string> = {
-      photo: path.join(process.cwd(), 'public', 'photos', category),
-      watercolor: path.join(process.cwd(), 'public', 'fine-art', 'watercolors'),
-      encaustic: path.join(process.cwd(), 'public', 'fine-art', 'encaustics'),
-      oil: path.join(process.cwd(), 'public', 'fine-art', 'oils'),
-      'oil-pleinair': path.join(process.cwd(), 'public', 'fine-art', 'oils'),
-      sticker: path.join(process.cwd(), 'public', 'stickers'),
+      photo:        getDataDir(`photos/${category}`),
+      watercolor:   getDataDir('fine-art/watercolors'),
+      encaustic:    getDataDir('fine-art/encaustics'),
+      oil:          getDataDir('fine-art/oils'),
+      'oil-pleinair': getDataDir('fine-art/oils'),
+      sticker:      getDataDir('stickers'),
     }
 
     const destDir = dirMap[type]
     if (!destDir) return res.status(400).json({ error: 'Invalid type' })
-    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true })
 
     let finalBuffer = buffer
     try {

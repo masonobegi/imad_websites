@@ -15,7 +15,7 @@ export default function Footer({ dark = false }: FooterProps) {
     facebook: 'https://www.facebook.com/imad.obegi/',
   })
   useEffect(() => {
-    fetch('/site-config.json').then(r => r.json()).then(c => { if (c.social) setSocial(c.social) }).catch(() => {})
+    fetch('/api/public/site-config').then(r => r.json()).then(c => { if (c.social) setSocial(c.social) }).catch(() => {})
   }, [])
 
   const border   = dark ? 'border-panel' : 'border-edge'

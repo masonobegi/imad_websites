@@ -2,11 +2,12 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
+import { getDataPath, getDataDir } from '../../../lib/dataDir'
 
-const fineArtPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
-const photosPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
-const configPath = path.join(process.cwd(), 'public', 'photos', 'config.json')
-const stickersDir = path.join(process.cwd(), 'public', 'stickers')
+function fineArtPath()()  { return getDataPath('fine-art/data.json') }
+function photosPath()()   { return getDataPath('photos/data.json') }
+function configPath()()   { return getDataPath('photos/config.json') }
+function stickersDir()()  { return getDataDir('stickers') }
 
 function readJson(p: string) { return JSON.parse(fs.readFileSync(p, 'utf-8')) }
 function writeJson(p: string, data: unknown) { fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8') }
@@ -16,10 +17,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   if (req.method === 'GET') {
     try {
-      const fineArt = readJson(fineArtPath)
-      const photos = readJson(photosPath)
-      const config = readJson(configPath)
-      const stickers = fs.readdirSync(stickersDir)
+      const fineArt = readJson(fineArtPath())
+      const photos = readJson(photosPath())
+      const config = readJson(configPath())
+      const stickers = fs.readdirSync(stickersDir())
         .filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f))
         .sort()
       res.json({ fineArt, photos, config, stickers })
@@ -34,14 +35,14 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const { type, action, data, category, id } = req.body
     try {
       if (type === 'printConfig') {
-        const config = readJson(configPath)
+        const config = readJson(configPath())
         config.printSizes = data.printSizes
-        writeJson(configPath, config)
+        writeJson(configPath(), config)
         return res.json({ ok: true })
       }
 
       if (type === 'photo') {
-        const photos = readJson(photosPath)
+        const photos = readJson(photosPath())
         const cat = category as string
         if (!photos.photos[cat]) photos.photos[cat] = []
         if (action === 'add') {
@@ -56,12 +57,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           const byId = new Map((photos.photos[cat] as { id: string }[]).map(p => [p.id, p]))
           photos.photos[cat] = ids.map(i => byId.get(i)).filter(Boolean)
         }
-        writeJson(photosPath, photos)
+        writeJson(photosPath(), photos)
         return res.json({ ok: true })
       }
 
       if (type === 'fineArt') {
-        const fineArt = readJson(fineArtPath)
+        const fineArt = readJson(fineArtPath())
         const cat = category as string
         if (!fineArt.works[cat]) fineArt.works[cat] = []
         if (action === 'add') {
@@ -76,12 +77,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           const byId = new Map((fineArt.works[cat] as { id: string }[]).map(w => [w.id, w]))
           fineArt.works[cat] = ids.map(i => byId.get(i)).filter(Boolean)
         }
-        writeJson(fineArtPath, fineArt)
+        writeJson(fineArtPath(), fineArt)
         return res.json({ ok: true })
       }
 
       if (type === 'sticker' && action === 'delete') {
-        const filePath = path.join(stickersDir, id as string)
+        const filePath = path.join(stickersDir(), id as string)
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
         return res.json({ ok: true })
       }
