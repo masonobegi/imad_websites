@@ -10,6 +10,9 @@ import WorkModal, { Work } from '../components/WorkModal'
 import OilModal, { OilWork } from '../components/OilModal'
 import CartPopup from '../components/CartPopup'
 import { Photo } from '../lib/photos'
+import { SiteConfig } from '../lib/siteConfig'
+
+interface FeaturedArt { id: string; type: 'watercolor' | 'encaustic' | 'oil'; imgPath: string; title: string }
 
 interface Props {
   heroPhoto: Photo
@@ -18,18 +21,11 @@ interface Props {
   allOils: OilWork[]
   allWatercolors: Work[]
   allEncaustics: Work[]
+  featuredFineArt: FeaturedArt[]
+  siteConfig: SiteConfig['homepage']
 }
 
-const FEATURED_FINE_ART = [
-  { id: 'the-crab-shack-salter-path', type: 'watercolor' as const, imgPath: '/fine-art/watercolors/the-crab-shack-salter-path.jpg', title: 'The Crab Shack, Salter Path' },
-  { id: 'autumn-arrival-engine-no-3', type: 'watercolor' as const, imgPath: '/fine-art/watercolors/autumn-arrival-engine-no-3.jpg', title: 'Autumn Arrival' },
-  { id: 'fields-of-mustard', type: 'encaustic' as const, imgPath: '/fine-art/encaustics/fields-of-mustard.jpg', title: 'Fields of Mustard' },
-  { id: 'wooden-shoe-tulip-festival', type: 'oil' as const, imgPath: '/fine-art/oils/wooden-shoe-tulip-festival.jpg', title: 'Wooden Shoe Tulip Festival' },
-  { id: 'peacock-on-display', type: 'encaustic' as const, imgPath: '/fine-art/encaustics/peacock-on-display.jpg', title: 'Peacock on Display' },
-  { id: 'south-falls', type: 'oil' as const, imgPath: '/fine-art/oils/south-falls.jpg', title: 'South Falls, Silverton, Oregon' },
-]
-
-export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics, featuredFineArt, siteConfig }: Props) {
   const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
   const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
   const [oilModalIndex, setOilModalIndex] = useState<number | null>(null)
@@ -41,7 +37,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
     setModalState({ photos: arr, index: idx >= 0 ? idx : 0 })
   }
 
-  const openFeaturedWork = (item: typeof FEATURED_FINE_ART[0]) => {
+  const openFeaturedWork = (item: FeaturedArt) => {
     if (item.type === 'watercolor') {
       const idx = allWatercolors.findIndex(w => w.id === item.id)
       if (idx >= 0) setWorkModalState({ works: allWatercolors, index: idx, category: 'watercolors', categoryLabel: 'Watercolors' })
@@ -73,10 +69,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-8 sm:pb-14">
-          <h1 className="font-serif text-5xl sm:text-7xl text-white leading-none mb-2">Imad Obegi</h1>
-          <p className="text-white/65 text-sm sm:text-base tracking-wide">
-            Artist · Photographer · OBGillustrator.com
-          </p>
+          <h1 className="font-serif text-5xl sm:text-7xl text-white leading-none mb-2">{siteConfig.heroHeadline}</h1>
+          <p className="text-white/65 text-sm sm:text-base tracking-wide">{siteConfig.heroSubtext}</p>
         </div>
       </section>
 
@@ -85,10 +79,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Available now</p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-ink">Photography</h2>
-            <p className="text-mist text-sm mt-1 hidden sm:block">
-              Nature, wildlife, and the San Francisco Bay · Metal &amp; canvas prints
-            </p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.photoStripHeadline}</h2>
+            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.photoStripSubtext}</p>
           </div>
           <Link
             href="/shop"
@@ -134,14 +126,12 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       <section className="border-b border-edge">
         <div className="px-6 sm:px-10 py-6 border-b border-edge">
           <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Fine Art</p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-ink">Fine Art</h2>
-          <p className="text-mist text-sm mt-1 hidden sm:block">
-            Watercolors, oil paintings &amp; encaustics · Originals &amp; prints
-          </p>
+          <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.fineArtHeadline}</h2>
+          <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.fineArtSubtext}</p>
         </div>
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-edge">
-          {FEATURED_FINE_ART.map(item => (
+          {featuredFineArt.map(item => (
             <button
               key={item.id}
               onClick={() => openFeaturedWork(item)}
@@ -175,20 +165,19 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── COMMISSION CTA ── */}
-      <section className="px-6 sm:px-10 py-14 sm:py-20 text-center border-b border-edge">
-        <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-3">Custom Work</p>
-        <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-4">Have something in mind?</h2>
-        <p className="text-mist text-sm sm:text-base max-w-md mx-auto mb-8 leading-relaxed">
-          Imad Obegi takes commissions — watercolors, encaustics, prints, and custom designs.
-          Tell him what you&apos;re envisioning and he&apos;ll be in touch.
-        </p>
-        <Link
-          href="/commissions"
-          className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
-        >
-          Commission a Piece
-        </Link>
-      </section>
+      {siteConfig.commissionOpen && (
+        <section className="px-6 sm:px-10 py-14 sm:py-20 text-center border-b border-edge">
+          <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-3">Custom Work</p>
+          <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-4">{siteConfig.commissionHeadline}</h2>
+          <p className="text-mist text-sm sm:text-base max-w-md mx-auto mb-8 leading-relaxed">{siteConfig.commissionBody}</p>
+          <Link
+            href="/commissions"
+            className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+          >
+            {siteConfig.commissionCta}
+          </Link>
+        </section>
+      )}
 
       {modalState && (
         <PhotoModal
@@ -220,43 +209,63 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const { readSiteConfig } = await import('../lib/siteConfig')
+  const siteConfig = readSiteConfig()
 
-  const nature: Photo[] = data.photos.nature || []
-  const sf: Photo[] = data.photos['san-francisco'] || []
+  const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'data.json'), 'utf-8'))
+  const fineArtData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'fine-art', 'data.json'), 'utf-8'))
 
+  // Flatten all photos for lookup
+  const allPhotosFlat: Photo[] = Object.entries(
+    data.photos as Record<string, Photo[]>
+  ).flatMap(([cat, photos]) => photos.map(p => ({ ...p, category: cat })))
+
+  // Hero photo from config
   const heroPhoto =
-    nature.find((p: Photo) => p.filename.includes('milky-way-over-joshua-tree')) || nature[0]
+    allPhotosFlat.find((p: Photo) => p.id === siteConfig.homepage.heroPhotoId) ||
+    allPhotosFlat[0]
 
-  const wantedNature = ['delicate-arch-at-dawn', 'dahlia-symphony', 'the-lone-cypress', 'milky-way-over-hidden-valley']
-  const wantedSF    = ['golden-gate-in-the-mist', 'bay-of-gold']
-
+  // Featured photos strip — pick by ID from config, pad from all photos if needed
   const picked: Photo[] = []
-  for (const id of wantedNature) {
-    const found = nature.find((p: Photo) => p.id === id)
-    if (found) picked.push(found)
-  }
-  for (const id of wantedSF) {
-    const found = sf.find((p: Photo) => p.id === id)
+  for (const id of siteConfig.featuredPhotos) {
+    const found = allPhotosFlat.find((p: Photo) => p.id === id)
     if (found) picked.push(found)
   }
   if (picked.length < 6) {
-    const rest = [...nature, ...sf].filter((p: Photo) => !picked.find(x => x.id === p.id))
+    const rest = allPhotosFlat.filter((p: Photo) => !picked.find(x => x.id === p.id))
     picked.push(...rest.slice(0, 6 - picked.length))
   }
 
-  const fineArtDataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
-  const fineArtData = JSON.parse(fs.readFileSync(fineArtDataPath, 'utf-8'))
+  // Featured fine art strip — resolve id+type to full work data
+  const folderMap = { watercolor: 'watercolors', encaustic: 'encaustics', oil: 'oils' } as const
+  const featuredFineArt = siteConfig.featuredFineArt.map(({ id, type }) => {
+    const arr: { id: string; filename: string; title: string }[] = fineArtData.works[folderMap[type]] || []
+    const work = arr.find(w => w.id === id)
+    if (!work) return null
+    return {
+      id: work.id,
+      type,
+      imgPath: `/fine-art/${folderMap[type]}/${work.filename}`,
+      title: work.title,
+    }
+  }).filter(Boolean) as FeaturedArt[]
+
+  // Group all photos by category for modal navigation
+  const allPhotos: Record<string, Photo[]> = {}
+  for (const [cat, photos] of Object.entries(data.photos as Record<string, Photo[]>)) {
+    allPhotos[cat] = photos.map(p => ({ ...p, category: cat }))
+  }
 
   return {
     props: {
       heroPhoto,
       previewPhotos: picked.slice(0, 6),
-      allPhotos: { nature, 'san-francisco': sf },
+      allPhotos,
       allOils: fineArtData.works.oils || [],
       allWatercolors: fineArtData.works.watercolors || [],
       allEncaustics: fineArtData.works.encaustics || [],
+      featuredFineArt,
+      siteConfig: siteConfig.homepage,
     },
   }
 }

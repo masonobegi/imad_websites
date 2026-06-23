@@ -1,0 +1,38 @@
+{
+  "homepage": {
+    "heroHeadline": "Imad Obegi",
+    "heroSubtext": "Artist · Photographer · OBGillustrator.com",
+    "heroPhotoId": "milky-way-over-joshua-tree",
+    "photoStripHeadline": "Photography",
+    "photoStripSubtext": "Nature, wildlife, and the San Francisco Bay · Metal & canvas prints",
+    "fineArtHeadline": "Fine Art",
+    "fineArtSubtext": "Watercolors, oil paintings & encaustics · Originals & prints",
+    "commissionOpen": true,
+    "commissionHeadline": "Have something in mind?",
+    "commissionBody": "Imad Obegi takes commissions — watercolors, encaustics, prints, and custom designs. Tell him what you're envisioning and he'll be in touch.",
+    "commissionCta": "Commission a Piece"
+  },
+  "featuredPhotos": [
+    "delicate-arch-at-dawn",
+    "dahlia-symphony",
+    "the-lone-cypress",
+    "milky-way-over-hidden-valley",
+    "golden-gate-in-the-mist",
+    "bay-of-gold"
+  ],
+  "featuredFineArt": [
+    { "id": "the-crab-shack-salter-path", "type": "watercolor" },
+    { "id": "autumn-arrival-engine-no-3", "type": "watercolor" },
+    { "id": "fields-of-mustard", "type": "encaustic" },
+    { "id": "wooden-shoe-tulip-festival", "type": "oil" },
+    { "id": "peacock-on-display", "type": "encaustic" },
+    { "id": "south-falls", "type": "oil" }
+  ],
+  "social": {
+    "instagram": "https://www.instagram.com/imadobegi/",
+    "facebook": "https://www.facebook.com/imad.obegi/"
+  },
+  "contact": {
+    "ownerEmail": "imadobegi@gmail.com"
+  }
+}
