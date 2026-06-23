@@ -5,7 +5,11 @@ import { useCart } from '../components/CartContext'
 
 export default function Success() {
   const { clearCart } = useCart()
-  useEffect(() => { clearCart() }, []) // eslint-disable-line
+
+  useEffect(() => {
+    clearCart()
+    localStorage.removeItem('photo-cart')
+  }, []) // eslint-disable-line
 
   return (
     <Layout>

@@ -665,15 +665,6 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         <h1 className="text-2xl font-bold text-gray-900">Products</h1>
         <p className="text-sm text-gray-500 mt-1">Manage artwork, photos, and pricing · drag cards to reorder</p>
 
-        {/* Storage note */}
-        <div className="mt-4 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex gap-3 items-start">
-          <svg className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
-          </svg>
-          <p className="text-xs text-amber-700 leading-relaxed">
-            <strong>Heads up:</strong> Changes save immediately to the live site. They may reset after a Railway redeploy — permanent database storage is coming when Stripe is connected.
-          </p>
-        </div>
       </div>
 
       {/* Success toast */}
