@@ -1,6 +1,4 @@
-import fs from 'fs'
-import path from 'path'
-import { getDataPath } from './dataDir'
+import { prisma } from './prisma'
 
 export interface SiteConfig {
   homepage: {
@@ -55,9 +53,11 @@ export const DEFAULT_CONFIG: SiteConfig = {
   contact: { ownerEmail: 'imadobegi@gmail.com' },
 }
 
-export function readSiteConfig(): SiteConfig {
+export async function readSiteConfig(): Promise<SiteConfig> {
   try {
-    const raw = JSON.parse(fs.readFileSync(getDataPath('site-config.json'), 'utf-8'))
+    const row = await prisma.siteConfig.findUnique({ where: { key: 'main' } })
+    if (!row) return DEFAULT_CONFIG
+    const raw = JSON.parse(row.value)
     return {
       homepage: { ...DEFAULT_CONFIG.homepage, ...(raw.homepage || {}) },
       featuredPhotos: raw.featuredPhotos ?? DEFAULT_CONFIG.featuredPhotos,
@@ -70,6 +70,10 @@ export function readSiteConfig(): SiteConfig {
   }
 }
 
-export function writeSiteConfig(config: SiteConfig): void {
-  fs.writeFileSync(getDataPath('site-config.json'), JSON.stringify(config, null, 2), 'utf-8')
+export async function writeSiteConfig(config: SiteConfig): Promise<void> {
+  await prisma.siteConfig.upsert({
+    where: { key: 'main' },
+    update: { value: JSON.stringify(config) },
+    create: { key: 'main', value: JSON.stringify(config) },
+  })
 }

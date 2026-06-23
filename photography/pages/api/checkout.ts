@@ -1,20 +1,14 @@
-import fs from 'fs'
-import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { CartItem } from '../../components/CartContext'
+import { prisma } from '../../lib/prisma'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
-function getValidPrices(): Map<string, number> {
+async function getValidPrices(): Promise<Map<string, number>> {
   try {
-    const configPath = path.join(process.cwd(), 'public', 'photos', 'config.json')
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
-    const prices = new Map<string, number>()
-    for (const s of config.printSizes || []) {
-      prices.set(s.label, s.price)
-    }
-    return prices
+    const sizes = await prisma.printSize.findMany()
+    return new Map(sizes.map(s => [s.label, s.price]))
   } catch {
     return new Map()
   }
@@ -27,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!items?.length) return res.status(400).json({ error: 'No items in cart' })
 
   // Verify prices server-side — never trust client-supplied prices
-  const validPrices = getValidPrices()
+  const validPrices = await getValidPrices()
   for (const item of items) {
     if (typeof item.price !== 'number' || item.price <= 0) {
       return res.status(400).json({ error: 'Invalid item price' })

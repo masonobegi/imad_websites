@@ -1,11 +1,9 @@
 import { useState } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
-import fs from 'fs'
-import path from 'path'
 import AdminLayout from '../../components/AdminLayout'
 import { checkAdminCookie } from '../../lib/admin'
-import { readSiteConfig, SiteConfig } from '../../lib/siteConfig'
+import { SiteConfig } from '../../lib/siteConfig'
 
 interface PhotoItem { id: string; filename: string; title: string; category: string }
 interface WorkItem { id: string; filename: string; title: string; type: 'watercolor' | 'encaustic' | 'oil' }
@@ -428,21 +426,21 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     return { redirect: { destination: '/admin/login', permanent: false } }
   }
 
-  const config = readSiteConfig()
+  const { prisma } = await import('../../lib/prisma')
+  const { readSiteConfig } = await import('../../lib/siteConfig')
 
-  const { getDataPath } = await import('../../lib/dataDir')
-  const fineArt    = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
-  const photosData = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
+  const [config, photos, fineArtWorks] = await Promise.all([
+    readSiteConfig(),
+    prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
+    prisma.fineArtWork.findMany({ orderBy: { sortOrder: 'asc' } }),
+  ])
 
-  const allPhotos: PhotoItem[] = Object.entries(
-    photosData.photos as Record<string, { id: string; filename: string; title: string }[]>
-  ).flatMap(([category, items]) => items.map(p => ({ ...p, category })))
+  const allPhotos: PhotoItem[] = photos.map(p => ({ id: p.id, filename: p.filename, title: p.title, category: p.category }))
 
-  const allWorks: WorkItem[] = [
-    ...((fineArt.works.watercolors || []) as WorkItem[]).map((w: WorkItem) => ({ ...w, type: 'watercolor' as const })),
-    ...((fineArt.works.encaustics || []) as WorkItem[]).map((w: WorkItem) => ({ ...w, type: 'encaustic' as const })),
-    ...((fineArt.works.oils || []) as WorkItem[]).map((w: WorkItem) => ({ ...w, type: 'oil' as const })),
-  ]
+  const allWorks: WorkItem[] = fineArtWorks.map(w => ({
+    id: w.id, filename: w.filename, title: w.title,
+    type: w.type as 'watercolor' | 'encaustic' | 'oil',
+  }))
 
   return { props: { config, allPhotos, allWorks } }
 }

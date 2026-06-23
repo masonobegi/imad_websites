@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model FineArtWork {
+  id               String          @id
+  type             String
+  filename         String
+  title            String
+  description      String          @default("")
+  originalSize     String?
+  available        Boolean         @default(false)
+  price            Float?
+  originalPrice    Float?
+  reprintAvailable Boolean         @default(false)
+  reprintPrice     Float?
+  awardTitle       String?
+  awardUrl         String?
+  sortOrder        Int             @default(0)
+  pleinAirImages   PleinAirImage[]
+  createdAt        DateTime        @default(now())
+}
+
+model PleinAirImage {
+  id        String      @id
+  filename  String
+  title     String
+  sortOrder Int         @default(0)
+  workId    String
+  work      FineArtWork @relation(fields: [workId], references: [id], onDelete: Cascade)
+}
+
+model Photo {
+  id          String   @id
+  filename    String
+  title       String
+  description String   @default("")
+  category    String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model PhotoCategory {
+  slug        String @id
+  label       String
+  description String @default("")
+  sortOrder   Int    @default(0)
+}
+
+model PrintSize {
+  id        Int    @id @default(autoincrement())
+  label     String @unique
+  price     Float
+  sortOrder Int    @default(0)
+}
+
+model Sticker {
+  id        String @id @default(cuid())
+  filename  String @unique
+  sortOrder Int    @default(0)
+}
+
+model SiteConfig {
+  key   String @id
+  value String
+}

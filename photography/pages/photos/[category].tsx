@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import { useState } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
@@ -93,19 +91,23 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const category = params?.category as string
-  const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
-  const configPath = path.join(process.cwd(), 'public', 'photos', 'config.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
-  const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
-  const cat = data.categories[category]
+  const { prisma } = await import('../../lib/prisma')
+
+  const [cat, photos, printSizes] = await Promise.all([
+    prisma.photoCategory.findUnique({ where: { slug: category } }),
+    prisma.photo.findMany({ where: { category }, orderBy: { sortOrder: 'asc' } }),
+    prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
+  ])
+
   if (!cat) return { notFound: true }
+
   return {
     props: {
       category,
       categoryLabel: cat.label,
       categoryDescription: cat.description,
-      items: data.photos[category] || [],
-      printSizes: config.printSizes,
+      items: photos.map(p => ({ id: p.id, filename: p.filename, title: p.title, description: p.description, category: p.category })),
+      printSizes: printSizes.map(s => ({ label: s.label, price: s.price })),
     },
   }
 }

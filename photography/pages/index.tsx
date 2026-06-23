@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -258,67 +256,71 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
+  const { prisma } = await import('../lib/prisma')
   const { readSiteConfig } = await import('../lib/siteConfig')
-  const siteConfig = readSiteConfig()
 
-  const { getDataPath, getDataDir } = await import('../lib/dataDir')
-  const data = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
-  const fineArtData = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
+  const [siteConfig, allPhotosRaw, allFineArt, stickers] = await Promise.all([
+    readSiteConfig(),
+    prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
+    prisma.fineArtWork.findMany({ where: { type: { in: ['watercolor', 'encaustic', 'oil'] } }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+    prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' }, take: 6 }),
+  ])
 
-  // Flatten all photos for lookup
-  const allPhotosFlat: Photo[] = Object.entries(
-    data.photos as Record<string, Photo[]>
-  ).flatMap(([cat, photos]) => photos.map(p => ({ ...p, category: cat })))
+  const allPhotosFlat: Photo[] = allPhotosRaw.map(p => ({ id: p.id, filename: p.filename, title: p.title, description: p.description, category: p.category }))
 
-  // Hero photo from config
-  const heroPhoto =
-    allPhotosFlat.find((p: Photo) => p.id === siteConfig.homepage.heroPhotoId) ||
-    allPhotosFlat[0]
+  const heroPhoto = allPhotosFlat.find(p => p.id === siteConfig.homepage.heroPhotoId) || allPhotosFlat[0]
 
-  // Featured photos strip — pick by ID from config, pad from all photos if needed
   const picked: Photo[] = []
   for (const id of siteConfig.featuredPhotos) {
-    const found = allPhotosFlat.find((p: Photo) => p.id === id)
+    const found = allPhotosFlat.find(p => p.id === id)
     if (found) picked.push(found)
   }
   if (picked.length < 6) {
-    const rest = allPhotosFlat.filter((p: Photo) => !picked.find(x => x.id === p.id))
+    const rest = allPhotosFlat.filter(p => !picked.find(x => x.id === p.id))
     picked.push(...rest.slice(0, 6 - picked.length))
   }
 
-  // Featured fine art strip — resolve id+type to full work data
   const folderMap = { watercolor: 'watercolors', encaustic: 'encaustics', oil: 'oils' } as const
   const featuredFineArt = siteConfig.featuredFineArt.map(({ id, type }) => {
-    const arr: { id: string; filename: string; title: string }[] = fineArtData.works[folderMap[type]] || []
-    const work = arr.find(w => w.id === id)
+    const work = allFineArt.find(w => w.id === id && w.type === type)
     if (!work) return null
-    return {
-      id: work.id,
-      type,
-      imgPath: `/fine-art/${folderMap[type]}/${work.filename}`,
-      title: work.title,
-    }
+    return { id: work.id, type, imgPath: `/fine-art/${folderMap[type]}/${work.filename}`, title: work.title }
   }).filter(Boolean) as FeaturedArt[]
 
-  // Group all photos by category for modal navigation
   const allPhotos: Record<string, Photo[]> = {}
-  for (const [cat, photos] of Object.entries(data.photos as Record<string, Photo[]>)) {
-    allPhotos[cat] = photos.map(p => ({ ...p, category: cat }))
+  for (const p of allPhotosFlat) {
+    if (!allPhotos[p.category]) allPhotos[p.category] = []
+    allPhotos[p.category].push(p)
   }
 
-  const stickersDir = getDataDir('stickers')
-  const previewStickers = fs.readdirSync(stickersDir).filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort().slice(0, 6)
+  const allOils = allFineArt.filter(w => w.type === 'oil').map(w => ({
+    id: w.id, filename: w.filename, title: w.title, description: w.description,
+    originalSize: w.originalSize, available: w.available,
+    originalPrice: w.originalPrice, reprintAvailable: w.reprintAvailable, reprintPrice: w.reprintPrice,
+    award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null,
+    pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })),
+  }))
+
+  const allWatercolors = allFineArt.filter(w => w.type === 'watercolor').map(w => ({
+    id: w.id, filename: w.filename, title: w.title, description: w.description,
+    originalSize: w.originalSize, available: w.available, price: w.price,
+  }))
+
+  const allEncaustics = allFineArt.filter(w => w.type === 'encaustic').map(w => ({
+    id: w.id, filename: w.filename, title: w.title, description: w.description,
+    originalSize: w.originalSize, available: w.available, price: w.price,
+  }))
 
   return {
     props: {
       heroPhoto,
       previewPhotos: picked.slice(0, 6),
       allPhotos,
-      allOils: fineArtData.works.oils || [],
-      allWatercolors: fineArtData.works.watercolors || [],
-      allEncaustics: fineArtData.works.encaustics || [],
+      allOils,
+      allWatercolors,
+      allEncaustics,
       featuredFineArt,
-      previewStickers,
+      previewStickers: stickers.map(s => s.filename),
       siteConfig: siteConfig.homepage,
     },
   }

@@ -2,26 +2,20 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import fs from 'fs'
 import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
-import { getDataDir } from '../../../lib/dataDir'
+import { prisma } from '../../../lib/prisma'
 
 export const config = { api: { bodyParser: { sizeLimit: '20mb' } } }
 
-// Verify file is actually an image by checking magic bytes
 function isValidImage(buf: Buffer): boolean {
   if (buf.length < 12) return false
-  // JPEG: FF D8 FF
   if (buf[0] === 0xFF && buf[1] === 0xD8 && buf[2] === 0xFF) return true
-  // PNG: 89 50 4E 47 0D 0A 1A 0A
   if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4E && buf[3] === 0x47) return true
-  // WebP: RIFF....WEBP
   if (buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
       buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50) return true
-  // HEIC/HEIF: ftyp box at offset 4
   if (buf[4] === 0x66 && buf[5] === 0x74 && buf[6] === 0x79 && buf[7] === 0x70) return true
   return false
 }
 
-// Strip to safe filename chars only
 function sanitizeFilename(name: string): string {
   const ext = path.extname(name).toLowerCase().replace(/[^.a-z0-9]/g, '')
   const base = path.basename(name, path.extname(name))
@@ -32,7 +26,6 @@ function sanitizeFilename(name: string): string {
   return `${base || 'image'}${ext}`
 }
 
-// Prevent path traversal in the category segment
 function sanitizeCategory(cat: string): string {
   return cat.replace(/[^a-z0-9-]/gi, '').toLowerCase().slice(0, 50)
 }
@@ -55,45 +48,59 @@ function buildWatermarkSvg(width: number, height: number): Buffer {
 
 const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'])
 
+async function commitToGithub(repoPath: string, buffer: Buffer) {
+  const token = process.env.GITHUB_TOKEN
+  const owner = process.env.GITHUB_OWNER
+  const repo = process.env.GITHUB_REPO
+  if (!token || !owner || !repo) return
+
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}`
+  let sha: string | undefined
+  try {
+    const existing = await fetch(apiUrl, { headers: { Authorization: `token ${token}`, 'User-Agent': 'obg-upload' } })
+    if (existing.ok) sha = (await existing.json()).sha
+  } catch { /* file doesn't exist yet */ }
+
+  await fetch(apiUrl, {
+    method: 'PUT',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json', 'User-Agent': 'obg-upload' },
+    body: JSON.stringify({
+      message: `Upload image: ${repoPath}`,
+      content: buffer.toString('base64'),
+      ...(sha ? { sha } : {}),
+    }),
+  })
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!requireAdmin(req, res)) return
   if (req.method !== 'POST') return res.status(405).end()
 
   const { type, base64, filename: rawFilename, category: rawCategory } = req.body as {
-    type: string
-    base64: string
-    filename: string
-    category?: string
+    type: string; base64: string; filename: string; category?: string
   }
 
   if (!base64 || !rawFilename) return res.status(400).json({ error: 'Missing base64 or filename' })
 
   const filename = sanitizeFilename(rawFilename)
   const category = sanitizeCategory(rawCategory || 'nature')
-
   const ext = path.extname(filename).toLowerCase()
-  if (!ALLOWED_EXTENSIONS.has(ext)) {
-    return res.status(400).json({ error: 'Unsupported file type' })
-  }
+  if (!ALLOWED_EXTENSIONS.has(ext)) return res.status(400).json({ error: 'Unsupported file type' })
 
   try {
     const buffer = Buffer.from(base64, 'base64')
-
-    if (!isValidImage(buffer)) {
-      return res.status(400).json({ error: 'File does not appear to be a valid image' })
-    }
+    if (!isValidImage(buffer)) return res.status(400).json({ error: 'File does not appear to be a valid image' })
 
     const dirMap: Record<string, string> = {
-      photo:        getDataDir(`photos/${category}`),
-      watercolor:   getDataDir('fine-art/watercolors'),
-      encaustic:    getDataDir('fine-art/encaustics'),
-      oil:          getDataDir('fine-art/oils'),
-      'oil-pleinair': getDataDir('fine-art/oils'),
-      sticker:      getDataDir('stickers'),
+      photo:          `photos/${category}`,
+      watercolor:     'fine-art/watercolors',
+      encaustic:      'fine-art/encaustics',
+      oil:            'fine-art/oils',
+      'oil-pleinair': 'fine-art/oils',
+      sticker:        'stickers',
     }
-
-    const destDir = dirMap[type]
-    if (!destDir) return res.status(400).json({ error: 'Invalid type' })
+    const relDir = dirMap[type]
+    if (!relDir) return res.status(400).json({ error: 'Invalid type' })
 
     let finalBuffer = buffer
     try {
@@ -112,7 +119,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.warn('Sharp unavailable, saving without watermark for:', filename)
     }
 
+    // Save to public/ for immediate serving
+    const destDir = path.join(process.cwd(), 'public', relDir)
+    fs.mkdirSync(destDir, { recursive: true })
     fs.writeFileSync(path.join(destDir, filename), finalBuffer)
+
+    // Register sticker in DB
+    if (type === 'sticker') {
+      const count = await prisma.sticker.count()
+      await prisma.sticker.upsert({
+        where: { filename },
+        update: {},
+        create: { filename, sortOrder: count },
+      })
+    }
+
+    // Commit to GitHub so image survives future redeploys
+    commitToGithub(`photography/public/${relDir}/${filename}`, finalBuffer).catch(e =>
+      console.warn('GitHub commit failed (image saved locally):', e.message)
+    )
+
     res.json({ ok: true, filename })
   } catch (err) {
     console.error(err)

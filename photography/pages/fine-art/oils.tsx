@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -115,11 +113,21 @@ export default function OilPaintings({ works }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const dataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const { prisma } = await import('../../lib/prisma')
+  const oils = await prisma.fineArtWork.findMany({
+    where: { type: 'oil' },
+    include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } },
+    orderBy: { sortOrder: 'asc' },
+  })
   return {
     props: {
-      works: data.works.oils || [],
+      works: oils.map(w => ({
+        id: w.id, filename: w.filename, title: w.title, description: w.description,
+        originalSize: w.originalSize, available: w.available,
+        originalPrice: w.originalPrice, reprintAvailable: w.reprintAvailable, reprintPrice: w.reprintPrice,
+        award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null,
+        pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })),
+      })),
     },
   }
 }

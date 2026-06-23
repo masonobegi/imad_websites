@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
@@ -56,17 +54,23 @@ export default function Shop({ categories, previews, counts }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const dataPath = path.join(process.cwd(), 'public', 'photos', 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const { prisma } = await import('../lib/prisma')
+  const [cats, photos] = await Promise.all([
+    prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
+    prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
+  ])
+
+  const photosBySlug: Record<string, Photo[]> = {}
+  for (const p of photos) {
+    if (!photosBySlug[p.category]) photosBySlug[p.category] = []
+    photosBySlug[p.category].push({ id: p.id, filename: p.filename, title: p.title, description: p.description, category: p.category })
+  }
+
   return {
     props: {
-      categories: data.categories,
-      previews: Object.fromEntries(
-        Object.entries(data.photos as Record<string, Photo[]>).map(([slug, items]) => [slug, items[0] ?? null])
-      ),
-      counts: Object.fromEntries(
-        Object.entries(data.photos as Record<string, Photo[]>).map(([slug, items]) => [slug, items.length])
-      ),
+      categories: Object.fromEntries(cats.map(c => [c.slug, { label: c.label, description: c.description }])),
+      previews: Object.fromEntries(cats.map(c => [c.slug, photosBySlug[c.slug]?.[0] ?? null])),
+      counts: Object.fromEntries(cats.map(c => [c.slug, photosBySlug[c.slug]?.length ?? 0])),
     },
   }
 }

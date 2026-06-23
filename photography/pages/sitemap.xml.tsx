@@ -1,6 +1,4 @@
 import { GetServerSideProps } from 'next'
-import fs from 'fs'
-import path from 'path'
 
 const BASE = 'https://obgillustrator.com'
 
@@ -25,9 +23,9 @@ function SitemapPage() { return null }
 export default SitemapPage
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
-  const photosData = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'public', 'photos', 'data.json'), 'utf-8'))
-  const photoUrls = Object.entries(photosData.photos as Record<string, { id: string }[]>)
-    .flatMap(([cat, photos]) => photos.map(p => ({ url: `/photos/${cat}/${p.id}`, priority: '0.7' })))
+  const { prisma } = await import('../lib/prisma')
+  const photos = await prisma.photo.findMany({ select: { id: true, category: true } })
+  const photoUrls = photos.map(p => ({ url: `/photos/${p.category}/${p.id}`, priority: '0.7' }))
 
   const allUrls = [...STATIC_PAGES, ...photoUrls]
 

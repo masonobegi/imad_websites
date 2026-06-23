@@ -1,29 +1,50 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
-import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
-import { getDataPath, getDataDir } from '../../../lib/dataDir'
+import { prisma } from '../../../lib/prisma'
 
-function fineArtPath()  { return getDataPath('fine-art/data.json') }
-function photosPath()   { return getDataPath('photos/data.json') }
-function configPath()   { return getDataPath('photos/config.json') }
-function stickersDir()  { return getDataDir('stickers') }
-
-function readJson(p: string) { return JSON.parse(fs.readFileSync(p, 'utf-8')) }
-function writeJson(p: string, data: unknown) { fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8') }
-
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!requireAdmin(req, res)) return
 
   if (req.method === 'GET') {
     try {
-      const fineArt = readJson(fineArtPath())
-      const photos = readJson(photosPath())
-      const config = readJson(configPath())
-      const stickers = fs.readdirSync(stickersDir())
-        .filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f))
-        .sort()
-      res.json({ fineArt, photos, config, stickers })
+      const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
+        prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, orderBy: { sortOrder: 'asc' } }),
+        prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, orderBy: { sortOrder: 'asc' } }),
+        prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+        prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
+        prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' } }),
+      ])
+
+      const photosByCategory: Record<string, typeof photos> = {}
+      for (const p of photos) {
+        if (!photosByCategory[p.category]) photosByCategory[p.category] = []
+        photosByCategory[p.category].push(p)
+      }
+
+      const photoCategoryMap: Record<string, { label: string; description: string }> = {}
+      for (const c of categories) photoCategoryMap[c.slug] = { label: c.label, description: c.description }
+
+      const oilsWithAward = oils.map(w => ({
+        ...w,
+        award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null,
+        pleinAirImages: w.pleinAirImages,
+      }))
+
+      res.json({
+        fineArt: {
+          categories: {
+            watercolors: { label: 'Watercolors', description: '' },
+            encaustics: { label: 'Encaustics', description: '' },
+            oils: { label: 'Oil Paintings', description: '' },
+          },
+          works: { watercolors, encaustics, oils: oilsWithAward },
+        },
+        photos: { categories: photoCategoryMap, photos: photosByCategory },
+        config: { printSizes },
+        stickers: stickers.map(s => s.filename),
+      })
     } catch (err) {
       console.error(err)
       res.status(500).json({ error: 'Failed to read product data' })
@@ -35,55 +56,73 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const { type, action, data, category, id } = req.body
     try {
       if (type === 'printConfig') {
-        const config = readJson(configPath())
-        config.printSizes = data.printSizes
-        writeJson(configPath(), config)
+        const sizes = (data.printSizes as { label: string; price: number }[])
+        await prisma.printSize.deleteMany()
+        for (let i = 0; i < sizes.length; i++) {
+          await prisma.printSize.create({ data: { label: sizes[i].label, price: sizes[i].price, sortOrder: i } })
+        }
         return res.json({ ok: true })
       }
 
       if (type === 'photo') {
-        const photos = readJson(photosPath())
-        const cat = category as string
-        if (!photos.photos[cat]) photos.photos[cat] = []
         if (action === 'add') {
-          photos.photos[cat].push(data)
+          const count = await prisma.photo.count({ where: { category } })
+          await prisma.photo.create({ data: { ...data, category, sortOrder: count } })
         } else if (action === 'update') {
-          const idx = photos.photos[cat].findIndex((p: { id: string }) => p.id === id)
-          if (idx >= 0) photos.photos[cat][idx] = { ...photos.photos[cat][idx], ...data }
+          await prisma.photo.update({ where: { id }, data })
         } else if (action === 'delete') {
-          photos.photos[cat] = photos.photos[cat].filter((p: { id: string }) => p.id !== id)
+          await prisma.photo.delete({ where: { id } })
         } else if (action === 'reorder') {
-          const ids = (data as { ids: string[] }).ids
-          const byId = new Map((photos.photos[cat] as { id: string }[]).map(p => [p.id, p]))
-          photos.photos[cat] = ids.map(i => byId.get(i)).filter(Boolean)
+          const ids: string[] = data.ids
+          await Promise.all(ids.map((pid, i) => prisma.photo.update({ where: { id: pid }, data: { sortOrder: i } })))
         }
-        writeJson(photosPath(), photos)
         return res.json({ ok: true })
       }
 
       if (type === 'fineArt') {
-        const fineArt = readJson(fineArtPath())
-        const cat = category as string
-        if (!fineArt.works[cat]) fineArt.works[cat] = []
+        const typeMap: Record<string, string> = { watercolors: 'watercolor', encaustics: 'encaustic', oils: 'oil' }
+        const artType = typeMap[category] || category
         if (action === 'add') {
-          fineArt.works[cat].push(data)
+          const count = await prisma.fineArtWork.count({ where: { type: artType } })
+          const { pleinAirImages, award, ...rest } = data
+          await prisma.fineArtWork.create({
+            data: {
+              ...rest,
+              type: artType,
+              sortOrder: count,
+              awardTitle: award?.title ?? null,
+              awardUrl: award?.url ?? null,
+              pleinAirImages: pleinAirImages?.length
+                ? { create: pleinAirImages.map((p: { id: string; filename: string; title: string }, i: number) => ({ ...p, sortOrder: i })) }
+                : undefined,
+            },
+          })
         } else if (action === 'update') {
-          const idx = fineArt.works[cat].findIndex((w: { id: string }) => w.id === id)
-          if (idx >= 0) fineArt.works[cat][idx] = { ...fineArt.works[cat][idx], ...data }
+          const { pleinAirImages, award, ...rest } = data
+          await prisma.fineArtWork.update({
+            where: { id },
+            data: {
+              ...rest,
+              awardTitle: award?.title ?? null,
+              awardUrl: award?.url ?? null,
+            },
+          })
         } else if (action === 'delete') {
-          fineArt.works[cat] = fineArt.works[cat].filter((w: { id: string }) => w.id !== id)
+          await prisma.fineArtWork.delete({ where: { id } })
         } else if (action === 'reorder') {
-          const ids = (data as { ids: string[] }).ids
-          const byId = new Map((fineArt.works[cat] as { id: string }[]).map(w => [w.id, w]))
-          fineArt.works[cat] = ids.map(i => byId.get(i)).filter(Boolean)
+          const ids: string[] = data.ids
+          await Promise.all(ids.map((wid, i) => prisma.fineArtWork.update({ where: { id: wid }, data: { sortOrder: i } })))
         }
-        writeJson(fineArtPath(), fineArt)
         return res.json({ ok: true })
       }
 
-      if (type === 'sticker' && action === 'delete') {
-        const filePath = path.join(stickersDir(), id as string)
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+      if (type === 'sticker') {
+        if (action === 'delete') {
+          await prisma.sticker.deleteMany({ where: { filename: id } })
+        } else if (action === 'reorder') {
+          const filenames: string[] = data.ids
+          await Promise.all(filenames.map((fn, i) => prisma.sticker.update({ where: { filename: fn }, data: { sortOrder: i } })))
+        }
         return res.json({ ok: true })
       }
 

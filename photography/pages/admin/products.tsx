@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
-import fs from 'fs'
-import path from 'path'
 import AdminLayout from '../../components/AdminLayout'
 import { checkAdminCookie } from '../../lib/admin'
 
@@ -865,11 +863,44 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   if (!checkAdminCookie(req.headers.cookie || '')) {
     return { redirect: { destination: '/admin/login', permanent: false } }
   }
-  const { getDataPath, getDataDir } = await import('../../lib/dataDir')
-  const fineArt = JSON.parse(fs.readFileSync(getDataPath('fine-art/data.json'), 'utf-8'))
-  const photos  = JSON.parse(fs.readFileSync(getDataPath('photos/data.json'), 'utf-8'))
-  const config  = JSON.parse(fs.readFileSync(getDataPath('photos/config.json'), 'utf-8'))
-  const stickers = fs.readdirSync(getDataDir('stickers'))
-    .filter((f: string) => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort()
-  return { props: { initialData: { fineArt, photos, stickers, printConfig: config } } }
+  const { prisma } = await import('../../lib/prisma')
+  const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
+    prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, orderBy: { sortOrder: 'asc' } }),
+    prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, orderBy: { sortOrder: 'asc' } }),
+    prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+    prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
+    prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
+    prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
+    prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' } }),
+  ])
+
+  const photosByCategory: Record<string, typeof photos> = {}
+  for (const p of photos) {
+    if (!photosByCategory[p.category]) photosByCategory[p.category] = []
+    photosByCategory[p.category].push(p)
+  }
+  const photoCatMap: Record<string, { label: string; description: string }> = {}
+  for (const c of categories) photoCatMap[c.slug] = { label: c.label, description: c.description }
+
+  return {
+    props: {
+      initialData: {
+        fineArt: {
+          categories: {
+            watercolors: { label: 'Watercolors', description: '' },
+            encaustics: { label: 'Encaustics', description: '' },
+            oils: { label: 'Oil Paintings', description: '' },
+          },
+          works: {
+            watercolors,
+            encaustics,
+            oils: oils.map(w => ({ ...w, award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null, pleinAirImages: w.pleinAirImages })),
+          },
+        },
+        photos: { categories: photoCatMap, photos: photosByCategory },
+        stickers: stickers.map(s => s.filename),
+        printConfig: { printSizes },
+      },
+    },
+  }
 }

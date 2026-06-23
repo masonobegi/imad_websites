@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
@@ -112,18 +110,29 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
   )
 }
 
+const CATEGORY_META: Record<string, { label: string; description: string; type: string }> = {
+  watercolors: { label: 'Watercolors',  description: 'Original watercolor paintings by Imad Obegi.', type: 'watercolor' },
+  encaustics:  { label: 'Encaustics',   description: 'Paintings built up in layers of pigmented beeswax, fused with heat.', type: 'encaustic' },
+  oils:        { label: 'Oil Paintings',description: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.', type: 'oil' },
+}
+
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const category = params?.category as string
-  const dataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
-  const cat = data.categories[category]
-  if (!cat) return { notFound: true }
+  const meta = CATEGORY_META[category]
+  if (!meta) return { notFound: true }
+
+  const { prisma } = await import('../../lib/prisma')
+  const works = await prisma.fineArtWork.findMany({ where: { type: meta.type }, orderBy: { sortOrder: 'asc' } })
+
   return {
     props: {
       category,
-      categoryLabel: cat.label,
-      categoryDescription: cat.description,
-      works: data.works[category] || [],
+      categoryLabel: meta.label,
+      categoryDescription: meta.description,
+      works: works.map(w => ({
+        id: w.id, filename: w.filename, title: w.title, description: w.description,
+        originalSize: w.originalSize, available: w.available, price: w.price,
+      })),
     },
   }
 }

@@ -1,5 +1,3 @@
-import fs from 'fs'
-import path from 'path'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -75,26 +73,27 @@ export default function FineArt({ categories }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const dataPath = path.join(process.cwd(), 'public', 'fine-art', 'data.json')
-  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'))
+  const { prisma } = await import('../../lib/prisma')
 
-  // Show oils first so they appear at the top
-  const ORDER = ['oils', 'watercolors', 'encaustics']
-  const allKeys = Object.keys(data.categories as Record<string, unknown>)
-  const sortedKeys = [...ORDER.filter(k => allKeys.includes(k)), ...allKeys.filter(k => !ORDER.includes(k))]
+  const CATEGORY_META: Record<string, { key: string; label: string; description: string; folder: string; type: string }> = {
+    oils:       { key: 'oils',       label: 'Oil Paintings', description: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.', folder: 'oils',       type: 'oil' },
+    watercolors:{ key: 'watercolors',label: 'Watercolors',   description: 'Original watercolor paintings by Imad Obegi.',                                   folder: 'watercolors',type: 'watercolor' },
+    encaustics: { key: 'encaustics', label: 'Encaustics',    description: 'Paintings built up in layers of pigmented beeswax, fused with heat.',            folder: 'encaustics', type: 'encaustic' },
+  }
 
-  const categories: Category[] = sortedKeys.map(key => {
-    const meta = (data.categories as Record<string, { label: string; description: string }>)[key]
-    const works: { filename: string }[] = data.works[key] || []
-    // Oils are in /fine-art/oils/, plein air images in plein-air subfolder — only show main paintings
-    return {
-      key,
-      label: meta.label,
-      description: meta.description,
-      previewImages: works.slice(0, 4).map(w => `/fine-art/${key}/${w.filename}`),
-      count: works.length,
-    }
-  })
+  const categories: Category[] = await Promise.all(
+    Object.values(CATEGORY_META).map(async meta => {
+      const works = await prisma.fineArtWork.findMany({ where: { type: meta.type }, orderBy: { sortOrder: 'asc' }, take: 4 })
+      const count = await prisma.fineArtWork.count({ where: { type: meta.type } })
+      return {
+        key: meta.key,
+        label: meta.label,
+        description: meta.description,
+        previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}`),
+        count,
+      }
+    })
+  )
 
   return { props: { categories } }
 }
