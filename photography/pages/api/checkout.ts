@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid item price' })
     }
     const expected = validPrices.get(item.size)
-    if (expected !== undefined && Math.abs(item.price - expected) > 0.01) {
+    if (expected !== undefined && Math.abs(item.price - expected) > 1.00) {
       return res.status(400).json({ error: 'Price mismatch — please refresh and try again' })
     }
     if (typeof item.quantity !== 'number' || item.quantity < 1 || item.quantity > 20) {
