@@ -116,6 +116,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.json({ ok: true })
       }
 
+      if (type === 'photoCategory') {
+        if (action === 'add') {
+          const count = await prisma.photoCategory.count()
+          await prisma.photoCategory.create({ data: { slug: data.slug, label: data.label, description: data.description || '', sortOrder: count } })
+        } else if (action === 'delete') {
+          const photoCount = await prisma.photo.count({ where: { category: id } })
+          if (photoCount > 0) return res.status(400).json({ error: 'Category still has photos — remove them first' })
+          await prisma.photoCategory.delete({ where: { slug: id } })
+        }
+        return res.json({ ok: true })
+      }
+
       if (type === 'sticker') {
         if (action === 'delete') {
           await prisma.sticker.deleteMany({ where: { filename: id } })

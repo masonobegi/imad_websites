@@ -78,6 +78,11 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   const [deleteTarget, setDeleteTarget] = useState<{ type: string; id: string; category?: string; label: string } | null>(null)
   const [deleting, setDeleting] = useState(false)
 
+  const [showNewCat, setShowNewCat] = useState(false)
+  const [newCatLabel, setNewCatLabel] = useState('')
+  const [newCatDesc, setNewCatDesc] = useState('')
+  const [creatingCat, setCreatingCat] = useState(false)
+
   // Drag-to-reorder state
   const dragSrcRef = useRef<number | null>(null)
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
@@ -258,6 +263,14 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           photos[cat] = (photos[cat] || []).filter(p => p.id !== deleteTarget.id)
           return { ...prev, photos: { ...prev.photos, photos } }
         })
+      } else if (deleteTarget.type === 'photoCategory') {
+        setData(prev => {
+          const categories = { ...prev.photos.categories }
+          const photos = { ...prev.photos.photos }
+          delete categories[deleteTarget.id]
+          delete photos[deleteTarget.id]
+          return { ...prev, photos: { ...prev.photos, categories, photos } }
+        })
       } else if (deleteTarget.type === 'fineArt') {
         const cat = deleteTarget.category as 'watercolors' | 'encaustics' | 'oils'
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, [cat]: prev.fineArt.works[cat].filter(w => w.id !== deleteTarget.id) } } }))
@@ -300,6 +313,34 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     }
   }
 
+  // ── Category management ──────────────────────────────────────────────────────
+
+  async function handleCreateCategory() {
+    const label = newCatLabel.trim()
+    if (!label) return
+    const slug = toSlug(label)
+    setCreatingCat(true)
+    try {
+      const res = await fetch('/api/admin/products', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'photoCategory', action: 'add', data: { slug, label, description: newCatDesc.trim() } }),
+      })
+      if (!res.ok) { const j = await res.json(); throw new Error(j.error || 'Failed'); }
+      setData(prev => ({
+        ...prev,
+        photos: {
+          ...prev.photos,
+          categories: { ...prev.photos.categories, [slug]: { label, description: newCatDesc.trim() } },
+          photos: { ...prev.photos.photos, [slug]: [] },
+        },
+      }))
+      setNewCatLabel(''); setNewCatDesc(''); setShowNewCat(false)
+      showSuccess(`"${label}" category created!`)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error')
+    } finally { setCreatingCat(false) }
+  }
+
   // ── Pricing ─────────────────────────────────────────────────────────────────
 
   async function savePricing() {
@@ -338,6 +379,15 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   function PhotographyTab() {
     return (
       <div className="space-y-6">
+        {/* New category button */}
+        <div className="flex justify-end">
+          <button onClick={() => { setShowNewCat(true); setNewCatLabel(''); setNewCatDesc(''); setError('') }}
+            className="flex items-center gap-1.5 text-sm text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-4 py-2 rounded-xl transition-colors font-medium">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            New Category
+          </button>
+        </div>
+
         {/* Pricing */}
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -383,11 +433,21 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                   <h2 className="font-semibold text-gray-900">{cat.label}</h2>
                   <p className="text-xs text-gray-400 mt-0.5">{photos.length} photo{photos.length !== 1 ? 's' : ''} · drag to reorder</p>
                 </div>
-                <button onClick={() => openAdd('photo', catSlug)}
-                  className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-                  Add Photo
-                </button>
+                <div className="flex items-center gap-2">
+                  {photos.length === 0 && (
+                    <button
+                      onClick={() => setDeleteTarget({ type: 'photoCategory', id: catSlug, label: cat.label })}
+                      className="text-xs text-red-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 px-2.5 py-1.5 rounded-lg transition-colors"
+                      title="Delete category">
+                      Delete
+                    </button>
+                  )}
+                  <button onClick={() => openAdd('photo', catSlug)}
+                    className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                    Add Photo
+                  </button>
+                </div>
               </div>
               <div className="p-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                 {photos.map((photo, i) => (
@@ -648,6 +708,56 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         {tab === 'oils' && <OilsTab />}
         {tab === 'stickers' && <StickersTab />}
       </div>
+
+      {/* ── New Category modal ──────────────────────────────────────────────── */}
+      {showNewCat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowNewCat(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900">New Photo Category</h2>
+              <button onClick={() => setShowNewCat(false)} className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors text-lg">×</button>
+            </div>
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Category Name <span className="text-red-400">*</span></label>
+                <input
+                  value={newCatLabel}
+                  onChange={e => setNewCatLabel(e.target.value)}
+                  placeholder="e.g. Italy, Macro, Birds"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+                  onKeyDown={e => e.key === 'Enter' && handleCreateCategory()}
+                />
+                {newCatLabel.trim() && (
+                  <p className="text-xs text-gray-400 mt-1">URL slug: <span className="font-mono">/photos/{toSlug(newCatLabel)}</span></p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Description <span className="font-normal text-gray-400">(shown on the gallery page)</span></label>
+                <textarea
+                  value={newCatDesc}
+                  onChange={e => setNewCatDesc(e.target.value)}
+                  rows={2}
+                  placeholder="A short description of this collection…"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none bg-white"
+                />
+              </div>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">{error}</div>
+              )}
+            </div>
+            <div className="px-6 py-4 border-t border-gray-100 flex gap-3">
+              <button onClick={handleCreateCategory} disabled={creatingCat || !newCatLabel.trim()}
+                className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60 text-sm">
+                {creatingCat ? 'Creating…' : 'Create Category'}
+              </button>
+              <button onClick={() => setShowNewCat(false)} className="px-5 py-2.5 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors text-sm font-medium">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Edit / Add modal ─────────────────────────────────────────────────── */}
       {editKind && (
