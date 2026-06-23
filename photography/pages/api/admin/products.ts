@@ -4,10 +4,10 @@ import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
 import { getDataPath, getDataDir } from '../../../lib/dataDir'
 
-function fineArtPath()()  { return getDataPath('fine-art/data.json') }
-function photosPath()()   { return getDataPath('photos/data.json') }
-function configPath()()   { return getDataPath('photos/config.json') }
-function stickersDir()()  { return getDataDir('stickers') }
+function fineArtPath()  { return getDataPath('fine-art/data.json') }
+function photosPath()   { return getDataPath('photos/data.json') }
+function configPath()   { return getDataPath('photos/config.json') }
+function stickersDir()  { return getDataDir('stickers') }
 
 function readJson(p: string) { return JSON.parse(fs.readFileSync(p, 'utf-8')) }
 function writeJson(p: string, data: unknown) { fs.writeFileSync(p, JSON.stringify(data, null, 2), 'utf-8') }
