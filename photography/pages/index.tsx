@@ -77,7 +77,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       <section className="border-b border-edge">
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
-            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Available now</p>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.photoStripHeadline}</h2>
             <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.photoStripSubtext}</p>
           </div>
@@ -125,7 +125,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       <section className="border-b border-edge">
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
-            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Fine Art</p>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.fineArtHeadline}</h2>
             <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.fineArtSubtext}</p>
           </div>
