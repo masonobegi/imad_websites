@@ -75,6 +75,8 @@ export default function Footer({ dark = false }: FooterProps) {
           <Link href="/privacy" className={`text-xs text-mist hover:text-copper transition-colors`}>Privacy Policy</Link>
           <span className="text-mist/40 text-xs">·</span>
           <Link href="/tos" className={`text-xs text-mist hover:text-copper transition-colors`}>Terms of Service</Link>
+          <span className="text-mist/40 text-xs">·</span>
+          <Link href="/admin" className="text-xs text-mist/40 hover:text-mist transition-colors">Admin</Link>
         </div>
 
         <div className="flex items-center gap-5">
