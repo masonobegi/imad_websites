@@ -51,6 +51,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           if (idx >= 0) photos.photos[cat][idx] = { ...photos.photos[cat][idx], ...data }
         } else if (action === 'delete') {
           photos.photos[cat] = photos.photos[cat].filter((p: { id: string }) => p.id !== id)
+        } else if (action === 'reorder') {
+          const ids = (data as { ids: string[] }).ids
+          const byId = new Map((photos.photos[cat] as { id: string }[]).map(p => [p.id, p]))
+          photos.photos[cat] = ids.map(i => byId.get(i)).filter(Boolean)
         }
         writeJson(photosPath, photos)
         return res.json({ ok: true })
@@ -67,6 +71,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
           if (idx >= 0) fineArt.works[cat][idx] = { ...fineArt.works[cat][idx], ...data }
         } else if (action === 'delete') {
           fineArt.works[cat] = fineArt.works[cat].filter((w: { id: string }) => w.id !== id)
+        } else if (action === 'reorder') {
+          const ids = (data as { ids: string[] }).ids
+          const byId = new Map((fineArt.works[cat] as { id: string }[]).map(w => [w.id, w]))
+          fineArt.works[cat] = ids.map(i => byId.get(i)).filter(Boolean)
         }
         writeJson(fineArtPath, fineArt)
         return res.json({ ok: true })

@@ -27,7 +27,7 @@ export default function Header({ dark = false }: HeaderProps) {
           {/* Logo */}
           <div>
             <Link href="/" className={`font-serif text-xl sm:text-2xl ${text} tracking-wide ${hover} transition-colors`}>
-              Imad
+              Imad Obegi
             </Link>
             <p className={`text-xs ${sub} tracking-[0.15em] mt-0.5`}>OBGillustrator.com</p>
           </div>
@@ -37,6 +37,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>Stickers</Link>
+
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
             <Link href="/contact" className={`text-sm ${text} ${hover} transition-colors`}>Contact</Link>
             <Link

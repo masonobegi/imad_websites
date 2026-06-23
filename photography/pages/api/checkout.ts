@@ -1,14 +1,45 @@
+import fs from 'fs'
+import path from 'path'
 import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
 import { CartItem } from '../../components/CartContext'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
+function getValidPrices(): Map<string, number> {
+  try {
+    const configPath = path.join(process.cwd(), 'public', 'photos', 'config.json')
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+    const prices = new Map<string, number>()
+    for (const s of config.printSizes || []) {
+      prices.set(s.label, s.price)
+    }
+    return prices
+  } catch {
+    return new Map()
+  }
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
   const { items } = req.body as { items: CartItem[] }
   if (!items?.length) return res.status(400).json({ error: 'No items in cart' })
+
+  // Verify prices server-side — never trust client-supplied prices
+  const validPrices = getValidPrices()
+  for (const item of items) {
+    if (typeof item.price !== 'number' || item.price <= 0) {
+      return res.status(400).json({ error: 'Invalid item price' })
+    }
+    const expected = validPrices.get(item.size)
+    if (expected !== undefined && Math.abs(item.price - expected) > 0.01) {
+      return res.status(400).json({ error: 'Price mismatch — please refresh and try again' })
+    }
+    if (typeof item.quantity !== 'number' || item.quantity < 1 || item.quantity > 20) {
+      return res.status(400).json({ error: 'Invalid quantity' })
+    }
+  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
