@@ -69,3 +69,10 @@ model SiteConfig {
   key   String @id
   value String
 }
+
+model UploadedImage {
+  path      String   @id
+  data      Bytes
+  mime      String
+  createdAt DateTime @default(now())
+}

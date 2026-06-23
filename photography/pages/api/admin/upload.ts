@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import fs from 'fs'
 import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
 import { prisma } from '../../../lib/prisma'
@@ -48,30 +47,6 @@ function buildWatermarkSvg(width: number, height: number): Buffer {
 
 const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'])
 
-async function commitToGithub(repoPath: string, buffer: Buffer) {
-  const token = process.env.GITHUB_TOKEN
-  const owner = process.env.GITHUB_OWNER
-  const repo = process.env.GITHUB_REPO
-  if (!token || !owner || !repo) return
-
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${repoPath}`
-  let sha: string | undefined
-  try {
-    const existing = await fetch(apiUrl, { headers: { Authorization: `token ${token}`, 'User-Agent': 'obg-upload' } })
-    if (existing.ok) sha = (await existing.json()).sha
-  } catch { /* file doesn't exist yet */ }
-
-  await fetch(apiUrl, {
-    method: 'PUT',
-    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json', 'User-Agent': 'obg-upload' },
-    body: JSON.stringify({
-      message: `Upload image: ${repoPath}`,
-      content: buffer.toString('base64'),
-      ...(sha ? { sha } : {}),
-    }),
-  })
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!requireAdmin(req, res)) return
   if (req.method !== 'POST') return res.status(405).end()
@@ -103,6 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!relDir) return res.status(400).json({ error: 'Invalid type' })
 
     let finalBuffer = buffer
+    const mime = ext === '.png' ? 'image/png' : 'image/jpeg'
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const sharp = require('sharp')
@@ -119,12 +95,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.warn('Sharp unavailable, saving without watermark for:', filename)
     }
 
-    // Save to public/ for immediate serving
-    const destDir = path.join(process.cwd(), 'public', relDir)
-    fs.mkdirSync(destDir, { recursive: true })
-    fs.writeFileSync(path.join(destDir, filename), finalBuffer)
+    // Store image in PostgreSQL — survives all redeploys, no volume or GitHub needed
+    const imgPath = `${relDir}/${filename}`
+    await prisma.uploadedImage.upsert({
+      where: { path: imgPath },
+      update: { data: finalBuffer, mime },
+      create: { path: imgPath, data: finalBuffer, mime },
+    })
 
-    // Register sticker in DB
+    // Register sticker record so it appears in admin
     if (type === 'sticker') {
       const count = await prisma.sticker.count()
       await prisma.sticker.upsert({
@@ -133,11 +112,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         create: { filename, sortOrder: count },
       })
     }
-
-    // Commit to GitHub so image survives future redeploys
-    commitToGithub(`photography/public/${relDir}/${filename}`, finalBuffer).catch(e =>
-      console.warn('GitHub commit failed (image saved locally):', e.message)
-    )
 
     res.json({ ok: true, filename })
   } catch (err) {
