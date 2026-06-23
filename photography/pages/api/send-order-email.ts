@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const IMAD_EMAIL = 'imadobegi@gmail.com'
-const FROM = 'OBGillustrator <orders@obgillustrator.com>'
+const FROM = process.env.RESEND_FROM || 'onboarding@resend.dev'
 
 interface OrderItem {
   productName: string
