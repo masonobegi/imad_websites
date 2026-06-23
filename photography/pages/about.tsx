@@ -126,20 +126,6 @@ export default function About() {
 
           </div>
         </div>
-
-        {/* Photography CTA */}
-        <div className="mt-16 pt-10 border-t border-edge flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="font-serif text-xl text-ink mb-1">Browse the photography prints</p>
-            <p className="text-mist text-sm">42 photographs available on metal or canvas</p>
-          </div>
-          <Link
-            href="/shop"
-            className="flex-shrink-0 border border-ink text-ink px-8 py-3 text-sm tracking-wider uppercase hover:bg-ink hover:text-canvas transition-colors"
-          >
-            Shop Prints
-          </Link>
-        </div>
       </section>
     </Layout>
   )
