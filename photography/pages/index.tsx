@@ -12,6 +12,8 @@ import { SiteConfig } from '../lib/siteConfig'
 
 interface FeaturedArt { id: string; type: 'watercolor' | 'encaustic' | 'oil'; imgPath: string; title: string }
 
+interface PrintSize { label: string; price: number }
+
 interface Props {
   heroPhoto: Photo
   previewPhotos: Photo[]
@@ -22,9 +24,10 @@ interface Props {
   featuredFineArt: FeaturedArt[]
   previewStickers: string[]
   siteConfig: SiteConfig['homepage']
+  printSizes: PrintSize[]
 }
 
-export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics, featuredFineArt, previewStickers, siteConfig }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics, featuredFineArt, previewStickers, siteConfig, printSizes }: Props) {
   const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
   const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
   const [oilModalIndex, setOilModalIndex] = useState<number | null>(null)
@@ -232,6 +235,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           initialIndex={modalState.index}
           onClose={() => setModalState(null)}
           onAddedToCart={() => { setModalState(null); setCartOpen(true) }}
+          printSizes={printSizes}
         />
       )}
       {workModalState && (
@@ -259,11 +263,12 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const { prisma } = await import('../lib/prisma')
   const { readSiteConfig } = await import('../lib/siteConfig')
 
-  const [siteConfig, allPhotosRaw, allFineArt, stickers] = await Promise.all([
+  const [siteConfig, allPhotosRaw, allFineArt, stickers, printSizesRaw] = await Promise.all([
     readSiteConfig(),
     prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
     prisma.fineArtWork.findMany({ where: { type: { in: ['watercolor', 'encaustic', 'oil'] } }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' }, take: 6 }),
+    prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
   ])
 
   const allPhotosFlat: Photo[] = allPhotosRaw.map(p => ({ id: p.id, filename: p.filename, title: p.title, description: p.description, category: p.category }))
@@ -322,6 +327,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
       featuredFineArt,
       previewStickers: stickers.map(s => s.filename),
       siteConfig: siteConfig.homepage,
+      printSizes: printSizesRaw.map(s => ({ label: s.label, price: s.price })),
     },
   }
 }
