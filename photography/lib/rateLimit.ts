@@ -17,7 +17,5 @@ export function checkRateLimit(key: string, maxRequests: number, windowMs: numbe
 // Prune expired entries every 10 minutes
 setInterval(() => {
   const now = Date.now()
-  for (const [k, v] of store.entries()) {
-    if (now > v.resetAt) store.delete(k)
-  }
+  store.forEach((v, k) => { if (now > v.resetAt) store.delete(k) })
 }, 10 * 60 * 1000)
