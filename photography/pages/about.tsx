@@ -13,31 +13,31 @@ export default function About() {
         <meta property="og:image" content="https://obgillustrator.com/imad-portrait.jpg" />
       </Head>
 
-      {/* Hero — one of his photos as backdrop */}
-      <section className="relative h-[45vh] overflow-hidden photo-wrapper">
+      {/* Hero — accent strip, not full scene */}
+      <section className="relative h-[22vh] overflow-hidden photo-wrapper">
         <img
           src="/photos/nature/milky-way-over-joshua-tree.jpg"
           alt="Photography by Imad"
-          className="absolute inset-0 w-full h-full object-cover object-center photo-protected"
+          className="absolute inset-0 w-full h-full object-cover object-[center_30%] photo-protected"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/20 to-transparent" />
       </section>
 
       {/* Main content */}
-      <section className="max-w-4xl mx-auto px-5 sm:px-10 py-14 sm:py-20">
+      <section className="max-w-6xl mx-auto px-6 sm:px-10 py-12 sm:py-16">
 
-        <div className="flex flex-col sm:flex-row gap-10 sm:gap-16">
+        <div className="flex flex-col sm:flex-row gap-10 sm:gap-16 lg:gap-20">
 
           {/* Portrait */}
-          <div className="flex-shrink-0 sm:w-56">
-            <div className="w-44 sm:w-56 aspect-[3/4] overflow-hidden bg-edge">
+          <div className="flex-shrink-0 sm:w-72 lg:w-80">
+            <div className="w-full aspect-[3/4] overflow-hidden bg-edge">
               <img
                 src="/imad-portrait.jpg"
                 alt="Imad Obegi"
                 className="w-full h-full object-cover"
               />
             </div>
-            <p className="text-xs text-mist mt-3 leading-snug">
+            <p className="text-sm text-mist mt-4 leading-snug">
               Imad Obegi<br />
               OBGillustrator.com<br />
               Bay Area, California
@@ -45,11 +45,11 @@ export default function About() {
           </div>
 
           {/* Bio */}
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <p className="text-xs text-copper uppercase tracking-widest mb-4">Artist · Photographer</p>
-            <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-8 leading-tight">Imad Obegi</h1>
+            <h1 className="font-serif text-5xl sm:text-6xl text-ink mb-8 leading-tight">Imad Obegi</h1>
 
-            <div className="space-y-5 text-mist text-base leading-relaxed">
+            <div className="space-y-5 text-mist text-lg leading-relaxed">
               <p>
                 Imad Obegi's creative journey began in childhood, where an instinct for color and
                 composition surfaced before he had the words to describe it. What started as a natural

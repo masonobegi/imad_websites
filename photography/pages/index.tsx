@@ -22,10 +22,11 @@ interface Props {
   allWatercolors: Work[]
   allEncaustics: Work[]
   featuredFineArt: FeaturedArt[]
+  previewStickers: string[]
   siteConfig: SiteConfig['homepage']
 }
 
-export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics, featuredFineArt, siteConfig }: Props) {
+export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, allWatercolors, allEncaustics, featuredFineArt, previewStickers, siteConfig }: Props) {
   const [modalState, setModalState] = useState<{ photos: Photo[]; index: number } | null>(null)
   const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
   const [oilModalIndex, setOilModalIndex] = useState<number | null>(null)
@@ -86,7 +87,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
             href="/shop"
             className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
           >
-            <span className="hidden sm:inline">Browse all</span>
+            <span className="hidden sm:inline">Browse All Photography</span>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>
@@ -124,10 +125,21 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 
       {/* ── FINE ART ── */}
       <section className="border-b border-edge">
-        <div className="px-6 sm:px-10 py-6 border-b border-edge">
-          <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Fine Art</p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.fineArtHeadline}</h2>
-          <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.fineArtSubtext}</p>
+        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Fine Art</p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.fineArtHeadline}</h2>
+            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.fineArtSubtext}</p>
+          </div>
+          <Link
+            href="/fine-art"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
+            <span className="hidden sm:inline">Browse All Fine Art</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-edge">
@@ -153,15 +165,52 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           ))}
         </div>
 
-        <Link
-          href="/fine-art"
-          className="flex items-center justify-center gap-3 py-6 sm:py-8 border-t border-edge text-copper hover:bg-canvas/50 transition-colors group"
-        >
-          <span className="font-serif text-2xl sm:text-3xl tracking-wide">Browse All Fine Art</span>
-          <svg className="w-7 h-7 group-hover:translate-x-1.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
+          <p className="text-mist text-xs">Tap a work to learn more</p>
+          <Link href="/fine-art" className="text-copper text-xs">Browse All Fine Art →</Link>
+        </div>
+      </section>
+
+      {/* ── STICKERS ── */}
+      <section className="border-b border-edge">
+        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink">Stickers</h2>
+            <p className="text-mist text-sm mt-1 hidden sm:block">Original designs · via Sticker Mule</p>
+          </div>
+          <Link
+            href="/stickers"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
+            <span className="hidden sm:inline">Browse All Stickers</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
+          {previewStickers.map(filename => (
+            <Link
+              key={filename}
+              href="/stickers"
+              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
+            >
+              <img
+                src={`/stickers/${filename}`}
+                alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
+                className="w-full h-full object-contain p-4 group-hover/sticker:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            </Link>
+          ))}
+        </div>
+
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
+          <p className="text-mist text-xs">Original designs by Imad Obegi</p>
+          <Link href="/stickers" className="text-copper text-xs">Browse All Stickers →</Link>
+        </div>
       </section>
 
       {/* ── COMMISSION CTA ── */}
@@ -256,6 +305,11 @@ export const getServerSideProps: GetServerSideProps = async () => {
     allPhotos[cat] = photos.map(p => ({ ...p, category: cat }))
   }
 
+  const stickersDir = path.join(process.cwd(), 'public', 'stickers')
+  const previewStickers = fs.existsSync(stickersDir)
+    ? fs.readdirSync(stickersDir).filter(f => /\.(png|jpg|jpeg|webp)$/i.test(f)).sort().slice(0, 6)
+    : []
+
   return {
     props: {
       heroPhoto,
@@ -265,6 +319,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
       allWatercolors: fineArtData.works.watercolors || [],
       allEncaustics: fineArtData.works.encaustics || [],
       featuredFineArt,
+      previewStickers,
       siteConfig: siteConfig.homepage,
     },
   }
