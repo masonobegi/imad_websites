@@ -105,9 +105,9 @@ export default function Checkout() {
                   <input type="text" placeholder="Full name *" value={form.name} onChange={set('name')} className={inputClass} required />
                   <input type="text" placeholder="Address" value={form.address} onChange={set('address')} className={inputClass} />
                   <div className="flex gap-2">
-                    <input type="text" placeholder="City" value={form.city} onChange={set('city')} className={inputClass} />
-                    <input type="text" placeholder="State" value={form.state} onChange={set('state')} className={`${inputClass} w-24 flex-shrink-0`} />
-                    <input type="text" placeholder="ZIP" value={form.zip} onChange={set('zip')} className={`${inputClass} w-28 flex-shrink-0`} />
+                    <input type="text" placeholder="City" value={form.city} onChange={set('city')} className={`${inputClass} flex-1 min-w-0`} />
+                    <input type="text" placeholder="State" value={form.state} onChange={set('state')} className={`${inputClass} w-16 flex-shrink-0`} />
+                    <input type="text" placeholder="ZIP" value={form.zip} onChange={set('zip')} className={`${inputClass} w-20 flex-shrink-0`} />
                   </div>
                 </div>
               </div>
