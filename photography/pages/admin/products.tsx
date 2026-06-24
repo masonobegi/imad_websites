@@ -693,6 +693,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           ))}
         </div>
 
+        {/* render tabs as plain calls to avoid remount on each keystroke */}
         {tab === 'photography' && PhotographyTab()}
         {tab === 'watercolors' && WorksTab({ category: 'watercolors', kind: 'watercolor' })}
         {tab === 'encaustics' && WorksTab({ category: 'encaustics', kind: 'encaustic' })}
