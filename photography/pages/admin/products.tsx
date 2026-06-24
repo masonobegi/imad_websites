@@ -693,11 +693,11 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           ))}
         </div>
 
-        {tab === 'photography' && <PhotographyTab />}
-        {tab === 'watercolors' && <WorksTab category="watercolors" kind="watercolor" />}
-        {tab === 'encaustics' && <WorksTab category="encaustics" kind="encaustic" />}
-        {tab === 'oils' && <OilsTab />}
-        {tab === 'stickers' && <StickersTab />}
+        {tab === 'photography' && PhotographyTab()}
+        {tab === 'watercolors' && WorksTab({ category: 'watercolors', kind: 'watercolor' })}
+        {tab === 'encaustics' && WorksTab({ category: 'encaustics', kind: 'encaustic' })}
+        {tab === 'oils' && OilsTab()}
+        {tab === 'stickers' && StickersTab()}
       </div>
 
       {/* ── New Category modal ──────────────────────────────────────────────── */}
