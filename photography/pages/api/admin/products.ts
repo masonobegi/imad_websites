@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (action === 'add') {
           const count = await prisma.photo.count({ where: { category } })
           await prisma.photo.create({ data: { ...data, category, sortOrder: count } })
-        } else if (action === 'update') {
+        } else if (action === 'update' || action === 'edit') {
           const { id: _id, ...photoData } = data
           await prisma.photo.update({ where: { id }, data: photoData })
         } else if (action === 'delete') {
@@ -98,7 +98,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 : undefined,
             },
           })
-        } else if (action === 'update') {
+        } else if (action === 'update' || action === 'edit') {
           const { pleinAirImages, award, id: _id, ...rest } = data
           await prisma.fineArtWork.update({
             where: { id },
