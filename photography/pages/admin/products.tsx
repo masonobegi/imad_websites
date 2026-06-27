@@ -379,15 +379,6 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   function PhotographyTab() {
     return (
       <div className="space-y-6">
-        {/* New category button */}
-        <div className="flex justify-end">
-          <button onClick={() => { setShowNewCat(true); setNewCatLabel(''); setNewCatDesc(''); setError('') }}
-            className="flex items-center gap-1.5 text-sm text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-4 py-2 rounded-xl transition-colors font-medium">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-            New Category
-          </button>
-        </div>
-
         {/* Pricing */}
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -477,6 +468,13 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
             </div>
           )
         })}
+
+        {/* New photo category button — lives below all existing categories so it's obvious what it adds */}
+        <button onClick={() => { setShowNewCat(true); setNewCatLabel(''); setNewCatDesc(''); setError('') }}
+          className="w-full flex items-center justify-center gap-2 text-sm text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-dashed border-indigo-300 px-4 py-4 rounded-2xl transition-colors font-medium">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+          New Photo Category
+        </button>
       </div>
     )
   }
