@@ -100,16 +100,16 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
-                  </div>
-                  <div className="pt-2.5">
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="font-serif text-sm text-ink leading-snug">{work.title}</p>
-                      {work.available && (
-                        <span className="text-[9px] border border-copper text-copper px-1.5 py-0.5 uppercase tracking-widest flex-shrink-0 mt-0.5">
+                    {work.available && (
+                      <div className="absolute top-2 right-2">
+                        <span className="text-[9px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-widest font-medium">
                           For Sale
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pt-2.5">
+                    <p className="font-serif text-sm text-ink leading-snug">{work.title}</p>
                     {work.originalSize && (
                       <p className="text-mist text-[11px] mt-0.5">{work.originalSize}</p>
                     )}
