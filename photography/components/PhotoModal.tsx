@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Photo, PRINT_SIZES as DEFAULT_PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
@@ -15,6 +15,13 @@ interface PhotoModalProps {
 const LENS = 170
 const ZOOM = 2.8
 
+function parsePrintRatio(label: string): number | null {
+  const m = label.match(/(\d+(?:\.\d+)?)\s*[×xX]\s*(\d+(?:\.\d+)?)/)
+  if (!m) return null
+  const a = parseFloat(m[1]), b = parseFloat(m[2])
+  return (a && b) ? Math.max(a, b) / Math.min(a, b) : null
+}
+
 interface LensState { x: number; y: number; cw: number; ch: number }
 
 export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCart, printSizes }: PhotoModalProps) {
@@ -24,6 +31,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const [lens, setLens] = useState<LensState | null>(null)
+  const [photoDims, setPhotoDims] = useState<{ w: number; h: number } | null>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
   const { addItem } = useCart()
 
   const PRINT_SIZES = printSizes || DEFAULT_PRINT_SIZES
@@ -34,6 +43,40 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
   const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setAdded(false); setLens(null) } }, [hasPrev])
   const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setAdded(false); setLens(null) } }, [hasNext])
+
+  // Detect dims from cached image when photo changes; onLoad handles non-cached
+  useEffect(() => {
+    const img = imgRef.current
+    if (img && img.complete && img.naturalWidth) {
+      setPhotoDims({ w: img.naturalWidth, h: img.naturalHeight })
+    } else {
+      setPhotoDims(null)
+    }
+  }, [idx])
+
+  // Auto-select the best-fit print size when dims are known
+  useEffect(() => {
+    if (!photoDims) return
+    const ratio = Math.max(photoDims.w, photoDims.h) / Math.min(photoDims.w, photoDims.h)
+    let bestIdx = 0
+    let bestDiff = Infinity
+    PRINT_SIZES.forEach((s, i) => {
+      const pr = parsePrintRatio(s.label)
+      if (pr === null) return
+      const diff = Math.abs(ratio - pr)
+      if (diff < bestDiff) { bestDiff = diff; bestIdx = i }
+    })
+    setSizeIdx(bestIdx)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photoDims])
+
+  function isBestFit(label: string): boolean {
+    if (!photoDims) return false
+    const pr = parsePrintRatio(label)
+    if (!pr) return false
+    const ratio = Math.max(photoDims.w, photoDims.h) / Math.min(photoDims.w, photoDims.h)
+    return Math.abs(ratio - pr) < 0.06
+  }
 
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -77,7 +120,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
       {/* Modal — full-screen on mobile, max-w constrained on desktop */}
-      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row
+      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-white shadow-2xl flex flex-col sm:flex-row
                       h-[92vh] sm:h-auto sm:max-h-[90vh]
                       rounded-t-2xl sm:rounded-none"
 >
@@ -85,7 +128,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1"
+          className="absolute top-3 right-4 z-20 text-mist hover:text-ink transition-colors p-1"
           aria-label="Close"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,17 +138,22 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
         {/* Photo area — hover to magnify */}
         <div
-          className="sm:w-[62%] flex-shrink-0 bg-darkroom relative photo-wrapper select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
+          className="sm:w-[62%] flex-shrink-0 bg-canvas relative photo-wrapper select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
           style={{ cursor: lens ? 'none' : 'crosshair' }}
           onPointerMove={handlePointerMove}
           onPointerLeave={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
           onPointerUp={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
         >
           <img
+            ref={imgRef}
             src={`/photos/${photo.category}/${photo.filename}`}
             alt={photo.title}
             className="w-full h-full object-contain block select-none photo-protected"
             draggable={false}
+            onLoad={() => {
+              const img = imgRef.current
+              if (img) setPhotoDims({ w: img.naturalWidth, h: img.naturalHeight })
+            }}
           />
 
           {/* Magnifier lens (desktop) */}
@@ -179,7 +227,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
         <div className="sm:w-[38%] flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto px-5 sm:px-7 pt-5 sm:pt-7 pb-2">
             <p className="text-xs text-copper uppercase tracking-widest mb-2">Fine Art Print</p>
-            <h2 className="font-serif text-lg sm:text-xl text-edge leading-snug mb-3">{photo.title}</h2>
+            <h2 className="font-serif text-lg sm:text-xl text-ink leading-snug mb-3">{photo.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-5">{photo.description}</p>
             <p className="text-xs text-mist mb-5">High quality professionally printed. Shipping is included in the United States.</p>
 
@@ -193,11 +241,16 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
                     onClick={() => setSizeIdx(i)}
                     className={`flex justify-between items-center px-3 py-2.5 text-sm transition-colors touch-manipulation ${
                       sizeIdx === i
-                        ? 'bg-copper/15 border border-copper text-edge'
-                        : 'border border-panel text-mist hover:border-mist'
+                        ? 'bg-copper/15 border border-copper text-ink'
+                        : 'border border-edge text-mist hover:border-shadow'
                     }`}
                   >
-                    <span>{s.label}</span>
+                    <span className="flex items-center gap-2">
+                      {s.label}
+                      {isBestFit(s.label) && (
+                        <span className="text-[10px] text-emerald-400 font-medium leading-none">Best fit</span>
+                      )}
+                    </span>
                     <span className={sizeIdx === i ? 'text-copper font-medium' : 'text-mist'}>${s.price}</span>
                   </button>
                 ))}
@@ -214,8 +267,8 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
                     onClick={() => setMedium(m)}
                     className={`flex-1 py-3 text-sm border transition-colors touch-manipulation ${
                       medium === m
-                        ? 'border-copper bg-copper/15 text-edge'
-                        : 'border-panel text-mist hover:border-mist'
+                        ? 'border-copper bg-copper/15 text-ink'
+                        : 'border-edge text-mist hover:border-shadow'
                     }`}
                   >
                     {m}
@@ -228,17 +281,17 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             <div className="mb-4">
               <p className="text-xs text-mist uppercase tracking-widest mb-2">Quantity</p>
               <div className="flex items-center gap-3">
-                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors touch-manipulation">−</button>
-                <span className="text-edge w-6 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(q => q + 1)} className="w-10 h-10 border border-panel text-mist hover:border-mist hover:text-edge flex items-center justify-center transition-colors touch-manipulation">+</button>
+                <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="w-10 h-10 border border-edge text-mist hover:border-shadow hover:text-ink flex items-center justify-center transition-colors touch-manipulation">−</button>
+                <span className="text-ink w-6 text-center">{quantity}</span>
+                <button onClick={() => setQuantity(q => q + 1)} className="w-10 h-10 border border-edge text-mist hover:border-shadow hover:text-ink flex items-center justify-center transition-colors touch-manipulation">+</button>
               </div>
             </div>
           </div>
 
           {/* Sticky add-to-cart footer */}
-          <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
+          <div className="px-5 sm:px-7 py-4 border-t border-edge flex-shrink-0">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-edge">
+              <p className="text-ink">
                 <span className="text-mist text-sm">Total </span>
                 <span className="font-serif text-xl">${(selectedSize.price * quantity).toFixed(2)}</span>
               </p>

@@ -4,43 +4,22 @@ import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 
-const DESIGNS = [
-  {
-    file: 'jazz-festival.jpg',
-    title: '5th Annual Leimert Park Jazz Festival',
-    subtitle: 'Winning Poster Design',
-    description: 'Juried poster competition for the Leimert Park Jazz Festival.',
-    popup: true,
-  },
-  {
-    file: 'notaries-of-the-realm.jpg',
-    title: 'Notaries of the Realm',
-    subtitle: 'Logo Design',
-    description: 'A dragon\'s head blending seamlessly into a fountain pen nib — created for a notary company catering to renaissance fairs.',
-    popup: false,
-  },
-  {
-    file: 'green-apples-gumbo.jpg',
-    title: 'Green Apples Gumbo',
-    subtitle: 'Product Label Design',
-    description: 'Food product label for a Gumbo Base with an old Louisiana feel — inviting and appetizing.',
-    popup: false,
-  },
-  {
-    file: 'matchfoot.jpg',
-    title: 'Matchfoot.com',
-    subtitle: 'Logo Design',
-    description: 'A dynamic illustration representing "lighting a fire under one\'s foot" — energy, motion, and motivation.',
-    popup: false,
-  },
-]
+interface DigitalWork {
+  id: string
+  filename: string
+  title: string
+  subtitle: string | null
+  description: string
+}
 
 interface Props {
   intro: string
+  works: DigitalWork[]
 }
 
-export default function Digital({ intro }: Props) {
-  const [popupOpen, setPopupOpen] = useState(false)
+export default function Digital({ intro, works }: Props) {
+  const [popupIdx, setPopupIdx] = useState<number | null>(null)
+  const popupWork = popupIdx !== null ? works[popupIdx] : null
 
   return (
     <Layout>
@@ -49,15 +28,15 @@ export default function Digital({ intro }: Props) {
         <meta name="description" content="Digital design and illustration work by Imad Obegi — logos, posters, and brand illustrations." />
       </Head>
 
-      {/* Header + Commission CTA */}
+      {/* Header */}
       <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10 text-center">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Portfolio</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           Digital Design &amp; Illustration
         </h1>
-        <p className="text-mist leading-relaxed max-w-xl mx-auto mb-8">
-          {intro}
-        </p>
+        <p className="text-mist leading-relaxed max-w-xl mx-auto mb-8">{intro}</p>
+
+        {/* Commission CTA */}
         <div className="border-t border-edge pt-8">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Interested in a logo or design?</p>
           <p className="text-mist text-sm max-w-md mx-auto mb-6 leading-relaxed">
@@ -74,18 +53,20 @@ export default function Digital({ intro }: Props) {
 
       {/* Work grid */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {DESIGNS.map(d => (
-            <div key={d.file} className="group">
-              {d.popup ? (
+        {works.length === 0 ? (
+          <p className="text-center text-mist py-16">Portfolio coming soon.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {works.map((d, i) => (
+              <div key={d.id} className="group">
                 <button
-                  onClick={() => setPopupOpen(true)}
+                  onClick={() => setPopupIdx(i)}
                   className="block w-full text-left focus:outline-none"
                   aria-label={`View ${d.title} full size`}
                 >
                   <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
-                      src={`/digital/${d.file}`}
+                      src={`/fine-art/digitals/${d.filename}`}
                       alt={d.title}
                       className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
@@ -97,41 +78,24 @@ export default function Digital({ intro }: Props) {
                     </div>
                   </div>
                   <div className="pt-3">
-                    <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{d.subtitle}</p>
+                    {d.subtitle && <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{d.subtitle}</p>}
                     <p className="font-serif text-lg text-ink">{d.title}</p>
-                    <p className="text-mist text-sm mt-1 leading-relaxed">{d.description}</p>
+                    {d.description && <p className="text-mist text-sm mt-1 leading-relaxed">{d.description}</p>}
                   </div>
                 </button>
-              ) : (
-                <div>
-                  <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
-                    <img
-                      src={`/digital/${d.file}`}
-                      alt={d.title}
-                      className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
-                      draggable={false}
-                    />
-                  </div>
-                  <div className="pt-3">
-                    <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{d.subtitle}</p>
-                    <p className="font-serif text-lg text-ink">{d.title}</p>
-                    <p className="text-mist text-sm mt-1 leading-relaxed">{d.description}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Jazz Festival full-size popup */}
-      {popupOpen && (
+      {/* Full-size popup */}
+      {popupWork && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/92" onClick={() => setPopupOpen(false)} />
+          <div className="fixed inset-0 bg-black/92" onClick={() => setPopupIdx(null)} />
           <div className="relative z-10 max-w-3xl w-full mx-4">
             <button
-              onClick={() => setPopupOpen(false)}
+              onClick={() => setPopupIdx(null)}
               className="absolute -top-10 right-0 text-white/70 hover:text-white transition-colors flex items-center gap-2 text-sm"
               aria-label="Close"
             >
@@ -140,13 +104,34 @@ export default function Digital({ intro }: Props) {
               </svg>
               Close
             </button>
+            {works.length > 1 && (
+              <>
+                {popupIdx! > 0 && (
+                  <button onClick={() => setPopupIdx(i => i! - 1)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 text-white/60 hover:text-white transition-colors"
+                    aria-label="Previous">
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" /></svg>
+                  </button>
+                )}
+                {popupIdx! < works.length - 1 && (
+                  <button onClick={() => setPopupIdx(i => i! + 1)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 text-white/60 hover:text-white transition-colors"
+                    aria-label="Next">
+                    <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" /></svg>
+                  </button>
+                )}
+              </>
+            )}
             <img
-              src="/digital/jazz-festival.jpg"
-              alt="5th Annual Leimert Park Jazz Festival winning poster by Imad Obegi"
+              src={`/fine-art/digitals/${popupWork.filename}`}
+              alt={popupWork.title}
               className="w-full block select-none"
               draggable={false}
             />
-            <p className="text-white/60 text-xs text-center mt-3">5th Annual Leimert Park Jazz Festival — Winning poster by Imad Obegi</p>
+            <p className="text-white/60 text-xs text-center mt-3">
+              {popupWork.subtitle && <span>{popupWork.subtitle} — </span>}
+              {popupWork.title}
+            </p>
           </div>
         </div>
       )}
@@ -155,7 +140,19 @@ export default function Digital({ intro }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps = async () => {
+  const { prisma } = await import('../lib/prisma')
   const { readSiteConfig } = await import('../lib/siteConfig')
-  const siteConfig = await readSiteConfig()
-  return { props: { intro: siteConfig.digitalDesign.intro } }
+  const [siteConfig, works] = await Promise.all([
+    readSiteConfig(),
+    prisma.fineArtWork.findMany({ where: { type: 'digital' }, orderBy: { sortOrder: 'asc' } }),
+  ])
+  return {
+    props: {
+      intro: siteConfig.digitalDesign.intro,
+      works: works.map(w => ({
+        id: w.id, filename: w.filename, title: w.title,
+        subtitle: w.originalSize, description: w.description,
+      })),
+    },
+  }
 }

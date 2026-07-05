@@ -10,6 +10,7 @@ interface PrintSize { label: string; price: number }
 interface BasicWork {
   id: string; filename: string; title: string; originalSize: string | null
   available: boolean; description: string; price: number | null
+  reprintAvailable?: boolean; reprintPrice?: number | null; reprintMedium?: string | null
   pleinAirImages?: PleinAirImage[]
 }
 interface PleinAirImage { id: string; filename: string; title: string }
@@ -19,24 +20,24 @@ interface OilWork extends BasicWork {
 }
 interface Photo { id: string; filename: string; title: string; description: string; category: string }
 interface PageData {
-  fineArt: { works: { watercolors: BasicWork[]; encaustics: BasicWork[]; oils: OilWork[] } }
+  fineArt: { works: { watercolors: BasicWork[]; encaustics: BasicWork[]; oils: OilWork[]; digitals: BasicWork[] } }
   photos: { categories: Record<string, { label: string }>; photos: Record<string, Photo[]> }
   stickers: string[]
   printConfig: { printSizes: PrintSize[] }
 }
 
-type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers'
-type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker'
+type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers' | 'digital'
+type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker' | 'digital'
 
 interface Draft {
   title: string; description: string; originalSize: string; available: boolean; price: string
-  originalPrice: string; reprintAvailable: boolean; reprintPrice: string
+  originalPrice: string; reprintAvailable: boolean; reprintPrice: string; reprintMedium: string
   awardTitle: string; awardUrl: string; photoCategory: string
 }
 
 const emptyDraft: Draft = {
   title: '', description: '', originalSize: '', available: false, price: '',
-  originalPrice: '', reprintAvailable: false, reprintPrice: '',
+  originalPrice: '', reprintAvailable: false, reprintPrice: '', reprintMedium: '',
   awardTitle: '', awardUrl: '', photoCategory: 'nature',
 }
 
@@ -49,6 +50,7 @@ function imgUrl(kind: ModalKind | string, category: string, filename: string) {
   if (kind === 'watercolor') return `/fine-art/watercolors/${filename}`
   if (kind === 'encaustic') return `/fine-art/encaustics/${filename}`
   if (kind === 'oil') return `/fine-art/oils/${filename}`
+  if (kind === 'digital') return `/fine-art/digitals/${filename}`
   if (kind === 'sticker') return `/stickers/${filename}`
   return ''
 }
@@ -115,8 +117,9 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       available: (item as BasicWork).available || false,
       price: (item as BasicWork).price?.toString() || '',
       originalPrice: oil.originalPrice?.toString() || '',
-      reprintAvailable: oil.reprintAvailable || false,
-      reprintPrice: oil.reprintPrice?.toString() || '',
+      reprintAvailable: oil.reprintAvailable || (item as BasicWork).reprintAvailable || false,
+      reprintPrice: (oil.reprintPrice ?? (item as BasicWork).reprintPrice)?.toString() || '',
+      reprintMedium: (item as BasicWork).reprintMedium || '',
       awardTitle: oil.award?.title || '', awardUrl: oil.award?.url || '',
       photoCategory: photo.category || category || 'nature',
     })
@@ -218,7 +221,17 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
 
       if (editKind === 'photo') {
         itemData = { id, filename, title: draft.title, description: draft.description, category: draft.photoCategory }
-      } else if (editKind === 'watercolor' || editKind === 'encaustic') {
+      } else if (editKind === 'watercolor') {
+        itemData = {
+          id, filename, title: draft.title, originalSize: draft.originalSize || null,
+          available: draft.available, description: draft.description,
+          price: draft.price ? parseFloat(draft.price) : null,
+          reprintAvailable: draft.reprintAvailable,
+          reprintPrice: draft.reprintPrice ? parseFloat(draft.reprintPrice) : null,
+          reprintMedium: draft.reprintMedium || null,
+          pleinAirImages: [...paItems, ...newPaImages],
+        }
+      } else if (editKind === 'encaustic') {
         itemData = {
           id, filename, title: draft.title, originalSize: draft.originalSize || null,
           available: draft.available, description: draft.description,
@@ -235,9 +248,14 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           award: draft.awardTitle ? { title: draft.awardTitle, url: draft.awardUrl } : null,
           pleinAirImages: [...paItems, ...newPaImages],
         }
+      } else if (editKind === 'digital') {
+        itemData = {
+          id, filename, title: draft.title, originalSize: draft.originalSize || null,
+          available: false, description: draft.description, price: null, pleinAirImages: [],
+        }
       }
 
-      const jsonCategory = editKind === 'watercolor' ? 'watercolors' : editKind === 'encaustic' ? 'encaustics' : editKind === 'oil' ? 'oils' : draft.photoCategory
+      const jsonCategory = editKind === 'watercolor' ? 'watercolors' : editKind === 'encaustic' ? 'encaustics' : editKind === 'oil' ? 'oils' : editKind === 'digital' ? 'digitals' : draft.photoCategory
       const res = await fetch('/api/admin/products', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: editKind === 'photo' ? 'photo' : 'fineArt', action: editMode, category: jsonCategory, id, data: itemData }),
@@ -247,8 +265,16 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       if (editKind === 'photo') {
         setData(prev => {
           const photos = { ...prev.photos.photos }
-          const cat = (itemData as Photo).category
-          photos[cat] = editMode === 'add' ? [...(photos[cat] || []), itemData as Photo] : (photos[cat] || []).map(p => p.id === id ? itemData as Photo : p)
+          const newCat = (itemData as Photo).category
+          const oldCat = editCategory
+          if (editMode === 'add') {
+            photos[newCat] = [...(photos[newCat] || []), itemData as Photo]
+          } else if (oldCat === newCat) {
+            photos[newCat] = (photos[newCat] || []).map(p => p.id === id ? itemData as Photo : p)
+          } else {
+            photos[oldCat] = (photos[oldCat] || []).filter(p => p.id !== id)
+            photos[newCat] = [...(photos[newCat] || []), itemData as Photo]
+          }
           return { ...prev, photos: { ...prev.photos, photos } }
         })
       } else if (editKind === 'watercolor') {
@@ -257,6 +283,8 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, encaustics: editMode === 'add' ? [...prev.fineArt.works.encaustics, itemData as BasicWork] : prev.fineArt.works.encaustics.map(w => w.id === id ? itemData as BasicWork : w) } } }))
       } else if (editKind === 'oil') {
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, oils: editMode === 'add' ? [...prev.fineArt.works.oils, itemData as OilWork] : prev.fineArt.works.oils.map(w => w.id === id ? itemData as OilWork : w) } } }))
+      } else if (editKind === 'digital') {
+        setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, digitals: editMode === 'add' ? [...prev.fineArt.works.digitals, itemData as BasicWork] : prev.fineArt.works.digitals.map(w => w.id === id ? itemData as BasicWork : w) } } }))
       }
       closeModal(); showSuccess('Changes saved!')
     } catch (err: unknown) {
@@ -290,7 +318,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           return { ...prev, photos: { ...prev.photos, categories, photos } }
         })
       } else if (deleteTarget.type === 'fineArt') {
-        const cat = deleteTarget.category as 'watercolors' | 'encaustics' | 'oils'
+        const cat = deleteTarget.category as 'watercolors' | 'encaustics' | 'oils' | 'digitals'
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, [cat]: prev.fineArt.works[cat].filter(w => w.id !== deleteTarget.id) } } }))
       } else if (deleteTarget.type === 'sticker') {
         setData(prev => ({ ...prev, stickers: prev.stickers.filter(s => s !== deleteTarget.id) }))
@@ -662,6 +690,58 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     )
   }
 
+  function DigitalTab() {
+    const works = data.fineArt.works.digitals || []
+    const dh = makeDragHandlers<BasicWork>(
+      works,
+      reordered => setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, digitals: reordered } } })),
+      'fineArt', 'digitals'
+    )
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Digital Design & Illustration</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{works.length} works · drag to reorder</p>
+          </div>
+          <button onClick={() => openAdd('digital')}
+            className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Add Design
+          </button>
+        </div>
+        <div className="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {works.map((work, i) => (
+            <div key={work.id} draggable
+              onDragStart={() => dh.onDragStart(i)}
+              onDragOver={e => dh.onDragOver(e, i)}
+              onDragLeave={dh.onDragLeave}
+              onDrop={() => dh.onDrop(i)}
+              className={`group relative cursor-grab active:cursor-grabbing rounded-xl border-2 overflow-hidden transition-all ${dragOverIdx === i ? 'border-amber-400 scale-95' : 'border-transparent'}`}>
+              <div className="aspect-square bg-gray-100 overflow-hidden">
+                <img src={imgUrl('digital', 'digitals', work.filename)} alt={work.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+              </div>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors rounded-xl flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                <button onClick={() => openEdit('digital', work)} className="bg-white text-gray-800 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-amber-50 transition-colors">Edit</button>
+                <button onClick={() => setDeleteTarget({ type: 'fineArt', id: work.id, category: 'digitals', label: work.title })} className="bg-white text-red-500 text-xs font-medium px-2.5 py-1.5 rounded-lg hover:bg-red-50 transition-colors">Del</button>
+              </div>
+              <div className="p-2">
+                <p className="text-xs text-gray-800 font-medium truncate">{work.title}</p>
+                {work.originalSize && <p className="text-[10px] text-gray-400 mt-0.5">{work.originalSize}</p>}
+              </div>
+            </div>
+          ))}
+          {works.length === 0 && (
+            <div className="col-span-full text-center py-12 text-gray-300">
+              <svg className="w-10 h-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <p className="text-sm">No designs yet — click Add Design</p>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   const TABS: { key: Tab; label: string; count?: number }[] = [
@@ -670,6 +750,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     { key: 'encaustics', label: 'Encaustics', count: data.fineArt.works.encaustics.length },
     { key: 'oils', label: 'Oils', count: data.fineArt.works.oils.length },
     { key: 'stickers', label: 'Stickers', count: data.stickers.length },
+    { key: 'digital', label: 'Digital', count: data.fineArt.works.digitals.length },
   ]
 
   return (
@@ -715,6 +796,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         {tab === 'encaustics' && WorksTab({ category: 'encaustics', kind: 'encaustic' })}
         {tab === 'oils' && OilsTab()}
         {tab === 'stickers' && StickersTab()}
+        {tab === 'digital' && DigitalTab()}
       </div>
 
       {/* ── New Category modal ──────────────────────────────────────────────── */}
@@ -776,7 +858,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
             <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <h2 className="font-semibold text-gray-900 text-base">
                 {editMode === 'add' ? 'Add' : 'Edit'}{' '}
-                {{ photo: 'Photo', watercolor: 'Watercolor', encaustic: 'Encaustic', oil: 'Oil Painting', sticker: 'Sticker' }[editKind]}
+                {{ photo: 'Photo', watercolor: 'Watercolor', encaustic: 'Encaustic', oil: 'Oil Painting', sticker: 'Sticker', digital: 'Digital Design' }[editKind]}
               </h2>
               <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors text-lg">×</button>
             </div>
@@ -840,6 +922,12 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                       {inp(draft.originalSize, v => setDraft(d => ({ ...d, originalSize: v })), 'e.g. 9" × 12"')}
                     </div>
                   )}
+                  {editKind === 'digital' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Subtitle</label>
+                      {inp(draft.originalSize, v => setDraft(d => ({ ...d, originalSize: v })), 'e.g. Logo Design, Winning Poster Design')}
+                    </div>
+                  )}
 
                   {(editKind === 'watercolor' || editKind === 'encaustic' || editKind === 'oil') && (
                     <div>{toggle(draft.available, () => setDraft(d => ({ ...d, available: !d.available })), draft.available ? 'Available for sale' : 'Not currently for sale')}</div>
@@ -856,6 +944,31 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                           placeholder="450"
                           className="w-full border border-gray-200 rounded-lg pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Archival reprints — watercolors only */}
+                  {editKind === 'watercolor' && (
+                    <div className="border-t border-gray-100 pt-4 space-y-3">
+                      <p className="text-sm font-semibold text-gray-700">Archival Reprints <span className="font-normal text-gray-400">(optional)</span></p>
+                      {toggle(draft.reprintAvailable, () => setDraft(d => ({ ...d, reprintAvailable: !d.reprintAvailable })), 'Archival reprints available')}
+                      {draft.reprintAvailable && (
+                        <>
+                          <div>
+                            <label className="block text-sm text-gray-600 mb-1.5">Printed on (medium)</label>
+                            {inp(draft.reprintMedium, v => setDraft(d => ({ ...d, reprintMedium: v })), 'e.g. 300lb cold-press watercolor paper')}
+                          </div>
+                          <div>
+                            <label className="block text-sm text-gray-600 mb-1.5">Reprint price <span className="font-normal text-gray-400">(blank = inquire)</span></label>
+                            <div className="relative w-36">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                              <input type="number" value={draft.reprintPrice} onChange={e => setDraft(d => ({ ...d, reprintPrice: e.target.value }))}
+                                placeholder="150"
+                                className="w-full border border-gray-200 rounded-lg pl-7 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
 
@@ -1024,10 +1137,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     return { redirect: { destination: '/admin/login', permanent: false } }
   }
   const { prisma } = await import('../../lib/prisma')
-  const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
+  const [watercolors, encaustics, oils, digitals, photos, categories, printSizes, stickers] = await Promise.all([
     prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+    prisma.fineArtWork.findMany({ where: { type: 'digital' }, orderBy: { sortOrder: 'asc' } }),
     prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
     prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
@@ -1055,6 +1169,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
             watercolors: watercolors.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
             encaustics: encaustics.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
             oils: oils.map(w => ({ ...w, award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
+            digitals: digitals.map(w => ({ id: w.id, filename: w.filename, title: w.title, originalSize: w.originalSize, description: w.description, available: false, price: null })),
           },
         },
         photos: { categories: photoCatMap, photos: photosByCategory },

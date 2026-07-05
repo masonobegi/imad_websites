@@ -19,6 +19,7 @@ model FineArtWork {
   originalPrice    Float?
   reprintAvailable Boolean         @default(false)
   reprintPrice     Float?
+  reprintMedium    String?
   awardTitle       String?
   awardUrl         String?
   sortOrder        Int             @default(0)

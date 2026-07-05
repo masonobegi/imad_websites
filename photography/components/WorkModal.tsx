@@ -14,6 +14,9 @@ export interface Work {
   available: boolean
   description: string
   price: number | null
+  reprintAvailable?: boolean
+  reprintPrice?: number | null
+  reprintMedium?: string | null
   processImages?: ProcessMedia[]
 }
 
@@ -195,6 +198,20 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
                     : 'Inquire for price'}
                 </span>
               </div>
+              {work.reprintAvailable && (
+                <>
+                  <div className="flex justify-between text-mist">
+                    <span>Archival reprint</span>
+                    <span>{work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}</span>
+                  </div>
+                  {work.reprintMedium && (
+                    <div className="flex justify-between text-mist">
+                      <span>Printed on</span>
+                      <span className="text-right max-w-[55%]">{work.reprintMedium}</span>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
 

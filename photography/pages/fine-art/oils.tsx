@@ -86,7 +86,7 @@ export default function OilPaintings({ works }: Props) {
           ))}
         </div>
 
-        <div className="mt-12 border border-edge px-6 py-5 max-w-lg">
+        <div className="mt-12 border border-edge px-6 py-5 max-w-lg mx-auto text-center">
           <p className="text-xs text-copper uppercase tracking-widest mb-2">Reprints</p>
           <p className="text-mist text-sm leading-relaxed">
             Archival watercolor paper reprints are available for all four paintings at $95 each (11"×14").

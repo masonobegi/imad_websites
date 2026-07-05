@@ -81,7 +81,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       if (type === 'fineArt') {
-        const typeMap: Record<string, string> = { watercolors: 'watercolor', encaustics: 'encaustic', oils: 'oil' }
+        const typeMap: Record<string, string> = { watercolors: 'watercolor', encaustics: 'encaustic', oils: 'oil', digitals: 'digital' }
         const artType = typeMap[category] || category
         if (action === 'add') {
           const count = await prisma.fineArtWork.count({ where: { type: artType } })

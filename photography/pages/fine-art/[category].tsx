@@ -153,6 +153,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
       works: works.map(w => ({
         id: w.id, filename: w.filename, title: w.title, description: w.description,
         originalSize: w.originalSize, available: w.available, price: w.price,
+        reprintAvailable: w.reprintAvailable, reprintPrice: w.reprintPrice, reprintMedium: w.reprintMedium,
         processImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })),
       })),
     },
