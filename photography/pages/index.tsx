@@ -102,7 +102,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-darkroom">
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-white">
           {previewPhotos.map(photo => (
             <Link
               key={photo.id}
@@ -218,6 +218,58 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="sm:hidden px-6 py-3 flex items-center justify-between">
           <p className="text-mist text-xs">Original designs by Imad Obegi</p>
           <Link href="/stickers" className="text-copper text-xs">Browse All Stickers →</Link>
+        </div>
+      </section>
+
+      {/* ── DIGITAL ── */}
+      <section className="border-b border-edge">
+        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Portfolio</p>
+            <Link href="/digital"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Digital Design</h2></Link>
+            <p className="text-mist text-sm mt-1 hidden sm:block">Logos, posters &amp; brand illustrations</p>
+          </div>
+          <Link
+            href="/digital"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
+            <span className="hidden sm:inline">Browse Digital</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-4 gap-2 bg-canvas">
+          {[
+            { src: '/fine-art/oils/rhythms-of-leimert-park.jpg', title: 'Jazz Festival', id: 'jazz' },
+            { src: '/digital/notaries-of-the-realm.jpg', title: 'Notaries of the Realm', id: 'notaries' },
+            { src: '/digital/green-apples-gumbo.jpg', title: 'Green Apples Gumbo', id: 'gumbo' },
+            { src: '/digital/matchfoot.jpg', title: 'Matchfoot', id: 'matchfoot' },
+          ].map(item => (
+            <Link
+              key={item.id}
+              href="/digital"
+              className="group/digital flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas"
+            >
+              <img
+                src={item.src}
+                alt={item.title}
+                className="w-full h-full object-contain p-3 group-hover/digital:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover/digital:bg-black/20 transition-colors duration-300 flex items-end">
+                <p className="opacity-0 group-hover/digital:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
+                  {item.title}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
+          <p className="text-mist text-xs">Digital design &amp; illustration</p>
+          <Link href="/digital" className="text-copper text-xs">Browse Digital →</Link>
         </div>
       </section>
 
