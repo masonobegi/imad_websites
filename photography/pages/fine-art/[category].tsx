@@ -83,7 +83,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
 
         {category === 'encaustics' ? (
           /* Encaustics: CSS grid with wide/panoramic pieces spanning 2 columns */
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 [grid-auto-flow:dense]">
             {displayed.map((work, i) => {
               const wide = isPanoramic(work.originalSize)
               return (
