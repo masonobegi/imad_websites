@@ -135,7 +135,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       photoCategory: photo.category || category || 'nature',
     })
     setUploadFile(null)
-    setUploadPreview(imgUrl(kind, category || (photo.category) || '', item.filename))
+    setUploadPreview(imgUrl(kind, category || (photo.category) || '', (item as BasicWork).filename))
     setPaUploads([])
     setPaItems(oil.pleinAirImages || (item as BasicWork).pleinAirImages || [])
     setError('')
