@@ -77,3 +77,20 @@ model UploadedImage {
   mime      String
   createdAt DateTime @default(now())
 }
+
+model ArtProcess {
+  id          String            @id
+  title       String
+  description String            @default("")
+  sortOrder   Int               @default(0)
+  images      ArtProcessImage[]
+  createdAt   DateTime          @default(now())
+}
+
+model ArtProcessImage {
+  id        String     @id
+  filename  String
+  sortOrder Int        @default(0)
+  processId String
+  process   ArtProcess @relation(fields: [processId], references: [id], onDelete: Cascade)
+}

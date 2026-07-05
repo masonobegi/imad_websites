@@ -11,6 +11,8 @@ interface DigitalWork {
   title: string
   subtitle: string | null
   description: string
+  externalUrl?: string
+  externalLabel?: string
 }
 
 interface Props {
@@ -129,10 +131,22 @@ export default function Digital({ intro, works }: Props) {
               className="w-full block select-none"
               draggable={false}
             />
-            <p className="text-white/60 text-xs text-center mt-3">
-              {popupWork.subtitle && <span>{popupWork.subtitle} — </span>}
-              {popupWork.title}
-            </p>
+            <div className="text-center mt-3 space-y-2">
+              <p className="text-white/60 text-xs">
+                {popupWork.subtitle && <span>{popupWork.subtitle} — </span>}
+                {popupWork.title}
+              </p>
+              {popupWork.externalUrl && (
+                <a
+                  href={popupWork.externalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-copper text-darkroom text-xs px-5 py-2 uppercase tracking-widest hover:bg-amber-600 transition-colors"
+                >
+                  {popupWork.externalLabel || 'View More'}
+                </a>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -141,10 +155,40 @@ export default function Digital({ intro, works }: Props) {
 }
 
 const STATIC_DESIGNS = [
-  { id: 'static-jazz', filename: 'rhythms-of-leimert-park.jpg', src: '/fine-art/oils/rhythms-of-leimert-park.jpg', title: 'Jazz Festival', subtitle: 'Poster Design', description: '' },
-  { id: 'static-notaries', filename: 'notaries-of-the-realm.jpg', src: '/digital/notaries-of-the-realm.jpg', title: 'Notaries of the Realm', subtitle: 'Logo Design', description: '' },
-  { id: 'static-gumbo', filename: 'green-apples-gumbo.jpg', src: '/digital/green-apples-gumbo.jpg', title: 'Green Apples Gumbo', subtitle: 'Logo Design', description: '' },
-  { id: 'static-matchfoot', filename: 'matchfoot.jpg', src: '/digital/matchfoot.jpg', title: 'Matchfoot', subtitle: 'Logo Design', description: '' },
+  {
+    id: 'static-jazz',
+    filename: 'rhythms-of-leimert-park.jpg',
+    src: '/fine-art/oils/rhythms-of-leimert-park.jpg',
+    title: 'Jazz Festival',
+    subtitle: 'Winning Poster Design',
+    description: '5th Annual Leimert Park Jazz Festival — Juried poster competition for the Leimert Park Jazz Festival.',
+    externalUrl: 'https://www.leimertparkbeat.com/',
+    externalLabel: 'View Winning Poster Coverage',
+  },
+  {
+    id: 'static-notaries',
+    filename: 'notaries-of-the-realm.jpg',
+    src: '/digital/notaries-of-the-realm.jpg',
+    title: 'Notaries of the Realm',
+    subtitle: 'Logo Design',
+    description: 'Client requested a distinctive, authoritative logo for a notary services firm. Designed to convey trust, professionalism, and a touch of classic elegance.',
+  },
+  {
+    id: 'static-gumbo',
+    filename: 'green-apples-gumbo.jpg',
+    src: '/digital/green-apples-gumbo.jpg',
+    title: 'Green Apples Gumbo',
+    subtitle: 'Logo Design',
+    description: 'Client requested a fun, vibrant logo for a catering and food business blending Southern and California flavors. Final design captures the energy and warmth of the brand.',
+  },
+  {
+    id: 'static-matchfoot',
+    filename: 'matchfoot.jpg',
+    src: '/digital/matchfoot.jpg',
+    title: 'Matchfoot',
+    subtitle: 'Logo Design',
+    description: 'Client requested a modern, sporty logo for a footwear and active lifestyle brand. Clean, bold design built for versatility across digital and print.',
+  },
 ]
 
 export const getServerSideProps: GetServerSideProps = async () => {

@@ -67,13 +67,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isValidImage(buffer)) return res.status(400).json({ error: 'File does not appear to be a valid image' })
 
     const dirMap: Record<string, string> = {
-      photo:          `photos/${category}`,
-      watercolor:     'fine-art/watercolors',
-      encaustic:      'fine-art/encaustics',
-      oil:            'fine-art/oils',
-      'oil-pleinair': 'fine-art/oils',
-      digital:        'fine-art/digitals',
-      sticker:        'stickers',
+      photo:           `photos/${category}`,
+      watercolor:      'fine-art/watercolors',
+      encaustic:       'fine-art/encaustics',
+      oil:             'fine-art/oils',
+      'oil-pleinair':  'fine-art/oils',
+      digital:         'fine-art/digitals',
+      'process-image': 'fine-art/process',
+      sticker:         'stickers',
     }
     const relDir = dirMap[type]
     if (!relDir) return res.status(400).json({ error: 'Invalid type' })

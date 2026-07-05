@@ -14,6 +14,8 @@ interface BasicWork {
   pleinAirImages?: PleinAirImage[]
 }
 interface PleinAirImage { id: string; filename: string; title: string }
+interface ProcessImage { id: string; filename: string }
+interface ProcessEntry { id: string; title: string; description: string; images: ProcessImage[] }
 interface OilWork extends BasicWork {
   originalPrice: number | null; reprintAvailable: boolean; reprintPrice: number | null
   award: { title: string; url: string } | null; pleinAirImages: PleinAirImage[]
@@ -24,10 +26,11 @@ interface PageData {
   photos: { categories: Record<string, { label: string }>; photos: Record<string, Photo[]> }
   stickers: string[]
   printConfig: { printSizes: PrintSize[] }
+  process: ProcessEntry[]
 }
 
-type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers' | 'digital'
-type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker' | 'digital'
+type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers' | 'digital' | 'process'
+type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker' | 'digital' | 'process'
 
 interface Draft {
   title: string; description: string; originalSize: string; available: boolean; price: string
@@ -51,6 +54,7 @@ function imgUrl(kind: ModalKind | string, category: string, filename: string) {
   if (kind === 'encaustic') return `/fine-art/encaustics/${filename}`
   if (kind === 'oil') return `/fine-art/oils/${filename}`
   if (kind === 'digital') return `/fine-art/digitals/${filename}`
+  if (kind === 'process') return `/fine-art/process/${filename}`
   if (kind === 'sticker') return `/stickers/${filename}`
   return ''
 }
@@ -108,8 +112,15 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     setUploadFile(null); setUploadPreview(''); setPaUploads([]); setPaItems([]); setError('')
   }
 
-  function openEdit(kind: ModalKind, item: BasicWork | OilWork | Photo, category = '') {
-    setEditKind(kind); setEditMode('edit'); setEditItem(item); setEditCategory(category)
+  function openEdit(kind: ModalKind, item: BasicWork | OilWork | Photo | ProcessEntry, category = '') {
+    setEditKind(kind); setEditMode('edit'); setEditItem(item as BasicWork); setEditCategory(category)
+    if (kind === 'process') {
+      const proc = item as ProcessEntry
+      setDraft({ ...emptyDraft, title: proc.title, description: proc.description })
+      setUploadFile(null); setUploadPreview(''); setPaUploads([])
+      setPaItems(proc.images.map(img => ({ id: img.id, filename: img.filename, title: '' })))
+      setError(''); return
+    }
     const oil = item as OilWork; const photo = item as Photo
     setDraft({
       title: item.title, description: item.description,
@@ -172,8 +183,11 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
 
   async function handleSave() {
     if (!draft.title.trim()) { setError('Title is required'); return }
-    if (editMode === 'add' && !uploadFile && editKind !== 'sticker') {
+    if (editMode === 'add' && !uploadFile && editKind !== 'sticker' && editKind !== 'process') {
       setError('Please upload an image'); return
+    }
+    if (editKind === 'process' && editMode === 'add' && paUploads.length === 0) {
+      setError('Please add at least one image'); return
     }
     setSaving(true); setError('')
     try {
@@ -203,6 +217,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           oil: 'fine-art/oils',
           watercolor: 'fine-art/watercolors',
           encaustic: 'fine-art/encaustics',
+          process: 'fine-art/process',
         }
         const folder = folderMap[editKind || ''] || 'fine-art/oils'
         const uploadEndpoint = pa.isVideo ? '/api/admin/upload-video' : '/api/admin/upload'
@@ -253,12 +268,18 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           id, filename, title: draft.title, originalSize: draft.originalSize || null,
           available: false, description: draft.description, price: null, pleinAirImages: [],
         }
+      } else if (editKind === 'process') {
+        itemData = {
+          id, title: draft.title, description: draft.description,
+          images: [...paItems.map(p => ({ id: p.id, filename: p.filename })), ...newPaImages.map(p => ({ id: p.id, filename: p.filename }))],
+        }
       }
 
       const jsonCategory = editKind === 'watercolor' ? 'watercolors' : editKind === 'encaustic' ? 'encaustics' : editKind === 'oil' ? 'oils' : editKind === 'digital' ? 'digitals' : draft.photoCategory
+      const apiType = editKind === 'photo' ? 'photo' : editKind === 'process' ? 'artProcess' : 'fineArt'
       const res = await fetch('/api/admin/products', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: editKind === 'photo' ? 'photo' : 'fineArt', action: editMode, category: jsonCategory, id, data: itemData }),
+        body: JSON.stringify({ type: apiType, action: editMode, category: editKind === 'process' ? undefined : jsonCategory, id, data: itemData }),
       })
       if (!res.ok) throw new Error('Save failed')
 
@@ -285,6 +306,13 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, oils: editMode === 'add' ? [...prev.fineArt.works.oils, itemData as OilWork] : prev.fineArt.works.oils.map(w => w.id === id ? itemData as OilWork : w) } } }))
       } else if (editKind === 'digital') {
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, digitals: editMode === 'add' ? [...prev.fineArt.works.digitals, itemData as BasicWork] : prev.fineArt.works.digitals.map(w => w.id === id ? itemData as BasicWork : w) } } }))
+      } else if (editKind === 'process') {
+        setData(prev => ({
+          ...prev,
+          process: editMode === 'add'
+            ? [...prev.process, itemData as ProcessEntry]
+            : prev.process.map(p => p.id === id ? itemData as ProcessEntry : p)
+        }))
       }
       closeModal(); showSuccess('Changes saved!')
     } catch (err: unknown) {
@@ -322,6 +350,8 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, [cat]: prev.fineArt.works[cat].filter(w => w.id !== deleteTarget.id) } } }))
       } else if (deleteTarget.type === 'sticker') {
         setData(prev => ({ ...prev, stickers: prev.stickers.filter(s => s !== deleteTarget.id) }))
+      } else if (deleteTarget.type === 'artProcess') {
+        setData(prev => ({ ...prev, process: prev.process.filter(p => p.id !== deleteTarget.id) }))
       }
       setDeleteTarget(null); showSuccess('Deleted.')
     } finally { setDeleting(false) }
@@ -329,7 +359,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
 
   // ── Reorder (drag & drop) ───────────────────────────────────────────────────
 
-  async function saveReorder(type: 'fineArt' | 'photo', category: string, ids: string[]) {
+  async function saveReorder(type: 'fineArt' | 'photo' | 'artProcess', category: string, ids: string[]) {
     await fetch('/api/admin/products', {
       method: 'PUT', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type, action: 'reorder', category, data: { ids } }),
@@ -690,6 +720,65 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     )
   }
 
+  function ProcessTab() {
+    const entries = data.process || []
+    const dh = makeDragHandlers<ProcessEntry>(
+      entries,
+      reordered => setData(prev => ({ ...prev, process: reordered })),
+      'artProcess', 'process'
+    )
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Art Process</h2>
+            <p className="text-xs text-gray-400 mt-0.5">{entries.length} entries · drag to reorder · shown at /process</p>
+          </div>
+          <button onClick={() => openAdd('process')}
+            className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Add Entry
+          </button>
+        </div>
+        <div className="p-4 space-y-3">
+          {entries.map((entry, i) => (
+            <div key={entry.id} draggable
+              onDragStart={() => dh.onDragStart(i)}
+              onDragOver={e => dh.onDragOver(e, i)}
+              onDragLeave={dh.onDragLeave}
+              onDrop={() => dh.onDrop(i)}
+              className={`flex gap-4 p-4 rounded-xl border-2 cursor-grab active:cursor-grabbing transition-all ${dragOverIdx === i ? 'border-amber-400 bg-amber-50' : 'border-gray-100 bg-gray-50'}`}>
+              {entry.images[0] && (
+                <img src={`/fine-art/process/${entry.images[0].filename}`} alt={entry.title}
+                  className="w-20 h-20 object-cover rounded-lg flex-shrink-0" loading="lazy" />
+              )}
+              {!entry.images[0] && (
+                <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 truncate">{entry.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{entry.description}</p>
+                <p className="text-[10px] text-blue-400 mt-1">{entry.images.length} image{entry.images.length !== 1 ? 's' : ''}</p>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button onClick={() => openEdit('process', entry)} className="text-xs text-gray-600 bg-white border border-gray-200 hover:bg-amber-50 hover:border-amber-300 px-2.5 py-1.5 rounded-lg transition-colors">Edit</button>
+                <button onClick={() => setDeleteTarget({ type: 'artProcess', id: entry.id, label: entry.title })} className="text-xs text-red-400 bg-white border border-gray-200 hover:bg-red-50 hover:border-red-300 px-2.5 py-1.5 rounded-lg transition-colors">Del</button>
+              </div>
+            </div>
+          ))}
+          {entries.length === 0 && (
+            <div className="text-center py-12 text-gray-300">
+              <svg className="w-10 h-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              <p className="text-sm">No entries yet — click Add Entry to share your artistic process</p>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
   function DigitalTab() {
     const works = data.fineArt.works.digitals || []
     const dh = makeDragHandlers<BasicWork>(
@@ -751,6 +840,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     { key: 'oils', label: 'Oils', count: data.fineArt.works.oils.length },
     { key: 'stickers', label: 'Stickers', count: data.stickers.length },
     { key: 'digital', label: 'Digital', count: data.fineArt.works.digitals.length },
+    { key: 'process', label: 'Process', count: (data.process || []).length },
   ]
 
   return (
@@ -797,6 +887,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         {tab === 'oils' && OilsTab()}
         {tab === 'stickers' && StickersTab()}
         {tab === 'digital' && DigitalTab()}
+        {tab === 'process' && ProcessTab()}
       </div>
 
       {/* ── New Category modal ──────────────────────────────────────────────── */}
@@ -858,14 +949,14 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
             <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
               <h2 className="font-semibold text-gray-900 text-base">
                 {editMode === 'add' ? 'Add' : 'Edit'}{' '}
-                {{ photo: 'Photo', watercolor: 'Watercolor', encaustic: 'Encaustic', oil: 'Oil Painting', sticker: 'Sticker', digital: 'Digital Design' }[editKind]}
+                {{ photo: 'Photo', watercolor: 'Watercolor', encaustic: 'Encaustic', oil: 'Oil Painting', sticker: 'Sticker', digital: 'Digital Design', process: 'Art Process Entry' }[editKind]}
               </h2>
               <button onClick={closeModal} className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 transition-colors text-lg">×</button>
             </div>
 
             <div className="px-6 py-5 space-y-5">
-              {/* Image upload — drag and drop supported */}
-              <div>
+              {/* Image upload — drag and drop supported — hidden for process entries */}
+              {editKind !== 'process' && <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Image {editMode === 'add' && editKind !== 'sticker' && <span className="text-red-400">*</span>}
                   {editMode === 'edit' && <span className="font-normal text-gray-400 text-xs ml-1">(drag a new file to replace)</span>}
@@ -890,7 +981,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                   )}
                 </div>
                 <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
-              </div>
+              </div>}
 
               {editKind !== 'sticker' && (
                 <>
@@ -903,6 +994,39 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
                     {textarea(draft.description, v => setDraft(d => ({ ...d, description: v })))}
                   </div>
+
+                  {/* Process entry images */}
+                  {editKind === 'process' && (
+                    <div className="border-t border-gray-100 pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm font-semibold text-gray-700">Images <span className="text-red-400">*</span></p>
+                        <button type="button" onClick={() => paFileRef.current?.click()}
+                          className="text-xs text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors">
+                          + Add Images
+                        </button>
+                      </div>
+                      <input ref={paFileRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePaFileSelect} />
+                      <p className="text-xs text-gray-400 mb-3">Add photos showing this stage of the artistic process.</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {paItems.map(pa => (
+                          <div key={pa.id} className="relative group">
+                            <img src={`/fine-art/process/${pa.filename}`} alt={pa.id} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                            <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
+                              className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
+                          </div>
+                        ))}
+                        {paUploads.map((pa, i) => (
+                          <div key={i} className="relative group">
+                            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                              <span className="text-[10px] text-gray-400 text-center p-1">{pa.name}</span>
+                            </div>
+                            <button type="button" onClick={() => setPaUploads(prev => prev.filter((_, j) => j !== i))}
+                              className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">×</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {editKind === 'photo' && (
                     <div>
@@ -1137,7 +1261,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     return { redirect: { destination: '/admin/login', permanent: false } }
   }
   const { prisma } = await import('../../lib/prisma')
-  const [watercolors, encaustics, oils, digitals, photos, categories, printSizes, stickers] = await Promise.all([
+  const [watercolors, encaustics, oils, digitals, photos, categories, printSizes, stickers, processEntries] = await Promise.all([
     prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
@@ -1146,6 +1270,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
     prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' } }),
+    prisma.artProcess.findMany({ include: { images: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
   ])
 
   const photosByCategory: Record<string, typeof photos> = {}
@@ -1175,6 +1300,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
         photos: { categories: photoCatMap, photos: photosByCategory },
         stickers: stickers.map(s => s.filename),
         printConfig: { printSizes },
+        process: processEntries.map(e => ({ id: e.id, title: e.title, description: e.description, images: e.images.map(i => ({ id: i.id, filename: i.filename })) })),
       },
     },
   }

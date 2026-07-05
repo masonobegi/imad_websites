@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
+      const [watercolors, encaustics, oils, photos, categories, printSizes, stickers, processEntries] = await Promise.all([
         prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
         prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
         prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
@@ -15,6 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
         prisma.printSize.findMany({ orderBy: { sortOrder: 'asc' } }),
         prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' } }),
+        prisma.artProcess.findMany({ include: { images: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
       ])
 
       const photosByCategory: Record<string, typeof photos> = {}
@@ -44,6 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         photos: { categories: photoCategoryMap, photos: photosByCategory },
         config: { printSizes },
         stickers: stickers.map(s => s.filename),
+        process: processEntries.map(e => ({ id: e.id, title: e.title, description: e.description, images: e.images.map(i => ({ id: i.id, filename: i.filename })) })),
       })
     } catch (err) {
       console.error(err)
@@ -146,6 +148,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         } else if (action === 'reorder') {
           const filenames: string[] = data.ids
           await Promise.all(filenames.map((fn, i) => prisma.sticker.update({ where: { filename: fn }, data: { sortOrder: i } })))
+        }
+        return res.json({ ok: true })
+      }
+
+      if (type === 'artProcess') {
+        if (action === 'add') {
+          const count = await prisma.artProcess.count()
+          const { images, ...rest } = data
+          await prisma.artProcess.create({
+            data: {
+              ...rest,
+              sortOrder: count,
+              images: images?.length
+                ? { create: images.map((img: { id: string; filename: string }, i: number) => ({ id: img.id, filename: img.filename, sortOrder: i })) }
+                : undefined,
+            },
+          })
+        } else if (action === 'update' || action === 'edit') {
+          const { images, id: _id, ...rest } = data
+          await prisma.artProcess.update({ where: { id }, data: rest })
+          if (Array.isArray(images)) {
+            await prisma.artProcessImage.deleteMany({ where: { processId: id } })
+            if (images.length > 0) {
+              await prisma.artProcessImage.createMany({
+                data: images.map((img: { id: string; filename: string }, i: number) => ({
+                  id: img.id, filename: img.filename, sortOrder: i, processId: id,
+                })),
+              })
+            }
+          }
+        } else if (action === 'delete') {
+          await prisma.artProcess.delete({ where: { id } })
+        } else if (action === 'reorder') {
+          const ids: string[] = data.ids
+          await Promise.all(ids.map((eid, i) => prisma.artProcess.update({ where: { id: eid }, data: { sortOrder: i } })))
         }
         return res.json({ ok: true })
       }

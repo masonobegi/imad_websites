@@ -48,7 +48,7 @@ export const DEFAULT_CONFIG: SiteConfig = {
     commissionHeadline: 'Have something in mind?',
     commissionBody: "Imad Obegi takes commissions — watercolors, encaustics, prints, and custom designs. Tell him what you're envisioning and he'll be in touch.",
     commissionCta: 'Commission a Piece',
-    welcomeVisible: false,
+    welcomeVisible: true,
     welcomeText: "Welcome to my website. I've been a passionate artist for most of my life. Over the past few decades, I have honed my craft in encaustic art, photography, watercolor, and fine art. I'm excited to share my portfolio of custom and off-the-shelf artwork with you. My mission is to provide art pieces that resonate with your personal style and taste, for your home, or any space you are creating.",
   },
   stickers: {
