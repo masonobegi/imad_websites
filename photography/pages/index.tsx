@@ -74,7 +74,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           <h1 className="font-serif text-6xl sm:text-8xl text-white leading-none mb-3">{siteConfig.heroHeadline}</h1>
           <p className="text-white/65 text-base sm:text-lg tracking-wide mb-1">{siteConfig.heroSubtext}</p>
           {siteConfig.welcomeVisible && siteConfig.welcomeText && (
-            <p className="font-serif italic text-white/50 text-base sm:text-lg leading-relaxed max-w-2xl mt-3 hidden sm:block">
+            <p className="font-serif italic text-white/50 text-sm sm:text-lg leading-relaxed max-w-2xl mt-3">
               {siteConfig.welcomeText}
             </p>
           )}

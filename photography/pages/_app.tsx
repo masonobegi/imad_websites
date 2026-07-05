@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
       fetch('/api/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path }),
+        body: JSON.stringify({ path, referrer: document.referrer }),
       }).catch(() => {})
     }
     track(router.asPath)

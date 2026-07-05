@@ -11,7 +11,7 @@ export default function Terms() {
       <div className="max-w-2xl mx-auto px-5 sm:px-10 py-16 sm:py-24">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Legal</p>
         <h1 className="font-serif text-4xl text-ink mb-2">Terms of Service</h1>
-        <p className="text-xs text-mist mb-12">Last updated: June 2026</p>
+        <p className="text-xs text-mist mb-12">Last updated: July 2026</p>
 
         <div className="space-y-10 text-mist leading-relaxed">
 
@@ -23,6 +23,11 @@ export default function Terms() {
           <section>
             <h2 className="font-serif text-xl text-ink mb-3">Intellectual property</h2>
             <p>All artwork, photographs, illustrations, and designs displayed on this site are the exclusive property of Imad Obegi. Purchasing a print or original does not transfer any copyright or reproduction rights. You may not reproduce, publish, or create derivative works from any image on this site without explicit written consent.</p>
+          </section>
+
+          <section>
+            <h2 className="font-serif text-xl text-ink mb-3">Payment processing</h2>
+            <p>Photography print orders are processed through Stripe. By placing an order you agree to <a href="https://stripe.com/legal/ssa" target="_blank" rel="noopener noreferrer" className="text-copper hover:text-shadow transition-colors">Stripe's Terms of Service</a>. Your card details are entered directly on Stripe's secure interface and are never stored on this site.</p>
           </section>
 
           <section>
