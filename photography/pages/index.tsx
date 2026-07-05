@@ -76,6 +76,15 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         </div>
       </section>
 
+      {/* ── WELCOME ── */}
+      {siteConfig.welcomeVisible && siteConfig.welcomeText && (
+        <section className="bg-white px-6 sm:px-10 pt-8 pb-6">
+          <p className="font-serif italic text-ink/60 text-sm sm:text-base leading-relaxed max-w-2xl">
+            {siteConfig.welcomeText}
+          </p>
+        </section>
+      )}
+
       {/* ── PHOTOGRAPHY ── */}
       <section className="bg-white">
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
@@ -147,7 +156,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           {featuredFineArt.map(item => (
             <Link
               key={item.id}
-              href={`/fine-art/${item.type}s`}
+              href="/fine-art"
               className="group/art flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative text-left focus:outline-none touch-manipulation"
               aria-label={`View ${item.title}`}
             >
@@ -177,8 +186,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
-            <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Stickers</h2></Link>
-            <p className="text-mist text-sm mt-1 hidden sm:block">Original designs · via Sticker Mule</p>
+            <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.stickersHeadline}</h2></Link>
+            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.stickersSubtext}</p>
           </div>
           <Link
             href="/stickers"
@@ -219,8 +228,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Portfolio</p>
-            <Link href="/digital"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Digital Design</h2></Link>
-            <p className="text-mist text-sm mt-1 hidden sm:block">Logos, posters &amp; brand illustrations</p>
+            <Link href="/digital"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.digitalHeadline}</h2></Link>
+            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.digitalSubtext}</p>
           </div>
           <Link
             href="/digital"

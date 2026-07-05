@@ -228,6 +228,30 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
               </div>
             </Section>
 
+            {/* Stickers section */}
+            <Section title="Stickers Section" subtitle="Text above the stickers strip on the homepage">
+              <div className="space-y-4">
+                <Field label="Section headline">
+                  <TextInput value={config.homepage.stickersHeadline} onChange={v => setHomepage({ stickersHeadline: v })} placeholder="Stickers" />
+                </Field>
+                <Field label="Section description (shown on desktop)">
+                  <TextInput value={config.homepage.stickersSubtext} onChange={v => setHomepage({ stickersSubtext: v })} />
+                </Field>
+              </div>
+            </Section>
+
+            {/* Digital Design section */}
+            <Section title="Digital Design Section" subtitle="Text above the digital design section on the homepage">
+              <div className="space-y-4">
+                <Field label="Section headline">
+                  <TextInput value={config.homepage.digitalHeadline} onChange={v => setHomepage({ digitalHeadline: v })} placeholder="Digital Design" />
+                </Field>
+                <Field label="Section description (shown on desktop)">
+                  <TextInput value={config.homepage.digitalSubtext} onChange={v => setHomepage({ digitalSubtext: v })} />
+                </Field>
+              </div>
+            </Section>
+
             {/* Commission section */}
             <Section title="Commission Section" subtitle="The call-to-action block at the bottom of the homepage">
               <div className="space-y-5">

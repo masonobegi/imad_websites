@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
+import ExitPopup from '../components/ExitPopup'
 
 interface DigitalWork {
   id: string
@@ -22,6 +23,7 @@ interface Props {
 
 export default function Digital({ intro, works }: Props) {
   const [popupIdx, setPopupIdx] = useState<number | null>(null)
+  const [exitUrl, setExitUrl] = useState<{ url: string; label: string } | null>(null)
   const popupWork = popupIdx !== null ? works[popupIdx] : null
 
   return (
@@ -87,17 +89,15 @@ export default function Digital({ intro, works }: Props) {
                   </div>
                 </button>
                 {d.externalUrl && (
-                  <a
-                    href={d.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => setExitUrl({ url: d.externalUrl!, label: d.externalLabel || d.title })}
                     className="inline-flex items-center gap-1.5 mt-2 text-xs text-copper uppercase tracking-widest hover:underline"
                   >
                     {d.externalLabel || 'View More'}
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                  </a>
+                  </button>
                 )}
               </div>
             ))}
@@ -150,18 +150,23 @@ export default function Digital({ intro, works }: Props) {
                 {popupWork.title}
               </p>
               {popupWork.externalUrl && (
-                <a
-                  href={popupWork.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setExitUrl({ url: popupWork.externalUrl!, label: popupWork.externalLabel || popupWork.title })}
                   className="inline-block bg-copper text-darkroom text-xs px-5 py-2 uppercase tracking-widest hover:bg-amber-600 transition-colors"
                 >
                   {popupWork.externalLabel || 'View More'}
-                </a>
+                </button>
               )}
             </div>
           </div>
         </div>
+      )}
+      {exitUrl && (
+        <ExitPopup
+          url={exitUrl.url}
+          label={exitUrl.label}
+          onClose={() => setExitUrl(null)}
+        />
       )}
     </Layout>
   )

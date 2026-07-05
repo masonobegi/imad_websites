@@ -9,6 +9,10 @@ export interface SiteConfig {
     photoStripSubtext: string
     fineArtHeadline: string
     fineArtSubtext: string
+    stickersHeadline: string
+    stickersSubtext: string
+    digitalHeadline: string
+    digitalSubtext: string
     commissionOpen: boolean
     commissionHeadline: string
     commissionBody: string
@@ -57,6 +61,10 @@ export const DEFAULT_CONFIG: SiteConfig = {
     photoStripSubtext: 'Nature, wildlife, and the San Francisco Bay · Metal & canvas prints',
     fineArtHeadline: 'Fine Art',
     fineArtSubtext: 'Watercolors, oil paintings & encaustics · Originals & prints',
+    stickersHeadline: 'Stickers',
+    stickersSubtext: 'Original designs · via Sticker Mule',
+    digitalHeadline: 'Digital Design',
+    digitalSubtext: 'Logos, posters & brand illustrations',
     commissionOpen: true,
     commissionHeadline: 'Have something in mind?',
     commissionBody: "Imad Obegi takes commissions — watercolors, encaustics, prints, and custom designs. Tell him what you're envisioning and he'll be in touch.",
