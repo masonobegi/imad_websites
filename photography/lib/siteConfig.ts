@@ -49,14 +49,14 @@ export const DEFAULT_CONFIG: SiteConfig = {
     commissionBody: "Imad Obegi takes commissions — watercolors, encaustics, prints, and custom designs. Tell him what you're envisioning and he'll be in touch.",
     commissionCta: 'Commission a Piece',
     welcomeVisible: false,
-    welcomeText: "Welcome to my website. I've been a passionate artist for most of my life, and this site is a way to share my work with you.",
+    welcomeText: "Welcome to my website. I've been a passionate artist for most of my life. Over the past few decades, I have honed my craft in encaustic art, photography, watercolor, and fine art. I'm excited to share my portfolio of custom and off-the-shelf artwork with you. My mission is to provide art pieces that resonate with your personal style and taste, for your home, or any space you are creating.",
   },
   stickers: {
     heading: 'Original Character Designs',
-    intro: 'These 3" × 3" vinyl stickers are an easy way to decorate your drink containers, car, computer, or other items that could use some fun and personality. Available as singles and sets on Sticker Mule.',
+    intro: 'These 3" × 3" vinyl stickers are an easy way to decorate your drink containers, car, computer, or other items. Be proud of activities that interest you, fondly remember the places you have visited, and are great conversation starters. Printed on thick, durable vinyl, they\'re weatherproof & waterproof. I can create a custom sticker for you or your business. Contact me using the custom form.',
   },
   digitalDesign: {
-    intro: 'Imad is also a digital designer and illustrator. He has worked with businesses to create logos, posters, and illustrations that bring their brands to life.',
+    intro: 'At OBG Illustrator, we pride ourselves on delivering exceptional graphic design solutions tailored to each client\'s vision. As a full-service design agency, we collaborate closely with our clients to develop unique and impactful designs — whether from scratch or by refining existing concepts. Led by award-winning designer Imad Obegi, we combine traditional artistry with advanced digital techniques to ensure every project exceeds expectations. With a proven track record, competitive pricing, and a commitment to excellence, OBG Illustrator guarantees a seamless process and outstanding results.',
   },
   commissions: {
     formIntro: "Tell Imad what you have in mind — a watercolor of a place you love, an encaustic for a special occasion, a custom print, or something else entirely. He'll reach out to discuss and get you a quote.",

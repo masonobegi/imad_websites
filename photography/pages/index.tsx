@@ -88,7 +88,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.photoStripHeadline}</h2>
+            <Link href="/shop"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.photoStripHeadline}</h2></Link>
             <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.photoStripSubtext}</p>
           </div>
           <Link
@@ -136,7 +136,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-ink">{siteConfig.fineArtHeadline}</h2>
+            <Link href="/fine-art"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.fineArtHeadline}</h2></Link>
             <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.fineArtSubtext}</p>
           </div>
           <Link
@@ -184,7 +184,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
-            <h2 className="font-serif text-3xl sm:text-4xl text-ink">Stickers</h2>
+            <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Stickers</h2></Link>
             <p className="text-mist text-sm mt-1 hidden sm:block">Original designs · via Sticker Mule</p>
           </div>
           <Link

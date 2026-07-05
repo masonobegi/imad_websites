@@ -7,26 +7,30 @@ import Layout from '../components/Layout'
 const DESIGNS = [
   {
     file: 'jazz-festival.jpg',
-    title: 'Berkeley Jazz Festival',
-    description: 'First-place winning poster design for the Berkeley Jazz Festival.',
+    title: '5th Annual Leimert Park Jazz Festival',
+    subtitle: 'Winning Poster Design',
+    description: 'Juried poster competition for the Leimert Park Jazz Festival.',
     popup: true,
   },
   {
     file: 'notaries-of-the-realm.jpg',
     title: 'Notaries of the Realm',
-    description: 'Logo and brand illustration for Notaries of the Realm.',
+    subtitle: 'Logo Design',
+    description: 'A dragon\'s head blending seamlessly into a fountain pen nib — created for a notary company catering to renaissance fairs.',
     popup: false,
   },
   {
     file: 'green-apples-gumbo.jpg',
     title: 'Green Apples Gumbo',
-    description: 'Label and brand illustration for Green Apples Gumbo.',
+    subtitle: 'Product Label Design',
+    description: 'Food product label for a Gumbo Base with an old Louisiana feel — inviting and appetizing.',
     popup: false,
   },
   {
     file: 'matchfoot.jpg',
     title: 'Matchfoot.com',
-    description: 'Logo design for Matchfoot.com.',
+    subtitle: 'Logo Design',
+    description: 'A dynamic illustration representing "lighting a fire under one\'s foot" — energy, motion, and motivation.',
     popup: false,
   },
 ]
@@ -81,8 +85,9 @@ export default function Digital({ intro }: Props) {
                     </div>
                   </div>
                   <div className="pt-3">
+                    <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{d.subtitle}</p>
                     <p className="font-serif text-lg text-ink">{d.title}</p>
-                    <p className="text-mist text-sm mt-0.5">{d.description}</p>
+                    <p className="text-mist text-sm mt-1 leading-relaxed">{d.description}</p>
                   </div>
                 </button>
               ) : (
@@ -96,8 +101,9 @@ export default function Digital({ intro }: Props) {
                     />
                   </div>
                   <div className="pt-3">
+                    <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{d.subtitle}</p>
                     <p className="font-serif text-lg text-ink">{d.title}</p>
-                    <p className="text-mist text-sm mt-0.5">{d.description}</p>
+                    <p className="text-mist text-sm mt-1 leading-relaxed">{d.description}</p>
                   </div>
                 </div>
               )}
@@ -109,8 +115,8 @@ export default function Digital({ intro }: Props) {
         <div className="mt-16 border-t border-edge pt-12 text-center">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Interested in a logo or design?</p>
           <h2 className="font-serif text-3xl text-ink mb-4">Commission a Design</h2>
-          <p className="text-mist text-sm max-w-sm mx-auto mb-8 leading-relaxed">
-            Imad works with businesses and individuals to create logos, posters, and illustrations that bring their vision to life.
+          <p className="text-mist text-sm max-w-md mx-auto mb-8 leading-relaxed">
+            Send your design request to set up a meeting to discuss what you would like to see created for you or your business.
           </p>
           <Link
             href="/commissions"
@@ -138,11 +144,11 @@ export default function Digital({ intro }: Props) {
             </button>
             <img
               src="/digital/jazz-festival.jpg"
-              alt="Berkeley Jazz Festival poster by Imad Obegi"
+              alt="5th Annual Leimert Park Jazz Festival winning poster by Imad Obegi"
               className="w-full block select-none"
               draggable={false}
             />
-            <p className="text-white/60 text-xs text-center mt-3">Berkeley Jazz Festival — First-place winning poster by Imad Obegi</p>
+            <p className="text-white/60 text-xs text-center mt-3">5th Annual Leimert Park Jazz Festival — Winning poster by Imad Obegi</p>
           </div>
         </div>
       )}
