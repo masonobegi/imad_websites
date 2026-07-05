@@ -320,6 +320,17 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
               </div>
             </Section>
 
+            <Section title="Fine Art Page" subtitle="Headline and intro on the /fine-art index page">
+              <div className="space-y-4">
+                <Field label="Page headline">
+                  <TextInput value={config.fineArt.indexHeadline} onChange={v => setFineArt({ indexHeadline: v })} placeholder="Original Works" />
+                </Field>
+                <Field label="Page description">
+                  <TextInput value={config.fineArt.indexDescription} onChange={v => setFineArt({ indexDescription: v })} placeholder="Paintings across watercolor, oil, encaustic, and pastel…" />
+                </Field>
+              </div>
+            </Section>
+
             <Section title="Fine Art Category Descriptions" subtitle="Short descriptions shown below the title on each gallery page">
               <div className="space-y-4">
                 <Field label="Watercolors page description">

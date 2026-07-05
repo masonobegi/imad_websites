@@ -36,6 +36,8 @@ export interface SiteConfig {
     mediums: string
   }
   fineArt: {
+    indexHeadline: string
+    indexDescription: string
     watercolorsDescription: string
     encausticsDescription: string
     oilsDescription: string
@@ -82,6 +84,8 @@ export const DEFAULT_CONFIG: SiteConfig = {
     mediums: 'Photography, Encaustic Painting, Oil, Pastels, Watercolor, Illustration',
   },
   fineArt: {
+    indexHeadline: 'Original Works',
+    indexDescription: 'Paintings across watercolor, oil, encaustic, and pastel — each one an original, made over time.',
     watercolorsDescription: 'Original watercolor paintings by Imad Obegi.',
     encausticsDescription: 'Paintings built up in layers of pigmented beeswax, fused with heat.',
     oilsDescription: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.',

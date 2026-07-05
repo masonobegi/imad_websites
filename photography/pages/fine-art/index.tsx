@@ -12,10 +12,12 @@ interface Category {
 }
 
 interface Props {
+  headline: string
+  description: string
   categories: Category[]
 }
 
-export default function FineArt({ categories }: Props) {
+export default function FineArt({ headline, description, categories }: Props) {
   return (
     <Layout>
       <Head>
@@ -28,10 +30,8 @@ export default function FineArt({ categories }: Props) {
       <div className="max-w-6xl mx-auto px-5 sm:px-10 py-12 sm:py-16">
         <div className="mb-10">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Fine Art</p>
-          <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-3">Original Works</h1>
-          <p className="text-mist text-sm max-w-md">
-            Paintings across watercolor, oil, encaustic, and pastel — each one an original, made over time.
-          </p>
+          <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-3">{headline}</h1>
+          <p className="text-mist text-sm max-w-md">{description}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -74,26 +74,30 @@ export default function FineArt({ categories }: Props) {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const { prisma } = await import('../../lib/prisma')
+  const { readSiteConfig } = await import('../../lib/siteConfig')
 
-  const CATEGORY_META: Record<string, { key: string; label: string; description: string; folder: string; type: string }> = {
-    oils:       { key: 'oils',       label: 'Oil Paintings', description: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.', folder: 'oils',       type: 'oil' },
-    watercolors:{ key: 'watercolors',label: 'Watercolors',   description: 'Original watercolor paintings by Imad Obegi.',                                   folder: 'watercolors',type: 'watercolor' },
-    encaustics: { key: 'encaustics', label: 'Encaustics',    description: 'Paintings built up in layers of pigmented beeswax, fused with heat.',            folder: 'encaustics', type: 'encaustic' },
+  const CATEGORY_META: Record<string, { key: string; label: string; folder: string; type: string; configKey: 'watercolorsDescription' | 'encausticsDescription' | 'oilsDescription' }> = {
+    oils:       { key: 'oils',       label: 'Oil Paintings', folder: 'oils',       type: 'oil',       configKey: 'oilsDescription' },
+    watercolors:{ key: 'watercolors',label: 'Watercolors',   folder: 'watercolors',type: 'watercolor', configKey: 'watercolorsDescription' },
+    encaustics: { key: 'encaustics', label: 'Encaustics',    folder: 'encaustics', type: 'encaustic',  configKey: 'encausticsDescription' },
   }
 
-  const categories: Category[] = await Promise.all(
-    Object.values(CATEGORY_META).map(async meta => {
+  const [siteConfig, ...categoryResults] = await Promise.all([
+    readSiteConfig(),
+    ...Object.values(CATEGORY_META).map(async meta => {
       const works = await prisma.fineArtWork.findMany({ where: { type: meta.type }, orderBy: { sortOrder: 'asc' }, take: 4 })
       const count = await prisma.fineArtWork.count({ where: { type: meta.type } })
-      return {
-        key: meta.key,
-        label: meta.label,
-        description: meta.description,
-        previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}`),
-        count,
-      }
-    })
-  )
+      return { meta, works, count }
+    }),
+  ])
 
-  return { props: { categories } }
+  const categories: Category[] = (categoryResults as { meta: typeof CATEGORY_META[string]; works: { filename: string }[]; count: number }[]).map(({ meta, works, count }) => ({
+    key: meta.key,
+    label: meta.label,
+    description: siteConfig.fineArt[meta.configKey],
+    previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}`),
+    count,
+  }))
+
+  return { props: { headline: siteConfig.fineArt.indexHeadline, description: siteConfig.fineArt.indexDescription, categories } }
 }
