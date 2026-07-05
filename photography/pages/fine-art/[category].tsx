@@ -5,6 +5,16 @@ import { GetServerSideProps } from 'next'
 import Layout from '../../components/Layout'
 import WorkModal, { Work } from '../../components/WorkModal'
 
+// Returns true when width/height ratio >= 2.5 (panoramic, e.g. 6"×24")
+function isPanoramic(originalSize: string | null | undefined): boolean {
+  if (!originalSize) return false
+  const nums = originalSize.match(/\d+(?:\.\d+)?/g)
+  if (!nums || nums.length < 2) return false
+  const a = parseFloat(nums[0]), b = parseFloat(nums[1])
+  if (!a || !b) return false
+  return Math.max(a, b) / Math.min(a, b) >= 2.5
+}
+
 interface Props {
   category: string
   categoryLabel: string
@@ -71,8 +81,50 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
           </div>
         )}
 
-        <div className="photo-grid">
-          {displayed.map((work, i) => (
+        {category === 'encaustics' ? (
+          /* Encaustics: CSS grid with wide/panoramic pieces spanning 2 columns */
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
+            {displayed.map((work, i) => {
+              const wide = isPanoramic(work.originalSize)
+              return (
+                <div key={work.id} className={wide ? 'col-span-2' : ''}>
+                  <button
+                    onClick={() => setSelectedIndex(i)}
+                    className="group block w-full text-left focus:outline-none"
+                  >
+                    <div className="relative overflow-hidden bg-edge">
+                      <img
+                        src={`/fine-art/${category}/${work.filename}`}
+                        alt={work.title}
+                        className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                        draggable={false}
+                        loading="lazy"
+                      />
+                      {work.available && (
+                        <div className="absolute top-2 left-2">
+                          <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
+                            Available
+                          </span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-colors duration-300 flex items-end">
+                        <div className="p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                          <p className="text-white text-sm font-medium leading-snug">{work.title}</p>
+                          {work.originalSize && (
+                            <p className="text-white/60 text-xs mt-0.5">{work.originalSize} original</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          /* All other categories: CSS columns masonry */
+          <div className="photo-grid">
+            {displayed.map((work, i) => (
               <div key={work.id} className="photo-item">
                 <button
                   onClick={() => setSelectedIndex(i)}
@@ -104,8 +156,9 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                   </div>
                 </button>
               </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {selectedIndex !== null && (
