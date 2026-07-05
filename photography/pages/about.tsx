@@ -1,8 +1,21 @@
 import Head from 'next/head'
 import Link from 'next/link'
+import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 
-export default function About() {
+interface Props {
+  tagline: string
+  bio: string
+  phone: string
+  mediums: string[]
+  email: string
+  instagram: string
+  facebook: string
+}
+
+export default function About({ tagline, bio, phone, mediums, email, instagram, facebook }: Props) {
+  const paragraphs = bio.split(/\n\n+/).filter(Boolean)
+
   return (
     <Layout>
       <Head>
@@ -13,7 +26,7 @@ export default function About() {
         <meta property="og:image" content="https://obgillustrator.com/imad-portrait.jpg" />
       </Head>
 
-      {/* Hero — accent strip, not full scene */}
+      {/* Hero — accent strip */}
       <section className="relative h-[22vh] overflow-hidden photo-wrapper">
         <img
           src="/photos/nature/milky-way-over-joshua-tree.jpg"
@@ -25,7 +38,6 @@ export default function About() {
 
       {/* Main content */}
       <section className="max-w-6xl mx-auto px-6 sm:px-10 py-12 sm:py-16">
-
         <div className="flex flex-col sm:flex-row gap-10 sm:gap-16 lg:gap-20">
 
           {/* Portrait */}
@@ -45,49 +57,20 @@ export default function About() {
 
           {/* Bio */}
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-copper uppercase tracking-widest mb-4">Artist · Photographer</p>
+            <p className="text-xs text-copper uppercase tracking-widest mb-4">{tagline}</p>
             <h1 className="font-serif text-5xl sm:text-6xl text-ink mb-8 leading-tight">Imad Obegi</h1>
 
             <div className="space-y-5 text-mist text-lg leading-relaxed">
-              <p>
-                Imad Obegi is an artist whose creative journey began in the vibrant tapestry of childhood,
-                where even as a toddler, an innate talent for selecting yarn colors for his mother hinted
-                at a future immersed in the world of art. This early manifestation of artistic sensibility
-                laid the foundation for a versatile artist, proficient in a myriad of mediums, including
-                encaustic painting, oils, pastels, watercolor, and photography.
-              </p>
-              <p>
-                His artistic repertoire mirrors his deep appreciation for the beauty inherent in nature,
-                serving as a perpetual muse for his work. Imad possesses an unbridled passion and an
-                extensive background in portraiture and figure drawing, capturing the essence of his
-                subjects with meticulous detail and emotional resonance.
-              </p>
-              <p>
-                What sets Imad Obegi apart is his unwavering commitment to the craft, evident in his
-                deliberate choices of colors, composition, and lighting. Each element is carefully
-                selected, not merely for aesthetic appeal, but with the deliberate intention of eliciting
-                specific emotions in the viewer. His compositions are a harmonious dance of elements,
-                inviting the audience to connect with the artwork on a profound, emotional level.
-                Imad's love for nature extends beyond the canvas, transcending into his exploration of
-                landscapes and digital media. Proficient in both traditional and contemporary mediums,
-                he seamlessly blends his skills to create art that resonates with a diverse audience.
-              </p>
-              <p>
-                His accolades include a first-place award for Best Catalina Art Scene and a second-place
-                honor in photography at the Catalina Island Art Festival, as well as winning three years
-                consecutively at Berkeley's Chocolate and Chart Festival. Through his creations, Imad
-                invites us to see the world through his unique perspective, where every stroke and pixel
-                tells a story of passion, skill, and an unwavering connection to the beauty that surrounds us.
-              </p>
+              {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
             </div>
 
             {/* Mediums */}
             <div className="mt-10 pt-8 border-t border-edge">
               <p className="text-xs text-mist uppercase tracking-widest mb-4">Works in</p>
               <div className="flex flex-wrap gap-2">
-                {['Photography', 'Encaustic Painting', 'Oil', 'Pastels', 'Watercolor', 'Illustration'].map(m => (
+                {mediums.map(m => (
                   <span key={m} className="text-xs border border-edge text-mist px-3 py-1.5">
-                    {m}
+                    {m.trim()}
                   </span>
                 ))}
               </div>
@@ -98,15 +81,17 @@ export default function About() {
               <p className="text-xs text-mist uppercase tracking-widest mb-4">Contact</p>
               <div className="space-y-1 text-sm">
                 <p>
-                  <a href="mailto:imadobegi@gmail.com" className="text-copper hover:text-shadow transition-colors">
-                    imadobegi@gmail.com
+                  <a href={`mailto:${email}`} className="text-copper hover:text-shadow transition-colors">
+                    {email}
                   </a>
                 </p>
-                <p>
-                  <a href="tel:6504839838" className="text-mist hover:text-copper transition-colors">
-                    650-483-9838
-                  </a>
-                </p>
+                {phone && (
+                  <p>
+                    <a href={`tel:${phone.replace(/[^0-9]/g, '')}`} className="text-mist hover:text-copper transition-colors">
+                      {phone}
+                    </a>
+                  </p>
+                )}
               </div>
             </div>
 
@@ -114,20 +99,24 @@ export default function About() {
             <div className="mt-10 pt-8 border-t border-edge">
               <p className="text-xs text-mist uppercase tracking-widest mb-4">Follow</p>
               <div className="flex items-center gap-5">
-                <a href="https://www.instagram.com/imadobegi/" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-mist hover:text-copper transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                  </svg>
-                  @imadobegi
-                </a>
-                <a href="https://www.facebook.com/imad.obegi/" target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-mist hover:text-copper transition-colors">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                  Facebook
-                </a>
+                {instagram && (
+                  <a href={instagram} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-mist hover:text-copper transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    @imadobegi
+                  </a>
+                )}
+                {facebook && (
+                  <a href={facebook} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-mist hover:text-copper transition-colors">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Facebook
+                  </a>
+                )}
               </div>
             </div>
 
@@ -136,4 +125,20 @@ export default function About() {
       </section>
     </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { readSiteConfig } = await import('../lib/siteConfig')
+  const config = await readSiteConfig()
+  return {
+    props: {
+      tagline: config.about.tagline,
+      bio: config.about.bio,
+      phone: config.about.phone,
+      mediums: config.about.mediums.split(',').map((m: string) => m.trim()).filter(Boolean),
+      email: config.contact.ownerEmail,
+      instagram: config.social.instagram,
+      facebook: config.social.facebook,
+    },
+  }
 }

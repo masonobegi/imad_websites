@@ -12,6 +12,7 @@ interface BasicWork {
   available: boolean; description: string; price: number | null
   reprintAvailable?: boolean; reprintPrice?: number | null; reprintMedium?: string | null
   pleinAirImages?: PleinAirImage[]
+  awardTitle?: string | null; awardUrl?: string | null
 }
 interface PleinAirImage { id: string; filename: string; title: string }
 interface ProcessImage { id: string; filename: string }
@@ -53,7 +54,7 @@ function imgUrl(kind: ModalKind | string, category: string, filename: string) {
   if (kind === 'watercolor') return `/fine-art/watercolors/${filename}`
   if (kind === 'encaustic') return `/fine-art/encaustics/${filename}`
   if (kind === 'oil') return `/fine-art/oils/${filename}`
-  if (kind === 'digital') return `/fine-art/digitals/${filename}`
+  if (kind === 'digital') return `/digital/${filename}`
   if (kind === 'process') return `/fine-art/process/${filename}`
   if (kind === 'sticker') return `/stickers/${filename}`
   return ''
@@ -131,7 +132,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       reprintAvailable: oil.reprintAvailable || (item as BasicWork).reprintAvailable || false,
       reprintPrice: (oil.reprintPrice ?? (item as BasicWork).reprintPrice)?.toString() || '',
       reprintMedium: (item as BasicWork).reprintMedium || '',
-      awardTitle: oil.award?.title || '', awardUrl: oil.award?.url || '',
+      awardTitle: oil.award?.title || (item as BasicWork).awardTitle || '', awardUrl: oil.award?.url || (item as BasicWork).awardUrl || '',
       photoCategory: photo.category || category || 'nature',
     })
     setUploadFile(null)
@@ -267,6 +268,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         itemData = {
           id, filename, title: draft.title, originalSize: draft.originalSize || null,
           available: false, description: draft.description, price: null, pleinAirImages: [],
+          award: draft.awardTitle ? { title: draft.awardTitle, url: draft.awardUrl } : null,
         }
       } else if (editKind === 'process') {
         itemData = {
@@ -1047,10 +1049,23 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                     </div>
                   )}
                   {editKind === 'digital' && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Subtitle</label>
-                      {inp(draft.originalSize, v => setDraft(d => ({ ...d, originalSize: v })), 'e.g. Logo Design, Winning Poster Design')}
-                    </div>
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Subtitle</label>
+                        {inp(draft.originalSize, v => setDraft(d => ({ ...d, originalSize: v })), 'e.g. Logo Design, Winning Poster Design')}
+                      </div>
+                      <div className="border-t border-gray-100 pt-4 space-y-3">
+                        <p className="text-sm font-semibold text-gray-700">External Link <span className="font-normal text-gray-400">(optional — shown as a button in the popup)</span></p>
+                        <div>
+                          <label className="block text-sm text-gray-600 mb-1.5">Button label</label>
+                          {inp(draft.awardTitle, v => setDraft(d => ({ ...d, awardTitle: v })), 'e.g. View on Leimert Park Jazz Festival')}
+                        </div>
+                        <div>
+                          <label className="block text-sm text-gray-600 mb-1.5">URL</label>
+                          {inp(draft.awardUrl, v => setDraft(d => ({ ...d, awardUrl: v })), 'https://')}
+                        </div>
+                      </div>
+                    </>
                   )}
 
                   {(editKind === 'watercolor' || editKind === 'encaustic' || editKind === 'oil') && (
@@ -1294,7 +1309,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
             watercolors: watercolors.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
             encaustics: encaustics.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
             oils: oils.map(w => ({ ...w, award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
-            digitals: digitals.map(w => ({ id: w.id, filename: w.filename, title: w.title, originalSize: w.originalSize, description: w.description, available: false, price: null })),
+            digitals: digitals.map(w => ({ id: w.id, filename: w.filename, title: w.title, originalSize: w.originalSize, description: w.description, available: false, price: null, awardTitle: w.awardTitle, awardUrl: w.awardUrl })),
           },
         },
         photos: { categories: photoCatMap, photos: photosByCategory },

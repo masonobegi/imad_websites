@@ -174,10 +174,10 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
   )
 }
 
-const CATEGORY_META: Record<string, { label: string; description: string; type: string }> = {
-  watercolors: { label: 'Watercolors',  description: 'Original watercolor paintings by Imad Obegi.', type: 'watercolor' },
-  encaustics:  { label: 'Encaustics',   description: 'Paintings built up in layers of pigmented beeswax, fused with heat.', type: 'encaustic' },
-  oils:        { label: 'Oil Paintings',description: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.', type: 'oil' },
+const CATEGORY_META: Record<string, { label: string; type: string; configKey: 'watercolorsDescription' | 'encausticsDescription' | 'oilsDescription' }> = {
+  watercolors: { label: 'Watercolors',   type: 'watercolor', configKey: 'watercolorsDescription' },
+  encaustics:  { label: 'Encaustics',    type: 'encaustic',  configKey: 'encausticsDescription' },
+  oils:        { label: 'Oil Paintings', type: 'oil',        configKey: 'oilsDescription' },
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ params }) => {
@@ -201,7 +201,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     props: {
       category,
       categoryLabel: meta.label,
-      categoryDescription: meta.description,
+      categoryDescription: siteConfig.fineArt[meta.configKey],
       encausticsHeaderText: siteConfig.encaustics.headerText,
       works: works.map(w => ({
         id: w.id, filename: w.filename, title: w.title, description: w.description,

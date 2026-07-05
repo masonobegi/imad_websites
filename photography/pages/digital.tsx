@@ -69,7 +69,7 @@ export default function Digital({ intro, works }: Props) {
                 >
                   <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
-                      src={d.src || `/fine-art/digitals/${d.filename}`}
+                      src={d.src || `/digital/${d.filename}`}
                       alt={d.title}
                       className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
@@ -126,7 +126,7 @@ export default function Digital({ intro, works }: Props) {
               </>
             )}
             <img
-              src={popupWork.src || `/fine-art/digitals/${popupWork.filename}`}
+              src={popupWork.src || `/digital/${popupWork.filename}`}
               alt={popupWork.title}
               className="w-full block select-none"
               draggable={false}
@@ -201,6 +201,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const mappedWorks = works.map(w => ({
     id: w.id, filename: w.filename, title: w.title,
     subtitle: w.originalSize, description: w.description,
+    externalUrl: w.awardUrl || undefined,
+    externalLabel: w.awardTitle || undefined,
   }))
   return {
     props: {

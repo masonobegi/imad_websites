@@ -72,7 +72,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       encaustic:       'fine-art/encaustics',
       oil:             'fine-art/oils',
       'oil-pleinair':  'fine-art/oils',
-      digital:         'fine-art/digitals',
+      digital:         'digital',
       'process-image': 'fine-art/process',
       sticker:         'stickers',
     }

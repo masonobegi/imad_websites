@@ -62,6 +62,12 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
   function setDigitalDesign(update: Partial<SiteConfig['digitalDesign']>) {
     setConfig(prev => ({ ...prev, digitalDesign: { ...prev.digitalDesign, ...update } }))
   }
+  function setAbout(update: Partial<SiteConfig['about']>) {
+    setConfig(prev => ({ ...prev, about: { ...prev.about, ...update } }))
+  }
+  function setFineArt(update: Partial<SiteConfig['fineArt']>) {
+    setConfig(prev => ({ ...prev, fineArt: { ...prev.fineArt, ...update } }))
+  }
 
   async function save() {
     setSaving(true)
@@ -295,6 +301,37 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
               <Field label="Intro text">
                 <TextArea value={config.digitalDesign.intro} onChange={v => setDigitalDesign({ intro: v })} rows={3} />
               </Field>
+            </Section>
+
+            <Section title="About Page" subtitle="Your bio and contact info on the /about page">
+              <div className="space-y-4">
+                <Field label="Tagline (shown above your name)" hint='e.g. "Artist · Photographer"'>
+                  <TextInput value={config.about.tagline} onChange={v => setAbout({ tagline: v })} placeholder="Artist · Photographer" />
+                </Field>
+                <Field label="Bio" hint="Separate paragraphs with a blank line.">
+                  <TextArea value={config.about.bio} onChange={v => setAbout({ bio: v })} rows={10} />
+                </Field>
+                <Field label="Phone number">
+                  <TextInput value={config.about.phone} onChange={v => setAbout({ phone: v })} placeholder="650-483-9838" />
+                </Field>
+                <Field label="Mediums list" hint="Comma-separated. Shown as tags below the bio.">
+                  <TextInput value={config.about.mediums} onChange={v => setAbout({ mediums: v })} placeholder="Photography, Encaustic Painting, Oil, Pastels, Watercolor, Illustration" />
+                </Field>
+              </div>
+            </Section>
+
+            <Section title="Fine Art Category Descriptions" subtitle="Short descriptions shown below the title on each gallery page">
+              <div className="space-y-4">
+                <Field label="Watercolors page description">
+                  <TextInput value={config.fineArt.watercolorsDescription} onChange={v => setFineArt({ watercolorsDescription: v })} placeholder="Original watercolor paintings by Imad Obegi." />
+                </Field>
+                <Field label="Encaustics page description">
+                  <TextInput value={config.fineArt.encausticsDescription} onChange={v => setFineArt({ encausticsDescription: v })} placeholder="Paintings built up in layers of pigmented beeswax, fused with heat." />
+                </Field>
+                <Field label="Oil Paintings page description">
+                  <TextInput value={config.fineArt.oilsDescription} onChange={v => setFineArt({ oilsDescription: v })} placeholder="Original oil paintings by Imad Obegi." />
+                </Field>
+              </div>
             </Section>
           </>
         )}

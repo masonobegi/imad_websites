@@ -29,6 +29,17 @@ export interface SiteConfig {
   encaustics: {
     headerText: string
   }
+  about: {
+    tagline: string
+    bio: string
+    phone: string
+    mediums: string
+  }
+  fineArt: {
+    watercolorsDescription: string
+    encausticsDescription: string
+    oilsDescription: string
+  }
   featuredPhotos: string[]
   featuredFineArt: { id: string; type: 'watercolor' | 'encaustic' | 'oil' }[]
   social: { instagram: string; facebook: string }
@@ -64,6 +75,17 @@ export const DEFAULT_CONFIG: SiteConfig = {
   encaustics: {
     headerText: 'Shop one of a kind encaustic art pieces. I take commissions. If you saw an encaustic on the gallery page that you liked and it is not available on the purchase page, please send me a note to recreate a similar piece or I can create a custom encaustic for you.',
   },
+  about: {
+    tagline: 'Artist · Photographer',
+    bio: "Imad Obegi is an artist whose creative journey began in the vibrant tapestry of childhood, where even as a toddler, an innate talent for selecting yarn colors for his mother hinted at a future immersed in the world of art. This early manifestation of artistic sensibility laid the foundation for a versatile artist, proficient in a myriad of mediums, including encaustic painting, oils, pastels, watercolor, and photography.\n\nHis artistic repertoire mirrors his deep appreciation for the beauty inherent in nature, serving as a perpetual muse for his work. Imad possesses an unbridled passion and an extensive background in portraiture and figure drawing, capturing the essence of his subjects with meticulous detail and emotional resonance.\n\nWhat sets Imad Obegi apart is his unwavering commitment to the craft, evident in his deliberate choices of colors, composition, and lighting. Each element is carefully selected, not merely for aesthetic appeal, but with the deliberate intention of eliciting specific emotions in the viewer. His compositions are a harmonious dance of elements, inviting the audience to connect with the artwork on a profound, emotional level. Imad's love for nature extends beyond the canvas, transcending into his exploration of landscapes and digital media. Proficient in both traditional and contemporary mediums, he seamlessly blends his skills to create art that resonates with a diverse audience.\n\nHis accolades include a first-place award for Best Catalina Art Scene and a second-place honor in photography at the Catalina Island Art Festival, as well as winning three years consecutively at Berkeley's Chocolate and Chart Festival. Through his creations, Imad invites us to see the world through his unique perspective, where every stroke and pixel tells a story of passion, skill, and an unwavering connection to the beauty that surrounds us.",
+    phone: '650-483-9838',
+    mediums: 'Photography, Encaustic Painting, Oil, Pastels, Watercolor, Illustration',
+  },
+  fineArt: {
+    watercolorsDescription: 'Original watercolor paintings by Imad Obegi.',
+    encausticsDescription: 'Paintings built up in layers of pigmented beeswax, fused with heat.',
+    oilsDescription: 'Original oil paintings by Imad Obegi — plein air landscapes and studio works.',
+  },
   featuredPhotos: [
     'delicate-arch-at-dawn', 'dahlia-symphony', 'the-lone-cypress',
     'milky-way-over-hidden-valley', 'golden-gate-in-the-mist', 'bay-of-gold',
@@ -94,6 +116,8 @@ export async function readSiteConfig(): Promise<SiteConfig> {
       digitalDesign: { ...DEFAULT_CONFIG.digitalDesign, ...(raw.digitalDesign || {}) },
       commissions: { ...DEFAULT_CONFIG.commissions, ...(raw.commissions || {}) },
       encaustics: { ...DEFAULT_CONFIG.encaustics, ...(raw.encaustics || {}) },
+      about: { ...DEFAULT_CONFIG.about, ...(raw.about || {}) },
+      fineArt: { ...DEFAULT_CONFIG.fineArt, ...(raw.fineArt || {}) },
       featuredPhotos: raw.featuredPhotos ?? DEFAULT_CONFIG.featuredPhotos,
       featuredFineArt: raw.featuredFineArt ?? DEFAULT_CONFIG.featuredFineArt,
       social: { ...DEFAULT_CONFIG.social, ...(raw.social || {}) },
