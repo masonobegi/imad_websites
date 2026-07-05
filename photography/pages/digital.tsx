@@ -49,15 +49,27 @@ export default function Digital({ intro }: Props) {
         <meta name="description" content="Digital design and illustration work by Imad Obegi — logos, posters, and brand illustrations." />
       </Head>
 
-      {/* Header */}
+      {/* Header + Commission CTA */}
       <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10 text-center">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Portfolio</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           Digital Design &amp; Illustration
         </h1>
-        <p className="text-mist leading-relaxed max-w-xl mx-auto">
+        <p className="text-mist leading-relaxed max-w-xl mx-auto mb-8">
           {intro}
         </p>
+        <div className="border-t border-edge pt-8">
+          <p className="text-xs text-copper uppercase tracking-widest mb-3">Interested in a logo or design?</p>
+          <p className="text-mist text-sm max-w-md mx-auto mb-6 leading-relaxed">
+            Send your design request to set up a meeting to discuss what you would like to see created for you or your business.
+          </p>
+          <Link
+            href="/commissions"
+            className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+          >
+            Start a Project
+          </Link>
+        </div>
       </div>
 
       {/* Work grid */}
@@ -71,14 +83,14 @@ export default function Digital({ intro }: Props) {
                   className="block w-full text-left focus:outline-none"
                   aria-label={`View ${d.title} full size`}
                 >
-                  <div className="relative overflow-hidden bg-edge aspect-[4/3]">
+                  <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
                       src={`/digital/${d.file}`}
                       alt={d.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                      className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/60 text-white text-xs px-3 py-1.5 uppercase tracking-widest">
                         View full size
                       </span>
@@ -92,11 +104,11 @@ export default function Digital({ intro }: Props) {
                 </button>
               ) : (
                 <div>
-                  <div className="relative overflow-hidden bg-edge aspect-[4/3]">
+                  <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
                       src={`/digital/${d.file}`}
                       alt={d.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                      className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
                     />
                   </div>
@@ -111,20 +123,6 @@ export default function Digital({ intro }: Props) {
           ))}
         </div>
 
-        {/* Commission CTA */}
-        <div className="mt-16 border-t border-edge pt-12 text-center">
-          <p className="text-xs text-copper uppercase tracking-widest mb-3">Interested in a logo or design?</p>
-          <h2 className="font-serif text-3xl text-ink mb-4">Commission a Design</h2>
-          <p className="text-mist text-sm max-w-md mx-auto mb-8 leading-relaxed">
-            Send your design request to set up a meeting to discuss what you would like to see created for you or your business.
-          </p>
-          <Link
-            href="/commissions"
-            className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
-          >
-            Start a Project
-          </Link>
-        </div>
       </div>
 
       {/* Jazz Festival full-size popup */}
