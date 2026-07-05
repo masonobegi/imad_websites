@@ -73,30 +73,14 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-8 sm:pb-14">
           <h1 className="font-serif text-5xl sm:text-7xl text-white leading-none mb-2">{siteConfig.heroHeadline}</h1>
           <p className="text-white/65 text-sm sm:text-base tracking-wide">{siteConfig.heroSubtext}</p>
+          {siteConfig.welcomeVisible && siteConfig.welcomeText && (
+            <p className="font-serif italic text-white/50 text-xs sm:text-sm leading-relaxed max-w-xl mt-3 hidden sm:block">
+              {siteConfig.welcomeText}
+            </p>
+          )}
         </div>
       </section>
 
-      {/* ── WELCOME / ARTIST INTRO ── */}
-      {siteConfig.welcomeVisible && siteConfig.welcomeText && (
-        <section className="bg-white flex flex-col sm:flex-row sm:max-h-56 overflow-hidden">
-          <div className="flex-1 px-6 sm:px-10 py-6 sm:py-8 flex flex-col justify-center min-w-0">
-            <p className="text-[10px] text-copper uppercase tracking-widest mb-2">About the Artist</p>
-            <p className="font-serif italic text-ink/65 text-sm sm:text-base leading-relaxed max-w-lg">
-              {siteConfig.welcomeText}
-            </p>
-            <Link href="/about" className="mt-3 text-xs text-copper uppercase tracking-widest hover:underline self-start">
-              Learn more →
-            </Link>
-          </div>
-          <div className="w-full sm:w-52 lg:w-60 h-44 sm:h-full flex-shrink-0 overflow-hidden">
-            <img
-              src="/imad-portrait.jpg"
-              alt="Imad Obegi"
-              className="w-full h-full object-cover object-top"
-            />
-          </div>
-        </section>
-      )}
 
       {/* ── PHOTOGRAPHY ── */}
       <section className="bg-white">
