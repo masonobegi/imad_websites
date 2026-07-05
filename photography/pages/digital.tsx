@@ -162,8 +162,8 @@ const STATIC_DESIGNS = [
     title: 'Jazz Festival',
     subtitle: 'Winning Poster Design',
     description: '5th Annual Leimert Park Jazz Festival — Juried poster competition for the Leimert Park Jazz Festival.',
-    externalUrl: 'https://www.leimertparkbeat.com/',
-    externalLabel: 'View Winning Poster Coverage',
+    externalUrl: 'https://www.leimertparkjazzfestival.org/2024-art-competition',
+    externalLabel: 'View Winning Poster at Leimert Park Jazz Festival',
   },
   {
     id: 'static-notaries',
