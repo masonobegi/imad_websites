@@ -70,11 +70,11 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           className="absolute inset-0 w-full h-full object-cover photo-protected"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-8 sm:pb-14">
-          <h1 className="font-serif text-5xl sm:text-7xl text-white leading-none mb-2">{siteConfig.heroHeadline}</h1>
-          <p className="text-white/65 text-sm sm:text-base tracking-wide">{siteConfig.heroSubtext}</p>
+        <div className="absolute bottom-0 left-0 right-0 px-6 sm:px-12 pb-10 sm:pb-16">
+          <h1 className="font-serif text-6xl sm:text-8xl text-white leading-none mb-3">{siteConfig.heroHeadline}</h1>
+          <p className="text-white/65 text-base sm:text-lg tracking-wide mb-1">{siteConfig.heroSubtext}</p>
           {siteConfig.welcomeVisible && siteConfig.welcomeText && (
-            <p className="font-serif italic text-white/50 text-sm sm:text-base leading-relaxed max-w-xl mt-3 hidden sm:block">
+            <p className="font-serif italic text-white/50 text-base sm:text-lg leading-relaxed max-w-2xl mt-3 hidden sm:block">
               {siteConfig.welcomeText}
             </p>
           )}
