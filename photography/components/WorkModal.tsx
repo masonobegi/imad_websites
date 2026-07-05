@@ -174,7 +174,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
               <p className="text-xs text-copper uppercase tracking-widest">{categoryLabel}</p>
               {work.available && (
                 <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
-                  Available
+                  Original available
                 </span>
               )}
             </div>
