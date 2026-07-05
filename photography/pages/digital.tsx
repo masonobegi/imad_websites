@@ -201,6 +201,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const mappedWorks = works.map(w => ({
     id: w.id, filename: w.filename, title: w.title,
     subtitle: w.originalSize, description: w.description,
+    // Jazz Festival: use the full oil painting — much higher resolution than the poster scan
+    src: w.id === 'jazz-festival' ? '/fine-art/oils/rhythms-of-leimert-park.jpg' : undefined,
     externalUrl: w.awardUrl || undefined,
     externalLabel: w.awardTitle || undefined,
   }))
