@@ -174,7 +174,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 
       {/* ── STICKERS ── */}
       <section className="border-b-2 border-shadow bg-canvas">
-        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Stickers</h2></Link>
