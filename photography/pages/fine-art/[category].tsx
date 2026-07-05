@@ -81,84 +81,44 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
           </div>
         )}
 
-        {category === 'encaustics' ? (
-          /* Encaustics: CSS grid with wide/panoramic pieces spanning 2 columns */
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 [grid-auto-flow:dense]">
-            {displayed.map((work, i) => {
-              const wide = isPanoramic(work.originalSize)
-              return (
-                <div key={work.id} className={wide ? 'col-span-2' : ''}>
-                  <button
-                    onClick={() => setSelectedIndex(i)}
-                    className="group block w-full text-left focus:outline-none"
-                  >
-                    <div className="relative overflow-hidden bg-edge">
-                      <img
-                        src={`/fine-art/${category}/${work.filename}`}
-                        alt={work.title}
-                        className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
-                        draggable={false}
-                        loading="lazy"
-                      />
-                      {work.available && (
-                        <div className="absolute top-2 left-2">
-                          <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
-                            Available
-                          </span>
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-colors duration-300 flex items-end">
-                        <div className="p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                          <p className="text-white text-sm font-medium leading-snug">{work.title}</p>
-                          {work.originalSize && (
-                            <p className="text-white/60 text-xs mt-0.5">{work.originalSize} original</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              )
-            })}
-          </div>
-        ) : (
-          /* All other categories: CSS columns masonry */
-          <div className="photo-grid">
-            {displayed.map((work, i) => (
-              <div key={work.id} className="photo-item">
+        {/* Unified masonry — 3 cols, visible titles, panoramic pieces span full width */}
+        <div className="art-grid">
+          {displayed.map((work, i) => {
+            const wide = isPanoramic(work.originalSize)
+            return (
+              <div key={work.id} className={wide ? 'art-item--full' : 'art-item'}>
                 <button
                   onClick={() => setSelectedIndex(i)}
                   className="group block w-full text-left focus:outline-none"
                 >
-                  <div className="relative overflow-hidden bg-edge">
+                  <div className="relative overflow-hidden">
                     <img
                       src={`/fine-art/${category}/${work.filename}`}
                       alt={work.title}
-                      className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                      className="w-full block transition-transform duration-700 group-hover:scale-[1.02] select-none"
                       draggable={false}
                       loading="lazy"
                     />
-                    {work.available && (
-                      <div className="absolute top-2 left-2">
-                        <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
-                          Available
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
+                  </div>
+                  <div className="pt-2.5">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-serif text-sm text-ink leading-snug">{work.title}</p>
+                      {work.available && (
+                        <span className="text-[9px] border border-copper text-copper px-1.5 py-0.5 uppercase tracking-widest flex-shrink-0 mt-0.5">
+                          For Sale
                         </span>
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/45 transition-colors duration-300 flex items-end">
-                      <div className="p-3 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <p className="text-white text-sm font-medium leading-snug">{work.title}</p>
-                        {work.originalSize && (
-                          <p className="text-white/60 text-xs mt-0.5">{work.originalSize} original</p>
-                        )}
-                      </div>
+                      )}
                     </div>
+                    {work.originalSize && (
+                      <p className="text-mist text-[11px] mt-0.5">{work.originalSize}</p>
+                    )}
                   </div>
                 </button>
               </div>
-            ))}
-          </div>
-        )}
+            )
+          })}
+        </div>
       </div>
 
       {selectedIndex !== null && (

@@ -17,7 +17,7 @@ h1, h2, h3 {
   font-family: 'Merriweather', Georgia, serif;
 }
 
-/* Masonry gallery grid */
+/* Masonry gallery grid — photography (4 cols, tight) */
 .photo-grid {
   columns: 1;
   column-gap: 10px;
@@ -38,6 +38,26 @@ h1, h2, h3 {
 }
 @media (min-width: 1024px) {
   .photo-item { margin-bottom: 14px; }
+}
+
+/* Masonry gallery grid — fine art (3 cols, generous gaps) */
+.art-grid {
+  columns: 2;
+  column-gap: 16px;
+}
+@media (min-width: 768px) {
+  .art-grid { columns: 3; column-gap: 22px; }
+}
+
+.art-item {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+/* Panoramic pieces span full gallery width */
+.art-item--full {
+  column-span: all;
+  margin-bottom: 20px;
 }
 
 /* No right-click / drag on photos */

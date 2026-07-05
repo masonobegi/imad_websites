@@ -72,6 +72,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           await prisma.photo.create({ data: { ...data, category, sortOrder: count } })
         } else if (action === 'update' || action === 'edit') {
           const { id: _id, ...photoData } = data
+          // If category changed, rename the UploadedImage path so the image stays reachable
+          const oldPhoto = await prisma.photo.findUnique({ where: { id } })
+          if (oldPhoto && oldPhoto.category !== photoData.category) {
+            const oldPath = `photos/${oldPhoto.category}/${oldPhoto.filename}`
+            const newPath = `photos/${photoData.category}/${oldPhoto.filename}`
+            await prisma.uploadedImage.updateMany({ where: { path: oldPath }, data: { path: newPath } })
+          }
           await prisma.photo.update({ where: { id }, data: photoData })
         } else if (action === 'delete') {
           await prisma.photo.delete({ where: { id } })

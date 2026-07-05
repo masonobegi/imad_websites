@@ -1,5 +1,7 @@
 import Head from 'next/head'
 import Script from 'next/script'
+import { useEffect } from 'react'
+import { useRouter } from 'next/router'
 import type { AppProps } from 'next/app'
 import { CartProvider } from '../components/CartContext'
 import '../styles/globals.css'
@@ -7,6 +9,23 @@ import '../styles/globals.css'
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter()
+
+  useEffect(() => {
+    const track = (url: string) => {
+      const path = url.split('?')[0]
+      if (path.startsWith('/admin')) return
+      fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+      }).catch(() => {})
+    }
+    track(router.asPath)
+    router.events.on('routeChangeComplete', track)
+    return () => router.events.off('routeChangeComplete', track)
+  }, [router])
+
   return (
     <CartProvider>
       {GA_ID && (
