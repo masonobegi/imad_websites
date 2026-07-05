@@ -7,6 +7,7 @@ import Layout from '../components/Layout'
 interface DigitalWork {
   id: string
   filename: string
+  src?: string
   title: string
   subtitle: string | null
   description: string
@@ -66,7 +67,7 @@ export default function Digital({ intro, works }: Props) {
                 >
                   <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
-                      src={`/fine-art/digitals/${d.filename}`}
+                      src={d.src || `/fine-art/digitals/${d.filename}`}
                       alt={d.title}
                       className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
@@ -123,7 +124,7 @@ export default function Digital({ intro, works }: Props) {
               </>
             )}
             <img
-              src={`/fine-art/digitals/${popupWork.filename}`}
+              src={popupWork.src || `/fine-art/digitals/${popupWork.filename}`}
               alt={popupWork.title}
               className="w-full block select-none"
               draggable={false}
@@ -139,6 +140,13 @@ export default function Digital({ intro, works }: Props) {
   )
 }
 
+const STATIC_DESIGNS = [
+  { id: 'static-jazz', filename: 'rhythms-of-leimert-park.jpg', src: '/fine-art/oils/rhythms-of-leimert-park.jpg', title: 'Jazz Festival', subtitle: 'Poster Design', description: '' },
+  { id: 'static-notaries', filename: 'notaries-of-the-realm.jpg', src: '/digital/notaries-of-the-realm.jpg', title: 'Notaries of the Realm', subtitle: 'Logo Design', description: '' },
+  { id: 'static-gumbo', filename: 'green-apples-gumbo.jpg', src: '/digital/green-apples-gumbo.jpg', title: 'Green Apples Gumbo', subtitle: 'Logo Design', description: '' },
+  { id: 'static-matchfoot', filename: 'matchfoot.jpg', src: '/digital/matchfoot.jpg', title: 'Matchfoot', subtitle: 'Logo Design', description: '' },
+]
+
 export const getServerSideProps: GetServerSideProps = async () => {
   const { prisma } = await import('../lib/prisma')
   const { readSiteConfig } = await import('../lib/siteConfig')
@@ -146,13 +154,14 @@ export const getServerSideProps: GetServerSideProps = async () => {
     readSiteConfig(),
     prisma.fineArtWork.findMany({ where: { type: 'digital' }, orderBy: { sortOrder: 'asc' } }),
   ])
+  const mappedWorks = works.map(w => ({
+    id: w.id, filename: w.filename, title: w.title,
+    subtitle: w.originalSize, description: w.description,
+  }))
   return {
     props: {
       intro: siteConfig.digitalDesign.intro,
-      works: works.map(w => ({
-        id: w.id, filename: w.filename, title: w.title,
-        subtitle: w.originalSize, description: w.description,
-      })),
+      works: mappedWorks.length > 0 ? mappedWorks : STATIC_DESIGNS,
     },
   }
 }

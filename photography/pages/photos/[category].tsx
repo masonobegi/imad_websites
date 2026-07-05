@@ -22,7 +22,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
   const [cartOpen, setCartOpen] = useState(false)
 
   return (
-    <Layout dark>
+    <Layout>
       <Head>
         <title>{categoryLabel} Photography | OBGillustrator.com</title>
         <meta name="description" content={categoryDescription} />
@@ -38,7 +38,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
             <span className="mx-2 opacity-40">›</span>
             {categoryLabel}
           </p>
-          <h1 className="font-serif text-3xl text-edge">{categoryLabel}</h1>
+          <h1 className="font-serif text-3xl text-ink">{categoryLabel}</h1>
           <p className="text-mist text-sm mt-1 max-w-md">{categoryDescription}</p>
         </div>
 
@@ -54,7 +54,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
                   onClick={() => setSelectedIndex(i)}
                   className="group block w-full text-left focus:outline-none"
                 >
-                  <div className="relative photo-wrapper overflow-hidden bg-panel">
+                  <div className="relative photo-wrapper overflow-hidden bg-canvas">
                     <img
                       src={`/photos/${category}/${photo.filename}`}
                       alt={photo.title}
