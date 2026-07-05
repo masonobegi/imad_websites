@@ -76,12 +76,25 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         </div>
       </section>
 
-      {/* ── WELCOME ── */}
+      {/* ── WELCOME / ARTIST INTRO ── */}
       {siteConfig.welcomeVisible && siteConfig.welcomeText && (
-        <section className="bg-white px-6 sm:px-10 pt-8 pb-6">
-          <p className="font-serif italic text-ink/60 text-sm sm:text-base leading-relaxed max-w-2xl">
-            {siteConfig.welcomeText}
-          </p>
+        <section className="bg-white flex flex-col sm:flex-row">
+          <div className="flex-1 px-6 sm:px-10 py-8 sm:py-10 flex flex-col justify-center">
+            <p className="text-[10px] text-copper uppercase tracking-widest mb-3">About the Artist</p>
+            <p className="font-serif italic text-ink/65 text-sm sm:text-base leading-relaxed max-w-lg">
+              {siteConfig.welcomeText}
+            </p>
+            <Link href="/about" className="mt-4 text-xs text-copper uppercase tracking-widest hover:underline self-start">
+              Learn more →
+            </Link>
+          </div>
+          <div className="sm:w-64 lg:w-72 h-52 sm:h-auto flex-shrink-0 overflow-hidden">
+            <img
+              src="/imad-portrait.jpg"
+              alt="Imad Obegi"
+              className="w-full h-full object-cover object-top"
+            />
+          </div>
         </section>
       )}
 
