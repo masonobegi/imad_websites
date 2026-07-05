@@ -13,8 +13,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   await prisma.uploadedImage.upsert({
     where: { path: 'digital/jazz-festival.jpg' },
-    update: { data: oilImage.data, mimeType: oilImage.mimeType },
-    create: { path: 'digital/jazz-festival.jpg', data: oilImage.data, mimeType: oilImage.mimeType },
+    update: { data: oilImage.data, mime: oilImage.mime },
+    create: { path: 'digital/jazz-festival.jpg', data: oilImage.data, mime: oilImage.mime },
   })
 
   res.json({ ok: true })
