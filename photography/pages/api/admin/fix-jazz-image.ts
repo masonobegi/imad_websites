@@ -6,10 +6,13 @@ import { prisma } from '../../../lib/prisma'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.query.key !== 'fix-jazz-2026') return res.status(403).end()
 
-  const oilImage = await prisma.uploadedImage.findUnique({
-    where: { path: 'fine-art/oils/rhythms-of-leimert-park.jpg' },
+  const oilImage = await prisma.uploadedImage.findFirst({
+    where: { path: { contains: 'rhythms-of-leimert-park' } },
   })
-  if (!oilImage) return res.status(404).json({ error: 'Oil painting image not found' })
+  if (!oilImage) {
+    const sample = await prisma.uploadedImage.findMany({ take: 5, select: { path: true } })
+    return res.status(404).json({ error: 'Oil painting image not found', samplePaths: sample.map(s => s.path) })
+  }
 
   await prisma.uploadedImage.upsert({
     where: { path: 'digital/jazz-festival.jpg' },
