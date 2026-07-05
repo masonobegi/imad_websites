@@ -240,36 +240,59 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-4 gap-2 bg-canvas">
+        <div className="px-4 sm:px-6 py-6 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 bg-canvas">
           {[
-            { src: '/fine-art/oils/rhythms-of-leimert-park.jpg', title: 'Jazz Festival', id: 'jazz' },
-            { src: '/digital/notaries-of-the-realm.jpg', title: 'Notaries of the Realm', id: 'notaries' },
-            { src: '/digital/green-apples-gumbo.jpg', title: 'Green Apples Gumbo', id: 'gumbo' },
-            { src: '/digital/matchfoot.jpg', title: 'Matchfoot', id: 'matchfoot' },
+            {
+              id: 'jazz',
+              src: '/fine-art/oils/rhythms-of-leimert-park.jpg',
+              title: 'Jazz Festival',
+              desc: 'Winning poster — 5th Annual Leimert Park Jazz Festival',
+              externalUrl: 'https://www.leimertparkjazzfestival.org/2024-art-competition',
+            },
+            {
+              id: 'notaries',
+              src: '/digital/notaries-of-the-realm.jpg',
+              title: 'Notaries of the Realm',
+              desc: 'Logo design for a notary services firm',
+            },
+            {
+              id: 'gumbo',
+              src: '/digital/green-apples-gumbo.jpg',
+              title: 'Green Apples Gumbo',
+              desc: 'Brand identity for a catering & food business',
+            },
+            {
+              id: 'matchfoot',
+              src: '/digital/matchfoot.jpg',
+              title: 'Matchfoot',
+              desc: 'Logo for a footwear & active lifestyle brand',
+            },
           ].map(item => (
-            <Link
-              key={item.id}
-              href="/digital"
-              className="group/digital flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas"
-            >
-              <img
-                src={item.src}
-                alt={item.title}
-                className="w-full h-full object-contain p-3 group-hover/digital:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover/digital:bg-black/20 transition-colors duration-300 flex items-end">
-                <p className="opacity-0 group-hover/digital:opacity-100 transition-opacity duration-300 text-white text-xs px-3 pb-3 leading-snug">
-                  {item.title}
-                </p>
-              </div>
-            </Link>
+            <div key={item.id} className="group/digital">
+              <Link href={item.externalUrl || '/digital'} target={item.externalUrl ? '_blank' : undefined} rel={item.externalUrl ? 'noopener noreferrer' : undefined}>
+                <div className="bg-white h-40 sm:h-48 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={item.src}
+                    alt={item.title}
+                    className="w-full h-full object-contain p-2 group-hover/digital:scale-[1.03] transition-transform duration-500"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="pt-2.5">
+                  <p className="font-serif text-sm text-ink leading-snug">{item.title}</p>
+                  <p className="text-mist text-[11px] mt-0.5 leading-snug">{item.desc}</p>
+                  {item.externalUrl && (
+                    <span className="inline-flex items-center gap-1 mt-1.5 text-[10px] text-copper uppercase tracking-widest">
+                      View site
+                      <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </span>
+                  )}
+                </div>
+              </Link>
+            </div>
           ))}
-        </div>
-
-        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
-          <p className="text-mist text-xs">Digital design &amp; illustration</p>
-          <Link href="/digital" className="text-copper text-xs">Browse Digital →</Link>
         </div>
       </section>
 
