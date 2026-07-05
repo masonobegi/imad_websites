@@ -173,7 +173,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── STICKERS ── */}
-      <section className="border-b-2 border-shadow bg-white">
+      <section className="border-b-2 border-shadow bg-canvas">
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
@@ -191,12 +191,12 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-white">
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
           {previewStickers.map(filename => (
             <Link
               key={filename}
               href="/stickers"
-              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-white flex items-center justify-center"
+              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
             >
               <img
                 src={`/stickers/${filename}`}
