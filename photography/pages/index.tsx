@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -7,6 +7,7 @@ import PhotoModal from '../components/PhotoModal'
 import WorkModal, { Work } from '../components/WorkModal'
 import OilModal, { OilWork } from '../components/OilModal'
 import CartPopup from '../components/CartPopup'
+import ExitPopup from '../components/ExitPopup'
 import { Photo } from '../lib/photos'
 import { SiteConfig } from '../lib/siteConfig'
 
@@ -32,6 +33,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
   const [workModalState, setWorkModalState] = useState<{ works: Work[], index: number, category: string, categoryLabel: string } | null>(null)
   const [oilModalIndex, setOilModalIndex] = useState<number | null>(null)
   const [cartOpen, setCartOpen] = useState(false)
+  const [exitUrl, setExitUrl] = useState<{ url: string; label: string } | null>(null)
 
   const openPhoto = (photo: Photo) => {
     const arr: Photo[] = allPhotos[photo.category] || []
@@ -285,13 +287,15 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
                 <p className="font-serif text-base sm:text-lg text-ink leading-snug mb-1.5">{item.title}</p>
                 <p className="text-mist text-xs leading-relaxed">{item.desc}</p>
                 {item.externalUrl && (
-                  <a href={item.externalUrl} target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-2 text-[10px] text-copper uppercase tracking-widest hover:underline">
+                  <button
+                    onClick={() => setExitUrl({ url: item.externalUrl!, label: item.title })}
+                    className="inline-flex items-center gap-1 mt-2 text-[10px] text-copper uppercase tracking-widest hover:underline"
+                  >
                     View site
                     <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                  </a>
+                  </button>
                 )}
               </div>
             </div>
@@ -340,6 +344,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         />
       )}
       {cartOpen && <CartPopup onClose={() => setCartOpen(false)} />}
+      {exitUrl && <ExitPopup url={exitUrl.url} label={exitUrl.label} onClose={() => setExitUrl(null)} />}
     </Layout>
   )
 }

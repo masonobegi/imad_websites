@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import ExitPopup from './ExitPopup'
 
 export interface PleinAirImage {
   id: string
@@ -105,6 +106,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
   const [message, setMessage] = useState('')
   const [activeInquiry, setActiveInquiry] = useState<'original' | 'reprint' | null>(null)
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [exitUrl, setExitUrl] = useState<{ url: string; label: string } | null>(null)
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
@@ -160,6 +162,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
   }, [onClose, goPrev, goNext])
 
   return (
+    <>
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
@@ -242,11 +245,9 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
 
             {/* Award badge */}
             {work.award && (
-              <a
-                href={work.award.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 mb-3 bg-copper/10 border border-copper/30 px-3 py-2 hover:bg-copper/20 transition-colors group"
+              <button
+                onClick={() => setExitUrl({ url: work.award!.url, label: work.award!.title })}
+                className="flex items-center gap-2 mb-3 bg-copper/10 border border-copper/30 px-3 py-2 hover:bg-copper/20 transition-colors group w-full text-left"
               >
                 <svg className="w-4 h-4 text-copper flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -255,7 +256,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                 <svg className="w-3 h-3 text-copper/60 ml-auto flex-shrink-0 group-hover:text-copper transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-              </a>
+              </button>
             )}
 
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
@@ -369,5 +370,10 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
         </div>
       </div>
     </div>
+
+    {exitUrl && (
+      <ExitPopup url={exitUrl.url} label={exitUrl.label} onClose={() => setExitUrl(null)} />
+    )}
+    </>
   )
 }
