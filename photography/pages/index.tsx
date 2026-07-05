@@ -77,8 +77,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── PHOTOGRAPHY ── */}
-      <section className="border-b-2 border-shadow bg-white">
-        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
+      <section className="bg-white">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/shop"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.photoStripHeadline}</h2></Link>
@@ -125,8 +125,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── FINE ART ── */}
-      <section className="border-b-2 border-shadow bg-canvas">
-        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
+      <section className="bg-canvas">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/fine-art"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.fineArtHeadline}</h2></Link>
@@ -173,7 +173,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── STICKERS ── */}
-      <section className="border-b-2 border-shadow bg-canvas">
+      <section className="bg-canvas">
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
@@ -215,7 +215,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── DIGITAL ── */}
-      <section className="border-b-2 border-shadow bg-canvas">
+      <section className="bg-canvas">
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Portfolio</p>
