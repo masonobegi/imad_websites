@@ -15,7 +15,7 @@ interface FeaturedArt { id: string; type: 'watercolor' | 'encaustic' | 'oil'; im
 interface PrintSize { label: string; price: number }
 
 interface Props {
-  heroPhoto: Photo
+  heroPhoto: Photo & { src: string }
   previewPhotos: Photo[]
   allPhotos: Record<string, Photo[]>
   allOils: OilWork[]
@@ -65,7 +65,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       {/* ── HERO ── */}
       <section className="relative h-[65vh] sm:h-[78vh] overflow-hidden photo-wrapper">
         <img
-          src={`/photos/${heroPhoto.category}/${heroPhoto.filename}`}
+          src={heroPhoto.src}
           alt="Imad Obegi Photography"
           className="absolute inset-0 w-full h-full object-cover photo-protected"
         />
@@ -374,7 +374,13 @@ export const getServerSideProps: GetServerSideProps = async () => {
 
   const allPhotosFlat: Photo[] = allPhotosRaw.map(p => ({ id: p.id, filename: p.filename, title: p.title, description: p.description, category: p.category }))
 
-  const heroPhoto = allPhotosFlat.find(p => p.id === siteConfig.homepage.heroPhotoId) || allPhotosFlat[0]
+  const heroPhotoRecord = allPhotosFlat.find(p => p.id === siteConfig.homepage.heroPhotoId) || allPhotosFlat[0]
+  // Check for a clean (non-watermarked) hero image stored at hero/[id].jpg
+  const cleanHero = await prisma.uploadedImage.findUnique({ where: { path: `hero/${heroPhotoRecord.id}.jpg` }, select: { path: true } })
+  const heroPhoto = {
+    ...heroPhotoRecord,
+    src: cleanHero ? `/hero/${heroPhotoRecord.id}.jpg` : `/photos/${heroPhotoRecord.category}/${heroPhotoRecord.filename}`,
+  }
 
   const picked: Photo[] = []
   for (const id of siteConfig.featuredPhotos) {

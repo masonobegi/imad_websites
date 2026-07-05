@@ -21,6 +21,7 @@ const nextConfig = {
         { source: '/fine-art/:path*', destination: '/api/img/fine-art/:path*' },
         { source: '/stickers/:path*', destination: '/api/img/stickers/:path*' },
         { source: '/digital/:path*',  destination: '/api/img/digital/:path*' },
+        { source: '/hero/:path*',     destination: '/api/img/hero/:path*' },
       ],
     }
   },
