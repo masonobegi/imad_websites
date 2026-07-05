@@ -76,16 +76,9 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         </div>
       </section>
 
-      {/* ── WELCOME ── */}
-      {siteConfig.welcomeVisible && siteConfig.welcomeText && (
-        <section className="px-6 sm:px-12 py-10 sm:py-14 text-center border-b border-edge">
-          <p className="font-serif text-ink text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">{siteConfig.welcomeText}</p>
-        </section>
-      )}
-
       {/* ── PHOTOGRAPHY ── */}
-      <section className="border-b border-edge">
-        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+      <section className="border-b-2 border-shadow bg-white">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/shop"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.photoStripHeadline}</h2></Link>
@@ -132,8 +125,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── FINE ART ── */}
-      <section className="border-b border-edge">
-        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+      <section className="border-b-2 border-shadow bg-canvas">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/fine-art"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.fineArtHeadline}</h2></Link>
@@ -180,8 +173,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── STICKERS ── */}
-      <section className="border-b border-edge">
-        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+      <section className="border-b-2 border-shadow bg-white">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
             <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Stickers</h2></Link>
@@ -198,12 +191,12 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-white">
           {previewStickers.map(filename => (
             <Link
               key={filename}
               href="/stickers"
-              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
+              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-white flex items-center justify-center"
             >
               <img
                 src={`/stickers/${filename}`}
@@ -222,8 +215,8 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
       </section>
 
       {/* ── DIGITAL ── */}
-      <section className="border-b border-edge">
-        <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
+      <section className="border-b-2 border-shadow bg-canvas">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between border-b border-shadow">
           <div>
             <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Portfolio</p>
             <Link href="/digital"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">Digital Design</h2></Link>
