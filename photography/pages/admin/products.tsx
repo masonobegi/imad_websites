@@ -369,7 +369,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   function makeDragHandlers<T extends { id: string }>(
     items: T[],
     onReorder: (reordered: T[]) => void,
-    type: 'fineArt' | 'photo',
+    type: 'fineArt' | 'photo' | 'artProcess',
     category: string
   ) {
     return {
