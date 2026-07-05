@@ -95,7 +95,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-white">
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
           {previewPhotos.map(photo => (
             <Link
               key={photo.id}
