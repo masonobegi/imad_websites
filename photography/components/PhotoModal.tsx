@@ -70,12 +70,15 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photoDims])
 
-  function isBestFit(label: string): boolean {
-    if (!photoDims) return false
+  function fitLabel(label: string): 'best' | 'crop' | null {
+    if (!photoDims) return null
     const pr = parsePrintRatio(label)
-    if (!pr) return false
+    if (!pr) return null
     const ratio = Math.max(photoDims.w, photoDims.h) / Math.min(photoDims.w, photoDims.h)
-    return Math.abs(ratio - pr) < 0.06
+    const diff = Math.abs(ratio - pr)
+    if (diff < 0.06) return 'best'
+    if (diff >= 0.25) return 'crop'
+    return null
   }
 
 
@@ -247,8 +250,11 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
                   >
                     <span className="flex items-center gap-2">
                       {s.label}
-                      {isBestFit(s.label) && (
+                      {fitLabel(s.label) === 'best' && (
                         <span className="text-[10px] text-emerald-400 font-medium leading-none">Best fit</span>
+                      )}
+                      {fitLabel(s.label) === 'crop' && (
+                        <span className="text-[10px] text-amber-400 font-medium leading-none">Cropped</span>
                       )}
                     </span>
                     <span className={sizeIdx === i ? 'text-copper font-medium' : 'text-mist'}>${s.price}</span>

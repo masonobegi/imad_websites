@@ -67,17 +67,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!isValidImage(buffer)) return res.status(400).json({ error: 'File does not appear to be a valid image' })
 
     const dirMap: Record<string, string> = {
-      photo:           `photos/${category}`,
-      watercolor:      'fine-art/watercolors',
-      encaustic:       'fine-art/encaustics',
-      oil:             'fine-art/oils',
-      'oil-pleinair':  'fine-art/oils',
-      digital:         'digital',
-      'process-image': 'fine-art/process',
-      sticker:         'stickers',
+      photo:                `photos/${category}`,
+      watercolor:           'fine-art/watercolors',
+      encaustic:            'fine-art/encaustics',
+      oil:                  'fine-art/oils',
+      'oil-pleinair':       'fine-art/oils',
+      'watercolor-process': 'fine-art/watercolors',
+      'encaustic-process':  'fine-art/encaustics',
+      digital:              'digital',
+      'process-image':      'fine-art/process',
+      sticker:              'stickers',
     }
     const relDir = dirMap[type]
     if (!relDir) return res.status(400).json({ error: 'Invalid type' })
+
+    // Process images and hero images are not watermarked
+    const noWatermark = new Set(['watercolor-process', 'encaustic-process', 'process-image'])
 
     let finalBuffer = buffer
     const mime = ext === '.png' ? 'image/png' : 'image/jpeg'
@@ -88,11 +93,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const meta = await img.metadata()
       const w = meta.width || 800
       const h = meta.height || 600
-      const wm = buildWatermarkSvg(w, h)
-      const composed = img.composite([{ input: wm }])
-      finalBuffer = ext === '.png'
-        ? await composed.png().toBuffer()
-        : await composed.jpeg({ quality: 90 }).toBuffer()
+      if (noWatermark.has(type)) {
+        finalBuffer = ext === '.png'
+          ? await img.png().toBuffer()
+          : await img.jpeg({ quality: 90 }).toBuffer()
+      } else {
+        const wm = buildWatermarkSvg(w, h)
+        const composed = img.composite([{ input: wm }])
+        finalBuffer = ext === '.png'
+          ? await composed.png().toBuffer()
+          : await composed.jpeg({ quality: 90 }).toBuffer()
+      }
     } catch {
       console.warn('Sharp unavailable, saving without watermark for:', filename)
     }

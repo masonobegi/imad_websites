@@ -224,7 +224,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         const uploadEndpoint = pa.isVideo ? '/api/admin/upload-video' : '/api/admin/upload'
         const uploadBody = pa.isVideo
           ? JSON.stringify({ folder, base64: pa.base64, filename: paFilename })
-          : JSON.stringify({ type: editKind === 'oil' ? 'oil-pleinair' : editKind, base64: pa.base64, filename: paFilename })
+          : JSON.stringify({ type: editKind === 'oil' ? 'oil-pleinair' : editKind === 'watercolor' ? 'watercolor-process' : editKind === 'encaustic' ? 'encaustic-process' : editKind, base64: pa.base64, filename: paFilename })
         await fetch(uploadEndpoint, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: uploadBody,
@@ -252,6 +252,9 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           id, filename, title: draft.title, originalSize: draft.originalSize || null,
           available: draft.available, description: draft.description,
           price: draft.price ? parseFloat(draft.price) : null,
+          reprintAvailable: draft.reprintAvailable,
+          reprintPrice: draft.reprintPrice ? parseFloat(draft.reprintPrice) : null,
+          reprintMedium: draft.reprintMedium || null,
           pleinAirImages: [...paItems, ...newPaImages],
         }
       } else if (editKind === 'oil') {
@@ -1086,8 +1089,8 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                     </div>
                   )}
 
-                  {/* Archival reprints — watercolors only */}
-                  {editKind === 'watercolor' && (
+                  {/* Archival reprints — watercolors & encaustics */}
+                  {(editKind === 'watercolor' || editKind === 'encaustic') && (
                     <div className="border-t border-gray-100 pt-4 space-y-3">
                       <p className="text-sm font-semibold text-gray-700">Archival Reprints <span className="font-normal text-gray-400">(optional)</span></p>
                       {toggle(draft.reprintAvailable, () => setDraft(d => ({ ...d, reprintAvailable: !d.reprintAvailable })), 'Archival reprints available')}
