@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 
+export interface ProcessMedia {
+  id: string
+  filename: string
+  title: string
+}
+
 export interface Work {
   id: string
   filename: string
@@ -8,6 +14,7 @@ export interface Work {
   available: boolean
   description: string
   price: number | null
+  processImages?: ProcessMedia[]
 }
 
 interface Props {
@@ -190,6 +197,27 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
               </div>
             </div>
           </div>
+
+          {/* Process images / videos */}
+          {work.processImages && work.processImages.length > 0 && (
+            <div className="px-5 sm:px-7 pb-4 border-t border-darkroom pt-4">
+              <p className="text-xs text-mist uppercase tracking-widest mb-3">Process</p>
+              <div className="grid grid-cols-3 gap-2">
+                {work.processImages.map(pm => {
+                  const ext = pm.filename.split('.').pop()?.toLowerCase() || ''
+                  const isVideo = ['mp4', 'mov', 'webm', 'm4v'].includes(ext)
+                  const src = `/fine-art/${category}/${pm.filename}`
+                  return isVideo ? (
+                    <video key={pm.id} src={src} controls muted playsInline
+                      className="w-full aspect-square object-cover rounded" title={pm.title} />
+                  ) : (
+                    <img key={pm.id} src={src} alt={pm.title}
+                      className="w-full aspect-square object-cover rounded" loading="lazy" />
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
             {status === 'sent' ? (

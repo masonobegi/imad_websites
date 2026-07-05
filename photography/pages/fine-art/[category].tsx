@@ -9,10 +9,11 @@ interface Props {
   category: string
   categoryLabel: string
   categoryDescription: string
+  encausticsHeaderText: string
   works: Work[]
 }
 
-export default function FineArtCategory({ category, categoryLabel, categoryDescription, works }: Props) {
+export default function FineArtCategory({ category, categoryLabel, categoryDescription, encausticsHeaderText, works }: Props) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
   const [filter, setFilter] = useState<'all' | 'available'>('all')
 
@@ -59,6 +60,16 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
             )}
           </div>
         </div>
+
+        {/* Encaustics special notice */}
+        {category === 'encaustics' && encausticsHeaderText && (
+          <div className="mb-8 px-5 py-4 border-l-2 border-copper bg-copper/5">
+            <p className="text-sm text-ink leading-relaxed">{encausticsHeaderText}</p>
+            <Link href="/commissions" className="inline-block mt-3 text-xs text-copper uppercase tracking-widest hover:underline">
+              Request a commission →
+            </Link>
+          </div>
+        )}
 
         <div className="photo-grid">
           {displayed.map((work, i) => (
@@ -122,16 +133,27 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   if (!meta) return { notFound: true }
 
   const { prisma } = await import('../../lib/prisma')
-  const works = await prisma.fineArtWork.findMany({ where: { type: meta.type }, orderBy: { sortOrder: 'asc' } })
+  const { readSiteConfig } = await import('../../lib/siteConfig')
+
+  const [works, siteConfig] = await Promise.all([
+    prisma.fineArtWork.findMany({
+      where: { type: meta.type },
+      include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } },
+      orderBy: { sortOrder: 'asc' },
+    }),
+    readSiteConfig(),
+  ])
 
   return {
     props: {
       category,
       categoryLabel: meta.label,
       categoryDescription: meta.description,
+      encausticsHeaderText: siteConfig.encaustics.headerText,
       works: works.map(w => ({
         id: w.id, filename: w.filename, title: w.title, description: w.description,
         originalSize: w.originalSize, available: w.available, price: w.price,
+        processImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })),
       })),
     },
   }

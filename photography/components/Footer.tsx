@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react'
 interface FooterProps { dark?: boolean }
 
 const SECTIONS = [
-  { href: '/shop',        label: 'Photography',  sub: 'Fine art prints' },
-  { href: '/fine-art',   label: 'Fine Art',      sub: 'Watercolors & encaustics' },
-  { href: '/stickers',   label: 'Stickers',   sub: 'via Sticker Mule' },
+  { href: '/shop',     label: 'Photography',       sub: 'Fine art prints' },
+  { href: '/fine-art', label: 'Fine Art',           sub: 'Watercolors & encaustics' },
+  { href: '/stickers', label: 'Stickers',           sub: 'via Sticker Mule' },
+  { href: '/digital',  label: 'Digital Design',     sub: 'Logos & illustration' },
+  { href: '/faq',      label: 'FAQ',                sub: 'Common questions' },
 ]
 
 export default function Footer({ dark = false }: FooterProps) {
@@ -32,7 +34,7 @@ export default function Footer({ dark = false }: FooterProps) {
       {/* Section buttons */}
       <div className="max-w-6xl mx-auto px-5 pt-10 pb-6">
         <p className={`text-xs ${copy} uppercase tracking-widest text-center mb-5`}>Explore</p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {SECTIONS.map(s => (
             <Link
               key={s.href}

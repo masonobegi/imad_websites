@@ -34,7 +34,7 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
   const [config, setConfig] = useState<SiteConfig>(initialConfig)
   const [saving, setSaving] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
-  const [activeTab, setActiveTab] = useState<'homepage' | 'featured' | 'social'>('homepage')
+  const [activeTab, setActiveTab] = useState<'homepage' | 'pages' | 'featured' | 'social'>('homepage')
 
   function showSuccess(msg: string) {
     setSuccessMsg(msg)
@@ -49,6 +49,18 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
   }
   function setContact(update: Partial<SiteConfig['contact']>) {
     setConfig(prev => ({ ...prev, contact: { ...prev.contact, ...update } }))
+  }
+  function setStickers(update: Partial<SiteConfig['stickers']>) {
+    setConfig(prev => ({ ...prev, stickers: { ...prev.stickers, ...update } }))
+  }
+  function setEncaustics(update: Partial<SiteConfig['encaustics']>) {
+    setConfig(prev => ({ ...prev, encaustics: { ...prev.encaustics, ...update } }))
+  }
+  function setCommissions(update: Partial<SiteConfig['commissions']>) {
+    setConfig(prev => ({ ...prev, commissions: { ...prev.commissions, ...update } }))
+  }
+  function setDigitalDesign(update: Partial<SiteConfig['digitalDesign']>) {
+    setConfig(prev => ({ ...prev, digitalDesign: { ...prev.digitalDesign, ...update } }))
   }
 
   async function save() {
@@ -130,6 +142,7 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
 
   const TABS = [
     { key: 'homepage' as const, label: 'Homepage Text' },
+    { key: 'pages' as const, label: 'Pages' },
     { key: 'featured' as const, label: 'Featured Images' },
     { key: 'social' as const, label: 'Social & Contact' },
   ]
@@ -232,6 +245,56 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
                   </>
                 )}
               </div>
+            </Section>
+          </>
+        )}
+
+        {/* ═══════════════════════════════════════════════ PAGES */}
+        {activeTab === 'pages' && (
+          <>
+            <Section title="Welcome Message" subtitle="Optional intro text on the homepage, just below the hero photo">
+              <div className="space-y-4">
+                <Toggle
+                  on={config.homepage.welcomeVisible}
+                  onChange={() => setHomepage({ welcomeVisible: !config.homepage.welcomeVisible })}
+                  label="Show welcome message"
+                  description="Displays a short message below the hero photo"
+                />
+                {config.homepage.welcomeVisible && (
+                  <Field label="Message text">
+                    <TextArea value={config.homepage.welcomeText} onChange={v => setHomepage({ welcomeText: v })} rows={4} />
+                  </Field>
+                )}
+              </div>
+            </Section>
+
+            <Section title="Encaustics Page Notice" subtitle="Amber notice block shown at the top of the Encaustics gallery — leave blank to hide">
+              <Field label="Notice text" hint="A commission link is added below it automatically.">
+                <TextArea value={config.encaustics.headerText} onChange={v => setEncaustics({ headerText: v })} rows={4} />
+              </Field>
+            </Section>
+
+            <Section title="Stickers Page" subtitle="Heading and intro shown on the /stickers page">
+              <div className="space-y-4">
+                <Field label="Page heading">
+                  <TextInput value={config.stickers.heading} onChange={v => setStickers({ heading: v })} placeholder="Original Character Designs" />
+                </Field>
+                <Field label="Intro paragraph">
+                  <TextArea value={config.stickers.intro} onChange={v => setStickers({ intro: v })} rows={4} />
+                </Field>
+              </div>
+            </Section>
+
+            <Section title="Commission Form Intro" subtitle="Text at the top of the /commissions page, above the request form">
+              <Field label="Intro text">
+                <TextArea value={config.commissions.formIntro} onChange={v => setCommissions({ formIntro: v })} rows={4} />
+              </Field>
+            </Section>
+
+            <Section title="Digital Design Page Intro" subtitle="Short intro paragraph on the /digital page">
+              <Field label="Intro text">
+                <TextArea value={config.digitalDesign.intro} onChange={v => setDigitalDesign({ intro: v })} rows={3} />
+              </Field>
             </Section>
           </>
         )}

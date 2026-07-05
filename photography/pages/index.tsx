@@ -76,6 +76,13 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         </div>
       </section>
 
+      {/* ── WELCOME ── */}
+      {siteConfig.welcomeVisible && siteConfig.welcomeText && (
+        <section className="px-6 sm:px-12 py-10 sm:py-14 text-center border-b border-edge">
+          <p className="font-serif text-ink text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">{siteConfig.welcomeText}</p>
+        </section>
+      )}
+
       {/* ── PHOTOGRAPHY ── */}
       <section className="border-b border-edge">
         <div className="px-6 sm:px-10 py-6 flex items-center justify-between border-b border-edge">
@@ -97,9 +104,9 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-darkroom">
           {previewPhotos.map(photo => (
-            <button
+            <Link
               key={photo.id}
-              onClick={() => openPhoto(photo)}
+              href="/shop"
               className="group/photo flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden photo-wrapper block relative text-left focus:outline-none touch-manipulation"
               aria-label={`View ${photo.title}`}
             >
@@ -114,7 +121,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
                   {photo.title}
                 </p>
               </div>
-            </button>
+            </Link>
           ))}
         </div>
 
@@ -145,9 +152,9 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 
         <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-edge">
           {featuredFineArt.map(item => (
-            <button
+            <Link
               key={item.id}
-              onClick={() => openFeaturedWork(item)}
+              href={`/fine-art/${item.type}s`}
               className="group/art flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative text-left focus:outline-none touch-manipulation"
               aria-label={`View ${item.title}`}
             >
@@ -162,7 +169,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
                   {item.title}
                 </p>
               </div>
-            </button>
+            </Link>
           ))}
         </div>
 

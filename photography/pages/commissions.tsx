@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Head from 'next/head'
+import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 
 const WORK_TYPES = [
@@ -7,10 +8,13 @@ const WORK_TYPES = [
   'Encaustic painting',
   'Fine art photography print',
   'Custom sticker design',
+  'Digital design / illustration',
   'Other / not sure yet',
 ]
 
-export default function Commissions() {
+interface Props { formIntro: string }
+
+export default function Commissions({ formIntro }: Props) {
   const [form, setForm] = useState({ name: '', email: '', workType: '', description: '', budget: '' })
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
 
@@ -48,8 +52,7 @@ export default function Commissions() {
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Custom Work</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4">Commission a Piece</h1>
           <p className="text-mist text-base leading-relaxed max-w-lg">
-            Tell Imad what you have in mind — a watercolor of a place you love, an encaustic for a special occasion,
-            a custom print, or something else entirely. He'll reach out to discuss and get you a quote.
+            {formIntro}
           </p>
         </div>
 
@@ -140,4 +143,10 @@ export default function Commissions() {
       </div>
     </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { readSiteConfig } = await import('../lib/siteConfig')
+  const siteConfig = await readSiteConfig()
+  return { props: { formIntro: siteConfig.commissions.formIntro } }
 }

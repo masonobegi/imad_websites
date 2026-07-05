@@ -8,8 +8,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
-        prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, orderBy: { sortOrder: 'asc' } }),
-        prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, orderBy: { sortOrder: 'asc' } }),
+        prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+        prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
         prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
         prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
         prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
@@ -108,6 +108,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               awardUrl: award?.url ?? null,
             },
           })
+          // Sync process/plein-air images when provided
+          if (Array.isArray(pleinAirImages)) {
+            await prisma.pleinAirImage.deleteMany({ where: { workId: id } })
+            if (pleinAirImages.length > 0) {
+              await prisma.pleinAirImage.createMany({
+                data: pleinAirImages.map((p: { id: string; filename: string; title: string }, i: number) => ({
+                  id: p.id, filename: p.filename, title: p.title, sortOrder: i, workId: id,
+                })),
+              })
+            }
+          }
         } else if (action === 'delete') {
           await prisma.fineArtWork.delete({ where: { id } })
         } else if (action === 'reorder') {

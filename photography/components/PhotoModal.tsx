@@ -181,7 +181,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
             <p className="text-xs text-copper uppercase tracking-widest mb-2">Fine Art Print</p>
             <h2 className="font-serif text-lg sm:text-xl text-edge leading-snug mb-3">{photo.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-5">{photo.description}</p>
-            <p className="text-xs text-mist mb-5">Archival pigment print. Shipping included in the US.</p>
+            <p className="text-xs text-mist mb-5">High quality professionally printed. Shipping is included in the United States.</p>
 
             {/* Size */}
             <div className="mb-4">

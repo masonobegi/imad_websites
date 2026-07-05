@@ -39,8 +39,7 @@ export default function About() {
             </div>
             <p className="text-sm text-mist mt-4 leading-snug">
               Imad Obegi<br />
-              OBGillustrator.com<br />
-              Bay Area, California
+              OBGillustrator.com
             </p>
           </div>
 
@@ -51,26 +50,34 @@ export default function About() {
 
             <div className="space-y-5 text-mist text-lg leading-relaxed">
               <p>
-                Imad Obegi's creative journey began in childhood, where an instinct for color and
-                composition surfaced before he had the words to describe it. What started as a natural
-                inclination grew into a lifelong practice spanning five decades.
+                Imad Obegi is an artist whose creative journey began in the vibrant tapestry of childhood,
+                where even as a toddler, an innate talent for selecting yarn colors for his mother hinted
+                at a future immersed in the world of art. This early manifestation of artistic sensibility
+                laid the foundation for a versatile artist, proficient in a myriad of mediums, including
+                encaustic painting, oils, pastels, watercolor, and photography.
               </p>
               <p>
-                He works across encaustic painting, oils, pastels, watercolor, and photography —
-                each medium a different way of seeing the same world. His work is rooted in a deep
-                appreciation for the beauty that exists in nature: the light on open water, the silence
-                of a desert at night, the intricate life in a single flower.
+                His artistic repertoire mirrors his deep appreciation for the beauty inherent in nature,
+                serving as a perpetual muse for his work. Imad possesses an unbridled passion and an
+                extensive background in portraiture and figure drawing, capturing the essence of his
+                subjects with meticulous detail and emotional resonance.
               </p>
               <p>
-                An extensive background in portraiture and figure drawing informs everything he makes.
-                Whether photographing the Milky Way over Joshua Tree or layering encaustic wax on a
-                painted surface, the intention is the same — to draw out something specific in the person
-                looking at it.
+                What sets Imad Obegi apart is his unwavering commitment to the craft, evident in his
+                deliberate choices of colors, composition, and lighting. Each element is carefully
+                selected, not merely for aesthetic appeal, but with the deliberate intention of eliciting
+                specific emotions in the viewer. His compositions are a harmonious dance of elements,
+                inviting the audience to connect with the artwork on a profound, emotional level.
+                Imad's love for nature extends beyond the canvas, transcending into his exploration of
+                landscapes and digital media. Proficient in both traditional and contemporary mediums,
+                he seamlessly blends his skills to create art that resonates with a diverse audience.
               </p>
               <p>
-                The photography prints available here are places Imad has actually been, light he
-                waited for, moments that don't repeat. Each print is made to order on archival metal
-                or canvas.
+                His accolades include a first-place award for Best Catalina Art Scene and a second-place
+                honor in photography at the Catalina Island Art Festival, as well as winning three years
+                consecutively at Berkeley's Chocolate and Chart Festival. Through his creations, Imad
+                invites us to see the world through his unique perspective, where every stroke and pixel
+                tells a story of passion, skill, and an unwavering connection to the beauty that surrounds us.
               </p>
             </div>
 

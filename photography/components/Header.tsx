@@ -37,6 +37,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>Stickers</Link>
+            <Link href="/digital" className={`text-sm ${text} ${hover} transition-colors`}>Digital</Link>
 
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
             <Link href="/contact" className={`text-sm ${text} ${hover} transition-colors`}>Contact</Link>
@@ -103,6 +104,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Stickers</Link>
+            <Link href="/digital" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Digital Design</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
             <Link href="/contact" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Contact</Link>
             <Link

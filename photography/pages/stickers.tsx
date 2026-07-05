@@ -1,34 +1,31 @@
+import Head from 'next/head'
+import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 
 const STICKER_MULE_URL = 'https://www.stickermule.com/obgillustrator'
 
-const STICKERS = [
-  { file: 'sasquatch-looking-at-stickers-stickers-page-icon.png', title: 'Sasquatch Looking at Stickers' },
-  { file: 'kayaking-sasquatch-sticker.png', title: 'Kayaking Sasquatch' },
-  { file: 'gaming-sasquatch.png', title: 'Gaming Sasquatch' },
-  { file: 'crater-lake-sasquatch-no-text.png', title: 'Crater Lake Sasquatch' },
-  { file: 'day-of-the-dead-sasquatch.png', title: 'Day of the Dead Sasquatch' },
-  { file: 'sasquatch-artist.png', title: 'Sasquatch Artist' },
-  { file: 'mountain-biking-sasquatch.png', title: 'Mountain Biking Sasquatch' },
-  { file: 'owl-sticker.png', title: 'Owl' },
-  { file: 'martial-artists-sasquatch.png', title: 'Martial Artists Sasquatch' },
-  { file: 'sasquatch-fishing.png', title: 'Sasquatch Fishing' },
-  { file: 'yoga-sitting-pose-sasquatch.png', title: 'Yoga Sasquatch' },
-  { file: 'golfing-sasquatch.png', title: 'Golfing Sasquatch' },
-]
+interface Props {
+  stickers: string[]
+  heading: string
+  intro: string
+}
 
-export default function Stickers() {
+export default function Stickers({ stickers, heading, intro }: Props) {
   return (
     <Layout>
+      <Head>
+        <title>Stickers | OBGillustrator.com</title>
+        <meta name="description" content="Original character sticker designs by Imad Obegi — Sasquatch in every situation. Available on Sticker Mule." />
+      </Head>
+
       {/* Header */}
       <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10 text-center">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Stickers</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
-          Original Character Designs
+          {heading}
         </h1>
         <p className="text-mist leading-relaxed mb-8 max-w-sm mx-auto">
-          Imad's original character sticker designs — Sasquatch in every situation imaginable.
-          Available as singles and sets on Sticker Mule.
+          {intro}
         </p>
         <a
           href={STICKER_MULE_URL}
@@ -45,33 +42,55 @@ export default function Stickers() {
 
       {/* Sticker grid */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
-          {STICKERS.map(s => (
-            <a
-              key={s.file}
-              href={STICKER_MULE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col items-center gap-2 touch-manipulation"
-              aria-label={`${s.title} — shop on Sticker Mule`}
-            >
-              <div className="w-full aspect-square rounded-xl overflow-hidden bg-canvas/50 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center p-2">
-                <img
-                  src={`/stickers/${s.file}`}
-                  alt={s.title}
-                  className="w-full h-full object-contain select-none"
-                  draggable={false}
-                />
-              </div>
-              <p className="text-center text-[10px] text-mist leading-tight group-hover:text-copper transition-colors">
-                {s.title}
-              </p>
-            </a>
-          ))}
-        </div>
+        {stickers.length > 0 ? (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+            {stickers.map(filename => (
+              <a
+                key={filename}
+                href={STICKER_MULE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center gap-2 touch-manipulation"
+                aria-label={`${filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')} — shop on Sticker Mule`}
+              >
+                <div className="w-full aspect-square rounded-xl overflow-hidden bg-canvas/50 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center p-2">
+                  <img
+                    src={`/stickers/${filename}`}
+                    alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
+                    className="w-full h-full object-contain select-none"
+                    draggable={false}
+                  />
+                </div>
+                <p className="text-center text-[10px] text-mist leading-tight group-hover:text-copper transition-colors capitalize">
+                  {filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
+                </p>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-mist text-sm py-10">No stickers added yet.</p>
+        )}
 
         <p className="mt-8 text-xs text-mist opacity-60 text-center">More designs available on Sticker Mule</p>
       </div>
     </Layout>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const { prisma } = await import('../lib/prisma')
+  const { readSiteConfig } = await import('../lib/siteConfig')
+
+  const [stickerRows, siteConfig] = await Promise.all([
+    prisma.sticker.findMany({ orderBy: { sortOrder: 'asc' } }),
+    readSiteConfig(),
+  ])
+
+  return {
+    props: {
+      stickers: stickerRows.map(s => s.filename),
+      heading: siteConfig.stickers.heading,
+      intro: siteConfig.stickers.intro,
+    },
+  }
 }

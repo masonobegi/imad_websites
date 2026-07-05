@@ -34,7 +34,7 @@ export default function Contact() {
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Get in touch</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">Contact</h1>
         <p className="text-mist text-base leading-relaxed mb-10">
-          Questions about a piece, print orders, commissions, or anything else — Imad reads every message.
+          Questions about a piece, print orders, commissions, or anything else — reach out any time.
         </p>
 
         {status === 'sent' ? (

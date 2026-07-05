@@ -10,6 +10,7 @@ interface PrintSize { label: string; price: number }
 interface BasicWork {
   id: string; filename: string; title: string; originalSize: string | null
   available: boolean; description: string; price: number | null
+  pleinAirImages?: PleinAirImage[]
 }
 interface PleinAirImage { id: string; filename: string; title: string }
 interface OilWork extends BasicWork {
@@ -65,7 +66,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   const [draft, setDraft] = useState<Draft>(emptyDraft)
   const [uploadPreview, setUploadPreview] = useState('')
   const [uploadFile, setUploadFile] = useState<{ base64: string; name: string } | null>(null)
-  const [paUploads, setPaUploads] = useState<{ base64: string; name: string }[]>([])
+  const [paUploads, setPaUploads] = useState<{ base64: string; name: string; isVideo?: boolean }[]>([])
   const [paItems, setPaItems] = useState<PleinAirImage[]>([])
   const [dragOverUpload, setDragOverUpload] = useState(false)
 
@@ -121,7 +122,9 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     })
     setUploadFile(null)
     setUploadPreview(imgUrl(kind, category || (photo.category) || '', item.filename))
-    setPaUploads([]); setPaItems(oil.pleinAirImages || []); setError('')
+    setPaUploads([])
+    setPaItems(oil.pleinAirImages || (item as BasicWork).pleinAirImages || [])
+    setError('')
   }
 
   function closeModal() { setEditKind(null) }
@@ -155,7 +158,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       const reader = new FileReader()
       reader.onload = () => {
         const result = reader.result as string
-        setPaUploads(prev => [...prev, { base64: result.split(',')[1], name: file.name }])
+        setPaUploads(prev => [...prev, { base64: result.split(',')[1], name: file.name, isVideo: file.type.startsWith('video/') }])
       }
       reader.readAsDataURL(file)
     })
@@ -192,10 +195,20 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       for (const pa of paUploads) {
         const ext = pa.name.split('.').pop()?.toLowerCase() || 'jpg'
         const slug = toSlug(pa.name.replace(/\.[^.]+$/, ''))
-        const paFilename = `${slug}-pa.${ext}`
-        await fetch('/api/admin/upload', {
+        const paFilename = `${slug}-process.${ext}`
+        const folderMap: Record<string, string> = {
+          oil: 'fine-art/oils',
+          watercolor: 'fine-art/watercolors',
+          encaustic: 'fine-art/encaustics',
+        }
+        const folder = folderMap[editKind || ''] || 'fine-art/oils'
+        const uploadEndpoint = pa.isVideo ? '/api/admin/upload-video' : '/api/admin/upload'
+        const uploadBody = pa.isVideo
+          ? JSON.stringify({ folder, base64: pa.base64, filename: paFilename })
+          : JSON.stringify({ type: editKind === 'oil' ? 'oil-pleinair' : editKind, base64: pa.base64, filename: paFilename })
+        await fetch(uploadEndpoint, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'oil-pleinair', base64: pa.base64, filename: paFilename }),
+          body: uploadBody,
         })
         newPaImages.push({ id: slug, filename: paFilename, title: pa.name.replace(/\.[^.]+$/, '') })
       }
@@ -206,7 +219,12 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       if (editKind === 'photo') {
         itemData = { id, filename, title: draft.title, description: draft.description, category: draft.photoCategory }
       } else if (editKind === 'watercolor' || editKind === 'encaustic') {
-        itemData = { id, filename, title: draft.title, originalSize: draft.originalSize || null, available: draft.available, description: draft.description, price: draft.price ? parseFloat(draft.price) : null }
+        itemData = {
+          id, filename, title: draft.title, originalSize: draft.originalSize || null,
+          available: draft.available, description: draft.description,
+          price: draft.price ? parseFloat(draft.price) : null,
+          pleinAirImages: [...paItems, ...newPaImages],
+        }
       } else if (editKind === 'oil') {
         itemData = {
           id, filename, title: draft.title, originalSize: draft.originalSize || null,
@@ -841,6 +859,48 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                     </div>
                   )}
 
+                  {/* Process images/videos — watercolors & encaustics */}
+                  {(editKind === 'watercolor' || editKind === 'encaustic') && (
+                    <div className="border-t border-gray-100 pt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm font-semibold text-gray-700">In-Process Images / Videos <span className="font-normal text-gray-400">(optional)</span></p>
+                        <button type="button" onClick={() => paFileRef.current?.click()}
+                          className="text-xs text-amber-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition-colors">
+                          + Upload
+                        </button>
+                      </div>
+                      <input ref={paFileRef} type="file" accept="image/*,video/mp4,video/quicktime,video/webm" multiple className="hidden" onChange={handlePaFileSelect} />
+                      <p className="text-xs text-gray-400 mb-3">Images: JPG/PNG. Videos: MP4/MOV/WebM under 100 MB.</p>
+                      <div className="grid grid-cols-4 gap-2">
+                        {paItems.map(pa => {
+                          const ext = pa.filename.split('.').pop()?.toLowerCase() || ''
+                          const isVid = ['mp4','mov','webm','m4v'].includes(ext)
+                          const folder = editKind === 'watercolor' ? 'watercolors' : 'encaustics'
+                          return (
+                            <div key={pa.id} className="relative group">
+                              {isVid ? (
+                                <video src={`/fine-art/${folder}/${pa.filename}`} className="aspect-square object-cover rounded-lg w-full" muted />
+                              ) : (
+                                <img src={`/fine-art/${folder}/${pa.filename}`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                              )}
+                              <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
+                                className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
+                            </div>
+                          )
+                        })}
+                        {paUploads.map((pa, i) => (
+                          <div key={i} className="relative group">
+                            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                              <span className="text-[10px] text-gray-400 text-center p-1">{pa.name}</span>
+                            </div>
+                            <button type="button" onClick={() => setPaUploads(prev => prev.filter((_, j) => j !== i))}
+                              className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none flex items-center justify-center">×</button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {editKind === 'oil' && (
                     <>
                       <div className="border-t border-gray-100 pt-4 space-y-3">
@@ -887,7 +947,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                             + Upload
                           </button>
                         </div>
-                        <input ref={paFileRef} type="file" accept="image/*" multiple className="hidden" onChange={handlePaFileSelect} />
+                        <input ref={paFileRef} type="file" accept="image/*,video/mp4,video/quicktime,video/webm" multiple className="hidden" onChange={handlePaFileSelect} />
                         <div className="grid grid-cols-4 gap-2">
                           {paItems.map(pa => (
                             <div key={pa.id} className="relative group">
@@ -965,8 +1025,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   }
   const { prisma } = await import('../../lib/prisma')
   const [watercolors, encaustics, oils, photos, categories, printSizes, stickers] = await Promise.all([
-    prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, orderBy: { sortOrder: 'asc' } }),
-    prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, orderBy: { sortOrder: 'asc' } }),
+    prisma.fineArtWork.findMany({ where: { type: 'watercolor' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
+    prisma.fineArtWork.findMany({ where: { type: 'encaustic' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.fineArtWork.findMany({ where: { type: 'oil' }, include: { pleinAirImages: { orderBy: { sortOrder: 'asc' } } }, orderBy: { sortOrder: 'asc' } }),
     prisma.photo.findMany({ orderBy: [{ category: 'asc' }, { sortOrder: 'asc' }] }),
     prisma.photoCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
@@ -992,9 +1052,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
             oils: { label: 'Oil Paintings', description: '' },
           },
           works: {
-            watercolors,
-            encaustics,
-            oils: oils.map(w => ({ ...w, award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null, pleinAirImages: w.pleinAirImages })),
+            watercolors: watercolors.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
+            encaustics: encaustics.map(w => ({ ...w, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
+            oils: oils.map(w => ({ ...w, award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null, pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })) })),
           },
         },
         photos: { categories: photoCatMap, photos: photosByCategory },
