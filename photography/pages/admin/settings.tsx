@@ -28,6 +28,46 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
   )
 }
 
+// ─── Shared form components (must live outside AdminSettings to avoid remount on each keystroke) ───
+
+function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+  return (
+    <div className="space-y-1.5">
+      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      {children}
+      {hint && <p className="text-xs text-gray-400">{hint}</p>}
+    </div>
+  )
+}
+
+function TextInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
+  return (
+    <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
+      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
+  )
+}
+
+function TextArea({ value, onChange, rows = 3 }: { value: string; onChange: (v: string) => void; rows?: number }) {
+  return (
+    <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows}
+      className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none bg-white" />
+  )
+}
+
+function Toggle({ on, onChange, label, description }: { on: boolean; onChange: () => void; label: string; description?: string }) {
+  return (
+    <button type="button" onClick={onChange} className="flex items-start gap-3 text-left w-full">
+      <div className={`relative mt-0.5 w-10 h-5 rounded-full flex-shrink-0 transition-colors ${on ? 'bg-amber-500' : 'bg-gray-200'}`}>
+        <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${on ? 'translate-x-5' : ''}`} />
+      </div>
+      <div>
+        <p className="text-sm font-medium text-gray-800">{label}</p>
+        {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
+      </div>
+    </button>
+  )
+}
+
 // ─── Main ────────────────────────────────────────────────────────────────────
 
 export default function AdminSettings({ config: initialConfig, allPhotos, allWorks }: PageData) {
@@ -107,44 +147,6 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
   }
 
   // ── Shared UI helpers ────────────────────────────────────────────────────────
-
-  function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
-    return (
-      <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">{label}</label>
-        {children}
-        {hint && <p className="text-xs text-gray-400">{hint}</p>}
-      </div>
-    )
-  }
-
-  function TextInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder?: string }) {
-    return (
-      <input type="text" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
-    )
-  }
-
-  function TextArea({ value, onChange, rows = 3 }: { value: string; onChange: (v: string) => void; rows?: number }) {
-    return (
-      <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none bg-white" />
-    )
-  }
-
-  function Toggle({ on, onChange, label, description }: { on: boolean; onChange: () => void; label: string; description?: string }) {
-    return (
-      <button type="button" onClick={onChange} className="flex items-start gap-3 text-left w-full">
-        <div className={`relative mt-0.5 w-10 h-5 rounded-full flex-shrink-0 transition-colors ${on ? 'bg-amber-500' : 'bg-gray-200'}`}>
-          <span className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${on ? 'translate-x-5' : ''}`} />
-        </div>
-        <div>
-          <p className="text-sm font-medium text-gray-800">{label}</p>
-          {description && <p className="text-xs text-gray-400 mt-0.5">{description}</p>}
-        </div>
-      </button>
-    )
-  }
 
   const TABS = [
     { key: 'homepage' as const, label: 'Homepage Text' },
