@@ -264,6 +264,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           originalPrice: draft.originalPrice ? parseFloat(draft.originalPrice) : null,
           reprintAvailable: draft.reprintAvailable,
           reprintPrice: draft.reprintPrice ? parseFloat(draft.reprintPrice) : null,
+          reprintMedium: draft.reprintMedium || null,
           award: draft.awardTitle ? { title: draft.awardTitle, url: draft.awardUrl } : null,
           pleinAirImages: [...paItems, ...newPaImages],
         }
@@ -294,12 +295,12 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           const newCat = (itemData as Photo).category
           const oldCat = editCategory
           if (editMode === 'add') {
-            photos[newCat] = [...(photos[newCat] || []), itemData as Photo]
+            photos[newCat] = [...(photos[newCat] || []).filter(p => p.id !== id), itemData as Photo]
           } else if (oldCat === newCat) {
             photos[newCat] = (photos[newCat] || []).map(p => p.id === id ? itemData as Photo : p)
           } else {
             photos[oldCat] = (photos[oldCat] || []).filter(p => p.id !== id)
-            photos[newCat] = [...(photos[newCat] || []), itemData as Photo]
+            photos[newCat] = [...(photos[newCat] || []).filter(p => p.id !== id), itemData as Photo]
           }
           return { ...prev, photos: { ...prev.photos, photos } }
         })
@@ -1171,14 +1172,20 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                         </div>
                         {toggle(draft.reprintAvailable, () => setDraft(d => ({ ...d, reprintAvailable: !d.reprintAvailable })), 'Reprints available')}
                         {draft.reprintAvailable && (
-                          <div className="flex items-center gap-3">
-                            <label className="text-sm text-gray-600 w-28 flex-shrink-0">Reprint price</label>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                              <input type="number" value={draft.reprintPrice} onChange={e => setDraft(d => ({ ...d, reprintPrice: e.target.value }))} placeholder="95"
-                                className="border border-gray-200 rounded-lg pl-7 pr-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
+                          <>
+                            <div>
+                              <label className="block text-sm text-gray-600 mb-1.5">Printed on (medium)</label>
+                              {inp(draft.reprintMedium, v => setDraft(d => ({ ...d, reprintMedium: v })), 'e.g. Archival watercolor paper · 11"×14"')}
                             </div>
-                          </div>
+                            <div className="flex items-center gap-3">
+                              <label className="text-sm text-gray-600 w-28 flex-shrink-0">Reprint price</label>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+                                <input type="number" value={draft.reprintPrice} onChange={e => setDraft(d => ({ ...d, reprintPrice: e.target.value }))} placeholder="95"
+                                  className="border border-gray-200 rounded-lg pl-7 pr-3 py-2 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white" />
+                              </div>
+                            </div>
+                          </>
                         )}
                       </div>
 

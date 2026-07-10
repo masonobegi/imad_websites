@@ -181,36 +181,26 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
 
-            <div className="space-y-3 pt-4 border-t border-darkroom text-sm">
-              {work.originalSize && (
-                <div className="flex justify-between text-mist">
-                  <span>Original size</span>
-                  <span>{work.originalSize}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-mist">
-                <span>Price</span>
-                <span>
-                  {!work.available
-                    ? 'Not for sale'
-                    : work.price
-                    ? `$${work.price.toLocaleString()}`
-                    : 'Inquire for price'}
-                </span>
+            <div className="space-y-0 border border-darkroom text-sm overflow-hidden">
+              <div className={`px-4 py-3 ${work.reprintAvailable ? 'border-b border-darkroom' : ''}`}>
+                <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
+                {work.available ? (
+                  <p className="text-edge font-medium">
+                    {work.price ? `$${work.price.toLocaleString()}` : 'Inquire for price'}
+                  </p>
+                ) : (
+                  <p className="text-mist">Not for sale</p>
+                )}
+                {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
               </div>
               {work.reprintAvailable && (
-                <>
-                  <div className="flex justify-between text-mist">
-                    <span>Archival reprint</span>
-                    <span>{work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}</span>
-                  </div>
-                  {work.reprintMedium && (
-                    <div className="flex justify-between text-mist">
-                      <span>Printed on</span>
-                      <span className="text-right max-w-[55%]">{work.reprintMedium}</span>
-                    </div>
-                  )}
-                </>
+                <div className="px-4 py-3">
+                  <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
+                  <p className="text-edge font-medium">
+                    {work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}
+                  </p>
+                  {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
+                </div>
               )}
             </div>
           </div>

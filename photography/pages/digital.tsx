@@ -34,17 +34,17 @@ export default function Digital({ intro, works }: Props) {
       </Head>
 
       {/* Header */}
-      <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10 text-center">
+      <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Portfolio</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           Digital Design &amp; Illustration
         </h1>
-        <p className="text-mist leading-relaxed max-w-xl mx-auto mb-8">{intro}</p>
+        <p className="text-mist leading-relaxed mb-8">{intro}</p>
 
         {/* Commission CTA */}
         <div className="border-t border-edge pt-8">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Interested in a logo or design?</p>
-          <p className="text-mist text-sm max-w-md mx-auto mb-6 leading-relaxed">
+          <p className="text-mist text-sm mb-6 leading-relaxed">
             Send your design request to set up a meeting to discuss what you would like to see created for you or your business.
           </p>
           <Link

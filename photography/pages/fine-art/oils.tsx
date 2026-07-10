@@ -125,6 +125,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
         id: w.id, filename: w.filename, title: w.title, description: w.description,
         originalSize: w.originalSize, available: w.available,
         originalPrice: w.originalPrice, reprintAvailable: w.reprintAvailable, reprintPrice: w.reprintPrice,
+        reprintMedium: w.reprintMedium,
         award: w.awardTitle ? { title: w.awardTitle, url: w.awardUrl || '' } : null,
         pleinAirImages: w.pleinAirImages.map(p => ({ id: p.id, filename: p.filename, title: p.title })),
       })),

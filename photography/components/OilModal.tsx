@@ -16,6 +16,7 @@ export interface OilWork {
   originalPrice: number | null
   reprintAvailable: boolean
   reprintPrice: number | null
+  reprintMedium?: string | null
   description: string
   award: { title: string; url: string } | null
   pleinAirImages: PleinAirImage[]
@@ -293,7 +294,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                     <div>
                       <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
                       <p className="text-edge font-medium">${work.reprintPrice}</p>
-                      <p className="text-xs text-mist mt-0.5">Archival watercolor paper · 11"×14"</p>
+                      {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
                     </div>
                     <button
                       onClick={() => openInquiry('reprint')}

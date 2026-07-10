@@ -24,7 +24,7 @@ export default function Stickers({ stickers, heading, intro }: Props) {
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           {heading}
         </h1>
-        <p className="text-mist leading-relaxed mb-8 max-w-sm mx-auto">
+        <p className="text-mist leading-relaxed mb-8">
           {intro}
         </p>
         <a

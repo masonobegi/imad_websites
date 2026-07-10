@@ -180,48 +180,6 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         </div>
       </section>
 
-      {/* ── STICKERS ── */}
-      <section className="bg-canvas">
-        <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
-          <div>
-            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
-            <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.stickersHeadline}</h2></Link>
-            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.stickersSubtext}</p>
-          </div>
-          <Link
-            href="/stickers"
-            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
-          >
-            <span className="hidden sm:inline">Browse All Stickers</span>
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-        </div>
-
-        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
-          {previewStickers.map(filename => (
-            <Link
-              key={filename}
-              href="/stickers"
-              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
-            >
-              <img
-                src={`/stickers/${filename}`}
-                alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
-                className="w-full h-full object-contain p-4 group-hover/sticker:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-            </Link>
-          ))}
-        </div>
-
-        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
-          <p className="text-mist text-xs">Original designs by Imad Obegi</p>
-          <Link href="/stickers" className="text-copper text-xs">Browse All Stickers →</Link>
-        </div>
-      </section>
-
       {/* ── DIGITAL ── */}
       <section className="bg-canvas">
         <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
@@ -274,14 +232,14 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
             },
           ].map(item => (
             <div key={item.id} className="flex gap-4 sm:gap-5 group/digital">
-              <div className="flex-shrink-0 w-28 sm:w-36 h-28 sm:h-36 overflow-hidden">
+              <Link href="/digital" className="flex-shrink-0 w-28 sm:w-36 h-28 sm:h-36 overflow-hidden block">
                 <img
                   src={item.src}
                   alt={item.title}
                   className="w-full h-full object-contain group-hover/digital:scale-[1.04] transition-transform duration-500"
                   loading="lazy"
                 />
-              </div>
+              </Link>
               <div className="flex-1 min-w-0 py-0.5">
                 <p className="text-[10px] text-copper uppercase tracking-widest mb-1">{item.subtitle}</p>
                 <p className="font-serif text-base sm:text-lg text-ink leading-snug mb-1.5">{item.title}</p>
@@ -300,6 +258,48 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── STICKERS ── */}
+      <section className="bg-canvas">
+        <div className="px-6 sm:px-10 py-8 flex items-center justify-between">
+          <div>
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-1.5">Shop</p>
+            <Link href="/stickers"><h2 className="font-serif text-3xl sm:text-4xl text-ink hover:text-copper transition-colors">{siteConfig.stickersHeadline}</h2></Link>
+            <p className="text-mist text-sm mt-1 hidden sm:block">{siteConfig.stickersSubtext}</p>
+          </div>
+          <Link
+            href="/stickers"
+            className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
+          >
+            <span className="hidden sm:inline">Browse All Stickers</span>
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+
+        <div className="flex overflow-x-auto sm:overflow-hidden sm:grid sm:grid-cols-6 gap-2 bg-canvas">
+          {previewStickers.map(filename => (
+            <Link
+              key={filename}
+              href="/stickers"
+              className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
+            >
+              <img
+                src={`/stickers/${filename}`}
+                alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
+                className="w-full h-full object-contain p-4 group-hover/sticker:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            </Link>
+          ))}
+        </div>
+
+        <div className="sm:hidden px-6 py-3 flex items-center justify-between">
+          <p className="text-mist text-xs">Original designs by Imad Obegi</p>
+          <Link href="/stickers" className="text-copper text-xs">Browse All Stickers →</Link>
         </div>
       </section>
 
