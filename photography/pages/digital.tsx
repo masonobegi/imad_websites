@@ -34,7 +34,7 @@ export default function Digital({ intro, works }: Props) {
       </Head>
 
       {/* Header */}
-      <div className="max-w-3xl mx-auto px-5 pt-16 sm:pt-20 pb-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-10">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Portfolio</p>
         <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4 leading-tight">
           Digital Design &amp; Illustration
