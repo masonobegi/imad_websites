@@ -51,7 +51,7 @@ export default function Commissions({ formIntro }: Props) {
         <div className="mb-10">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Custom Work</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4">Commission a Piece</h1>
-          <p className="text-mist text-base leading-relaxed max-w-lg">
+          <p className="text-mist text-base leading-relaxed">
             {formIntro}
           </p>
         </div>

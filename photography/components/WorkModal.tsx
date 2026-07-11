@@ -35,6 +35,7 @@ interface LensState { x: number; y: number; cw: number; ch: number }
 
 export default function WorkModal({ works, initialIndex, category, categoryLabel, onClose }: Props) {
   const [idx, setIdx] = useState(initialIndex)
+  const [subIdx, setSubIdx] = useState<number | null>(null)
   const [lens, setLens] = useState<LensState | null>(null)
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
@@ -42,10 +43,14 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
+  const hasProcess = (work.processImages?.length ?? 0) > 0
 
-  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null); setStatus('idle') } }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null); setStatus('idle') } }, [hasNext])
+  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null); setSubIdx(null); setStatus('idle') } }, [hasPrev])
+  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null); setSubIdx(null); setStatus('idle') } }, [hasNext])
 
+  const activeSrc = subIdx !== null && work.processImages?.[subIdx]
+    ? `/fine-art/${category}/${work.processImages[subIdx].filename}`
+    : `/fine-art/${category}/${work.filename}`
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,14 +86,11 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
     }
   }, [onClose, goPrev, goNext])
 
-  const imgSrc = `/fine-art/${category}/${work.filename}`
-
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="fixed inset-0 bg-black/85" onClick={onClose} />
 
-      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none"
->
+      <div className="relative z-10 w-full sm:max-w-5xl sm:mx-4 bg-panel shadow-2xl flex flex-col sm:flex-row h-[92vh] sm:h-auto sm:max-h-[90vh] rounded-t-2xl sm:rounded-none">
 
         <button onClick={onClose}
           className="absolute top-3 right-4 z-20 text-mist hover:text-edge transition-colors p-1" aria-label="Close">
@@ -98,43 +100,76 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
         </button>
 
         {/* Image area */}
-        <div
-          className="sm:w-[62%] flex-shrink-0 bg-darkroom relative select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
-          style={{ cursor: lens ? 'none' : 'crosshair' }}
-          onPointerMove={handlePointerMove}
-          onPointerLeave={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
-          onPointerUp={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
-        >
-          <img src={imgSrc} alt={work.title}
-            className="w-full h-full object-contain block select-none" draggable={false} />
+        <div className="sm:w-[62%] flex-shrink-0 bg-darkroom relative h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
+          {/* Main image + magnifier */}
+          <div
+            className="flex-1 flex items-center justify-center min-h-0 select-none touch-none"
+            style={{ cursor: lens ? 'none' : 'crosshair' }}
+            onPointerMove={handlePointerMove}
+            onPointerLeave={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
+            onPointerUp={(e) => { if (e.pointerType !== 'touch') setLens(null) }}
+          >
+            <img src={activeSrc} alt={work.title}
+              className="w-full h-full object-contain block select-none" draggable={false} />
 
-          {/* Magnifier lens (desktop hover) */}
-          {lens && (
-            <div
-              className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
-              style={{
-                width: LENS, height: LENS, borderRadius: '50%',
-                left: lens.x - LENS / 2,
-                top: lens.y - LENS / 2,
-                overflow: 'hidden',
-              }}
-            >
-              <img src={imgSrc} alt="" draggable={false} className="absolute select-none"
+            {lens && (
+              <div
+                className="absolute pointer-events-none z-20 border-2 border-white/70 shadow-[0_0_0_1px_rgba(0,0,0,0.15),0_4px_24px_rgba(0,0,0,0.55)]"
                 style={{
-                  width: lens.cw * ZOOM, height: lens.ch * ZOOM,
-                  objectFit: 'contain',
-                  left: LENS / 2 - lens.x * ZOOM,
-                  top: LENS / 2 - lens.y * ZOOM,
-                  maxWidth: 'none', maxHeight: 'none',
+                  width: LENS, height: LENS, borderRadius: '50%',
+                  left: lens.x - LENS / 2,
+                  top: lens.y - LENS / 2,
+                  overflow: 'hidden',
                 }}
-              />
-            </div>
-          )}
+              >
+                <img src={activeSrc} alt="" draggable={false} className="absolute select-none"
+                  style={{
+                    width: lens.cw * ZOOM, height: lens.ch * ZOOM,
+                    objectFit: 'contain',
+                    left: LENS / 2 - lens.x * ZOOM,
+                    top: LENS / 2 - lens.y * ZOOM,
+                    maxWidth: 'none', maxHeight: 'none',
+                  }}
+                />
+              </div>
+            )}
 
-          {!lens && (
-            <div className="absolute bottom-10 left-0 right-0 flex justify-center pointer-events-none">
-              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider sm:hidden">drag to magnify</span>
-              <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider hidden sm:inline">hover to magnify</span>
+            {!lens && (
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+                <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider sm:hidden">drag to magnify</span>
+                <span className="text-[10px] text-white/40 bg-black/30 px-2 py-0.5 tracking-wider hidden sm:inline">hover to magnify</span>
+              </div>
+            )}
+          </div>
+
+          {/* Process image thumbnail strip */}
+          {hasProcess && (
+            <div className="flex gap-1 p-2 bg-black/40 flex-shrink-0 overflow-x-auto">
+              <button
+                onClick={() => { setSubIdx(null); setLens(null) }}
+                className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === null ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
+              >
+                <img src={`/fine-art/${category}/${work.filename}`} alt={work.title}
+                  className="w-full h-full object-cover" draggable={false} />
+              </button>
+              {work.processImages!.map((pm, i) => {
+                const ext = pm.filename.split('.').pop()?.toLowerCase() || ''
+                const isVideo = ['mp4', 'mov', 'webm', 'm4v'].includes(ext)
+                const pmSrc = `/fine-art/${category}/${pm.filename}`
+                return (
+                  <button
+                    key={pm.id}
+                    onClick={() => { setSubIdx(i); setLens(null) }}
+                    title={pm.title}
+                    className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === i ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
+                  >
+                    {isVideo
+                      ? <video src={pmSrc} className="w-full h-full object-cover" muted />
+                      : <img src={pmSrc} alt={pm.title} className="w-full h-full object-cover" draggable={false} />
+                    }
+                  </button>
+                )
+              })}
             </div>
           )}
 
@@ -160,10 +195,17 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
               </svg>
             </button>
           )}
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center pointer-events-none">
-            <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
-              {idx + 1} / {works.length}
-            </span>
+          <div className="absolute bottom-[70px] left-0 right-0 flex justify-center pointer-events-none">
+            {hasProcess && (
+              <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
+                {idx + 1} / {works.length}
+              </span>
+            )}
+            {!hasProcess && (
+              <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
+                {idx + 1} / {works.length}
+              </span>
+            )}
           </div>
         </div>
 
@@ -204,27 +246,6 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
               )}
             </div>
           </div>
-
-          {/* Process images / videos */}
-          {work.processImages && work.processImages.length > 0 && (
-            <div className="px-5 sm:px-7 pb-4 border-t border-darkroom pt-4">
-              <p className="text-xs text-mist uppercase tracking-widest mb-3">Process</p>
-              <div className="grid grid-cols-3 gap-2">
-                {work.processImages.map(pm => {
-                  const ext = pm.filename.split('.').pop()?.toLowerCase() || ''
-                  const isVideo = ['mp4', 'mov', 'webm', 'm4v'].includes(ext)
-                  const src = `/fine-art/${category}/${pm.filename}`
-                  return isVideo ? (
-                    <video key={pm.id} src={src} controls muted playsInline
-                      className="w-full aspect-square object-cover rounded" title={pm.title} />
-                  ) : (
-                    <img key={pm.id} src={src} alt={pm.title}
-                      className="w-full aspect-square object-cover rounded" loading="lazy" />
-                  )
-                })}
-              </div>
-            </div>
-          )}
 
           <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
             {status === 'sent' ? (

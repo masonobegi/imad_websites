@@ -290,20 +290,8 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       if (!res.ok) throw new Error('Save failed')
 
       if (editKind === 'photo') {
-        setData(prev => {
-          const photos = { ...prev.photos.photos }
-          const newCat = (itemData as Photo).category
-          const oldCat = editCategory
-          if (editMode === 'add') {
-            photos[newCat] = [...(photos[newCat] || []).filter(p => p.id !== id), itemData as Photo]
-          } else if (oldCat === newCat) {
-            photos[newCat] = (photos[newCat] || []).map(p => p.id === id ? itemData as Photo : p)
-          } else {
-            photos[oldCat] = (photos[oldCat] || []).filter(p => p.id !== id)
-            photos[newCat] = [...(photos[newCat] || []).filter(p => p.id !== id), itemData as Photo]
-          }
-          return { ...prev, photos: { ...prev.photos, photos } }
-        })
+        const freshPhotos = await fetch('/api/admin/photos-list').then(r => r.json())
+        setData(prev => ({ ...prev, photos: freshPhotos }))
       } else if (editKind === 'watercolor') {
         setData(prev => ({ ...prev, fineArt: { ...prev.fineArt, works: { ...prev.fineArt.works, watercolors: editMode === 'add' ? [...prev.fineArt.works.watercolors, itemData as BasicWork] : prev.fineArt.works.watercolors.map(w => w.id === id ? itemData as BasicWork : w) } } }))
       } else if (editKind === 'encaustic') {
