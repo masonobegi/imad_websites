@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const filename = imgPath.split('/').pop()
       if (filename) {
         image = await prisma.uploadedImage.findFirst({
-          where: { path: { contains: `/${filename}` } },
+          where: { path: { startsWith: 'photos/', endsWith: filename } },
         })
       }
     }

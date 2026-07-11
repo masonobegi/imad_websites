@@ -223,25 +223,43 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
 
-            <div className="space-y-0 border border-edge text-sm overflow-hidden">
-              <div className={`px-4 py-3 ${work.reprintAvailable ? 'border-b border-edge' : ''}`}>
-                <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
-                {work.available ? (
-                  <p className="text-edge font-medium">
-                    {work.price ? `$${work.price.toLocaleString()}` : 'Inquire for price'}
-                  </p>
-                ) : (
-                  <p className="text-mist">Not for sale</p>
+            <div className="border border-edge text-sm overflow-hidden">
+              <div className={`px-4 py-3 bg-darkroom flex items-start justify-between gap-3 ${work.reprintAvailable ? 'border-b border-edge' : ''}`}>
+                <div>
+                  <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
+                  {work.available ? (
+                    <p className="text-edge font-medium">
+                      {work.price ? `$${work.price.toLocaleString()}` : 'Inquire for price'}
+                    </p>
+                  ) : (
+                    <p className="text-mist">Not for sale</p>
+                  )}
+                  {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
+                </div>
+                {work.available && (
+                  <button
+                    onClick={() => document.querySelector<HTMLInputElement>('input[type="email"]')?.focus()}
+                    className="text-xs bg-copper text-darkroom px-3 py-1.5 uppercase tracking-wider hover:bg-amber-600 transition-colors flex-shrink-0"
+                  >
+                    Inquire
+                  </button>
                 )}
-                {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
               </div>
               {work.reprintAvailable && (
-                <div className="px-4 py-3">
-                  <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
-                  <p className="text-edge font-medium">
-                    {work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}
-                  </p>
-                  {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
+                <div className="px-4 py-3 bg-darkroom flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
+                    <p className="text-edge font-medium">
+                      {work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}
+                    </p>
+                    {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
+                  </div>
+                  <button
+                    onClick={() => document.querySelector<HTMLInputElement>('input[type="email"]')?.focus()}
+                    className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0"
+                  >
+                    Contact
+                  </button>
                 </div>
               )}
             </div>
