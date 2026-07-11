@@ -1201,7 +1201,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                         <div className="grid grid-cols-4 gap-2">
                           {paItems.map(pa => (
                             <div key={pa.id} className="relative group">
-                              <img src={imgUrl('oil', 'oils', pa.filename)} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                              <img src={`/fine-art/oils/plein-air/${pa.filename}`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
                               <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
                                 className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
                             </div>
