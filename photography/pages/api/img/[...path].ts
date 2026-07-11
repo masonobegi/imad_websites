@@ -6,7 +6,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const imgPath = segments.join('/')
 
   try {
-    const image = await prisma.uploadedImage.findUnique({ where: { path: imgPath } })
+    let image = await prisma.uploadedImage.findUnique({ where: { path: imgPath } })
+
+    // For photos, if the exact path isn't found (category may have changed),
+    // fall back to searching by filename under any photos/ prefix
+    if (!image && imgPath.startsWith('photos/')) {
+      const filename = imgPath.split('/').pop()
+      if (filename) {
+        image = await prisma.uploadedImage.findFirst({
+          where: {
+            AND: [
+              { path: { startsWith: 'photos/' } },
+              { path: { endsWith: `/${filename}` } },
+            ],
+          },
+        })
+      }
+    }
+
     if (!image) return res.status(404).end()
 
     res.setHeader('Content-Type', image.mime)
