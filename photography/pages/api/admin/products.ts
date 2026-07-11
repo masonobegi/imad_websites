@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             if (exact.count === 0) {
               // Exact path didn't match — search by filename anywhere under photos/
               await prisma.uploadedImage.updateMany({
-                where: { path: { startsWith: 'photos/', endsWith: oldPhoto.filename } },
+                where: { path: { contains: `/${oldPhoto.filename}` } },
                 data: { path: newPath },
               })
             }
