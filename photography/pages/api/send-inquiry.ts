@@ -4,7 +4,7 @@ import { checkRateLimit } from '../../lib/rateLimit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const IMAD_EMAIL = 'imadobegi@gmail.com'
-const FROM = 'OBGillustrator <orders@obgillustrator.com>'
+const FROM = process.env.RESEND_FROM || 'OBGillustrator <onboarding@resend.dev>'
 const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,253}\.[^\s@]{2,}$/
 
 function esc(v: unknown): string {
