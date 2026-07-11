@@ -75,9 +75,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           // If category changed, rename the UploadedImage path so the image stays reachable
           const oldPhoto = await prisma.photo.findUnique({ where: { id } })
           if (oldPhoto && oldPhoto.category !== photoData.category) {
-            const oldPath = `photos/${oldPhoto.category}/${oldPhoto.filename}`
             const newPath = `photos/${photoData.category}/${oldPhoto.filename}`
-            await prisma.uploadedImage.updateMany({ where: { path: oldPath }, data: { path: newPath } })
+            const exact = await prisma.uploadedImage.updateMany({
+              where: { path: `photos/${oldPhoto.category}/${oldPhoto.filename}` },
+              data: { path: newPath },
+            })
+            if (exact.count === 0) {
+              // Exact path didn't match — find by filename under any photos/ prefix
+              await prisma.uploadedImage.updateMany({
+                where: { AND: [{ path: { startsWith: 'photos/' } }, { path: { endsWith: `/${oldPhoto.filename}` } }] },
+                data: { path: newPath },
+              })
+            }
           }
           await prisma.photo.update({ where: { id }, data: photoData })
         } else if (action === 'delete') {
