@@ -305,16 +305,18 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
 
       {/* ── COMMISSION CTA ── */}
       {siteConfig.commissionOpen && (
-        <section className="px-6 sm:px-10 py-14 sm:py-20 text-center border-b border-edge">
-          <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-3">Custom Work</p>
-          <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-4">{siteConfig.commissionHeadline}</h2>
-          <p className="text-mist text-sm sm:text-base max-w-md mx-auto mb-8 leading-relaxed">{siteConfig.commissionBody}</p>
-          <Link
-            href="/commissions"
-            className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
-          >
-            {siteConfig.commissionCta}
-          </Link>
+        <section className="border-b border-edge py-14 sm:py-20">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8">
+            <p className="text-[10px] text-copper uppercase tracking-[0.2em] mb-3">Custom Work</p>
+            <h2 className="font-serif text-3xl sm:text-4xl text-ink mb-4">{siteConfig.commissionHeadline}</h2>
+            <p className="text-mist text-sm sm:text-base max-w-md mb-8 leading-relaxed">{siteConfig.commissionBody}</p>
+            <Link
+              href="/commissions"
+              className="inline-block bg-copper text-darkroom px-8 py-3.5 text-sm tracking-wider uppercase hover:bg-amber-600 transition-colors"
+            >
+              {siteConfig.commissionCta}
+            </Link>
+          </div>
         </section>
       )}
 
