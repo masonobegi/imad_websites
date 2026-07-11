@@ -32,7 +32,8 @@ export default function Privacy() {
             <ul className="list-disc list-inside space-y-1 text-sm">
               <li><strong className="text-ink">Resend</strong> — used to deliver emails when you submit a form. Your email address is passed to Resend solely for this purpose.</li>
               <li><strong className="text-ink">Stripe</strong> — print orders are processed by Stripe. Your payment information is entered directly on Stripe's secure interface and is never stored on this site. Stripe's own privacy policy governs how they handle your payment data.</li>
-              <li><strong className="text-ink">Sticker Mule</strong> — sticker purchases are handled entirely on Sticker Mule's platform. Their own privacy policy applies when you visit their site.</li>
+              <li><strong className="text-ink">Bay Photo Lab / fulfillment partners</strong> — when you place a print order, your name and shipping address are shared with Bay Photo Lab or other fulfillment partners solely to produce and deliver your order. These partners do not use your information for any other purpose.</li>
+              <li><strong className="text-ink">Sticker Mule</strong> — sticker purchases are handled entirely on Sticker Mule's platform. <a href="https://www.stickermule.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-copper hover:text-shadow transition-colors">Their privacy policy</a> applies when you visit their site.</li>
               <li><strong className="text-ink">Railway</strong> — this site is hosted on Railway. Standard server logs (IP address, page requests) may be retained by Railway per their own policy.</li>
             </ul>
           </section>

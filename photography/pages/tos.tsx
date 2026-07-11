@@ -32,7 +32,8 @@ export default function Terms() {
 
           <section>
             <h2 className="font-serif text-xl text-ink mb-3">Print orders</h2>
-            <p>Photography prints are made to order. All sales are final once production has begun. If your order arrives damaged, contact <a href="mailto:imadobegi@gmail.com" className="text-copper hover:text-shadow transition-colors">imadobegi@gmail.com</a> within 7 days of delivery with photos of the damage and we will arrange a replacement.</p>
+            <p className="mb-3">Photography prints are made to order. All sales are final once production has begun. If your order arrives damaged, contact <a href="mailto:imadobegi@gmail.com" className="text-copper hover:text-shadow transition-colors">imadobegi@gmail.com</a> within 7 days of delivery with photos of the damage and we will arrange a replacement.</p>
+            <p>To fulfill print orders, your name and shipping address are shared with Bay Photo Lab or other third-party fulfillment partners. This information is used solely to produce and ship your order.</p>
           </section>
 
           <section>
@@ -42,7 +43,7 @@ export default function Terms() {
 
           <section>
             <h2 className="font-serif text-xl text-ink mb-3">Stickers</h2>
-            <p>Sticker products are sold exclusively through Sticker Mule. All purchases, returns, and customer service for stickers are governed by <a href="https://www.stickermule.com/policies" target="_blank" rel="noopener noreferrer" className="text-copper hover:text-shadow transition-colors">Sticker Mule's policies</a>.</p>
+            <p>Sticker products are sold exclusively through Sticker Mule. All purchases, returns, and customer service for stickers are governed by <a href="https://www.stickermule.com/legal/privacy" target="_blank" rel="noopener noreferrer" className="text-copper hover:text-shadow transition-colors">Sticker Mule's policies</a>.</p>
           </section>
 
           <section>

@@ -39,14 +39,31 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
   const [lens, setLens] = useState<LensState | null>(null)
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  const [activeInquiry, setActiveInquiry] = useState<'original' | 'reprint' | 'general' | null>(null)
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
   const hasProcess = (work.processImages?.length ?? 0) > 0
 
-  const goPrev = useCallback(() => { if (hasPrev) { setIdx(i => i - 1); setLens(null); setSubIdx(null); setStatus('idle') } }, [hasPrev])
-  const goNext = useCallback(() => { if (hasNext) { setIdx(i => i + 1); setLens(null); setSubIdx(null); setStatus('idle') } }, [hasNext])
+  const openInquiry = (type: 'original' | 'reprint' | 'general') => {
+    setActiveInquiry(type)
+    setStatus('idle')
+    if (type === 'original') {
+      setMessage(`Hi Imad,\n\nI'm interested in "${work.title}"${work.price ? ` ($${work.price.toLocaleString()})` : ''}. Is it still available?\n\nThank you`)
+    } else if (type === 'reprint') {
+      setMessage(`Hi Imad,\n\nI'm interested in an archival reprint of "${work.title}"${work.reprintPrice ? ` ($${work.reprintPrice.toLocaleString()})` : ''}. Could you share more details?\n\nThank you`)
+    } else {
+      setMessage(`Hi Imad,\n\nI admired "${work.title}" on your site and wanted to reach out.\n\nThank you`)
+    }
+  }
+
+  const goPrev = useCallback(() => {
+    if (hasPrev) { setIdx(i => i - 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
+  }, [hasPrev])
+  const goNext = useCallback(() => {
+    if (hasNext) { setIdx(i => i + 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
+  }, [hasNext])
 
   const activeSrc = subIdx !== null && work.processImages?.[subIdx]
     ? `/fine-art/${category}/${work.processImages[subIdx].filename}`
@@ -59,7 +76,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
       const res = await fetch('/api/send-inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, message, workTitle: work.title, workType: categoryLabel, inquiryType: 'general' }),
+        body: JSON.stringify({ email, message, workTitle: work.title, workType: categoryLabel, inquiryType: activeInquiry ?? 'general' }),
       })
       setStatus(res.ok ? 'sent' : 'error')
     } catch {
@@ -101,7 +118,6 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
 
         {/* Image area */}
         <div className="sm:w-[62%] flex-shrink-0 bg-darkroom relative h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
-          {/* Main image + magnifier */}
           <div
             className="flex-1 flex items-center justify-center min-h-0 select-none touch-none"
             style={{ cursor: lens ? 'none' : 'crosshair' }}
@@ -157,10 +173,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
                 const isVideo = ['mp4', 'mov', 'webm', 'm4v'].includes(ext)
                 const pmSrc = `/fine-art/${category}/${pm.filename}`
                 return (
-                  <button
-                    key={pm.id}
-                    onClick={() => { setSubIdx(i); setLens(null) }}
-                    title={pm.title}
+                  <button key={pm.id} onClick={() => { setSubIdx(i); setLens(null) }} title={pm.title}
                     className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === i ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
                   >
                     {isVideo
@@ -177,8 +190,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
             <button onClick={goPrev}
               onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-30 touch-manipulation"
-              style={{ cursor: 'pointer' }}
-              aria-label="Previous">
+              style={{ cursor: 'pointer' }} aria-label="Previous">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
@@ -188,108 +200,131 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
             <button onClick={goNext}
               onPointerEnter={() => setLens(null)} onPointerMove={e => e.stopPropagation()}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-black/55 hover:bg-black/80 text-white flex items-center justify-center transition-colors z-30 touch-manipulation"
-              style={{ cursor: 'pointer' }}
-              aria-label="Next">
+              style={{ cursor: 'pointer' }} aria-label="Next">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
           )}
-          <div className="absolute bottom-[70px] left-0 right-0 flex justify-center pointer-events-none">
-            {hasProcess && (
-              <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
-                {idx + 1} / {works.length}
-              </span>
-            )}
-            {!hasProcess && (
-              <span className="text-xs text-white/60 bg-black/40 px-2 py-0.5">
-                {idx + 1} / {works.length}
-              </span>
-            )}
-          </div>
         </div>
 
         {/* Info panel */}
         <div className="sm:w-[38%] flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto px-5 sm:px-7 pt-5 sm:pt-7 pb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <p className="text-xs text-copper uppercase tracking-widest">{categoryLabel}</p>
-              {work.available && (
-                <span className="text-[10px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-wider font-medium">
-                  Original available
-                </span>
-              )}
-            </div>
+            <p className="text-xs text-copper uppercase tracking-widest mb-2">{categoryLabel}</p>
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
 
             <div className="border border-edge text-sm overflow-hidden">
-              <div className={`px-4 py-3 bg-darkroom flex items-start justify-between gap-3 ${work.reprintAvailable ? 'border-b border-edge' : ''}`}>
-                <div>
-                  <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
-                  {work.available ? (
-                    <p className="text-edge font-medium">
-                      {work.price ? `$${work.price.toLocaleString()}` : 'Inquire for price'}
-                    </p>
-                  ) : (
-                    <p className="text-mist">Not for sale</p>
-                  )}
-                  {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
-                </div>
-                {work.available && (
-                  <button
-                    onClick={() => document.querySelector<HTMLInputElement>('input[type="email"]')?.focus()}
-                    className="text-xs bg-copper text-darkroom px-3 py-1.5 uppercase tracking-wider hover:bg-amber-600 transition-colors flex-shrink-0"
-                  >
-                    Inquire
-                  </button>
-                )}
-              </div>
-              {work.reprintAvailable && (
-                <div className="px-4 py-3 bg-darkroom flex items-start justify-between gap-3">
+              {/* Original row */}
+              <div className={`px-4 py-3 ${work.reprintAvailable ? 'border-b border-edge' : ''}`}>
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
-                    <p className="text-edge font-medium">
-                      {work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}
-                    </p>
-                    {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
+                    <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
+                    {work.available ? (
+                      <p className="text-edge font-medium">
+                        {work.price ? `$${work.price.toLocaleString()}` : 'Inquire for price'}
+                      </p>
+                    ) : (
+                      <p className="text-mist">Not for sale</p>
+                    )}
+                    {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
                   </div>
-                  <button
-                    onClick={() => document.querySelector<HTMLInputElement>('input[type="email"]')?.focus()}
-                    className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0"
-                  >
-                    Contact
-                  </button>
+                  {work.available ? (
+                    <button onClick={() => openInquiry('original')}
+                      className="text-xs bg-copper text-darkroom px-3 py-1.5 uppercase tracking-wider hover:bg-amber-600 transition-colors flex-shrink-0">
+                      Inquire
+                    </button>
+                  ) : (
+                    <button onClick={() => openInquiry('general')}
+                      className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
+                      Contact
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Reprint row */}
+              {work.reprintAvailable && (
+                <div className="px-4 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Archival Reprint</p>
+                      <p className="text-edge font-medium">
+                        {work.reprintPrice ? `$${work.reprintPrice.toLocaleString()}` : 'Inquire for price'}
+                      </p>
+                      {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
+                    </div>
+                    <button onClick={() => openInquiry('reprint')}
+                      className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
+                      Contact
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
+
+            {/* Inquiry form — appears only after clicking a button */}
+            {activeInquiry && (
+              <div className="mt-4 border-t border-darkroom pt-4">
+                {status === 'sent' ? (
+                  <p className="text-sm text-copper">Message sent — Imad will be in touch soon.</p>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-2">
+                    <p className="text-xs text-mist uppercase tracking-wider mb-1">
+                      {activeInquiry === 'original' ? 'Inquire about the original'
+                        : activeInquiry === 'reprint' ? 'Inquire about a reprint'
+                        : 'Send a message'}
+                    </p>
+                    <input
+                      type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                      placeholder="Your email"
+                      className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist"
+                    />
+                    <textarea
+                      required value={message} onChange={e => setMessage(e.target.value)}
+                      rows={4}
+                      className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist resize-none"
+                    />
+                    {status === 'error' && <p className="text-xs text-red-400">Something went wrong — try again.</p>}
+                    <div className="flex gap-2">
+                      <button type="button" onClick={() => setActiveInquiry(null)}
+                        className="text-xs border border-panel text-mist px-3 py-2 hover:border-mist transition-colors">
+                        Cancel
+                      </button>
+                      <button type="submit" disabled={status === 'sending'}
+                        className="flex-1 text-xs bg-copper text-darkroom py-2 uppercase tracking-wider hover:bg-amber-600 transition-colors disabled:opacity-60">
+                        {status === 'sending' ? 'Sending…' : 'Send Message'}
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
+
+            {hasProcess && (
+              <p className="text-xs text-mist mt-4 leading-relaxed">
+                Thumbnails below the painting show the work in progress.
+              </p>
+            )}
           </div>
 
-          <div className="px-5 sm:px-7 py-4 border-t border-darkroom flex-shrink-0">
-            {status === 'sent' ? (
-              <p className="text-center text-sm text-copper py-2">Message sent — Imad will be in touch soon.</p>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-2">
-                <input
-                  type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                  placeholder="Your email"
-                  className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist"
-                />
-                <textarea
-                  required value={message} onChange={e => setMessage(e.target.value)}
-                  placeholder={work.available ? `Hi Imad, I'm interested in "${work.title}"…` : `Hi Imad, I admired "${work.title}" on your site…`}
-                  rows={3}
-                  className="w-full bg-darkroom border border-panel text-edge text-sm px-3 py-2 placeholder:text-mist focus:outline-none focus:border-mist resize-none"
-                />
-                {status === 'error' && <p className="text-xs text-red-400">Something went wrong — try again.</p>}
-                <button
-                  type="submit" disabled={status === 'sending'}
-                  className="w-full py-3 text-sm tracking-wider uppercase transition-colors bg-copper text-darkroom hover:bg-amber-600 disabled:opacity-60"
-                >
-                  {status === 'sending' ? 'Sending…' : 'Send Message'}
+          <div className="px-5 sm:px-7 py-3 border-t border-darkroom flex-shrink-0 flex items-center justify-between">
+            <span className="text-xs text-mist">{idx + 1} / {works.length}</span>
+            <div className="flex gap-2">
+              {hasPrev && (
+                <button onClick={goPrev}
+                  className="text-xs border border-edge text-mist px-3 py-1.5 hover:border-shadow transition-colors touch-manipulation">
+                  ← Prev
                 </button>
-              </form>
-            )}
+              )}
+              {hasNext && (
+                <button onClick={goNext}
+                  className="text-xs border border-edge text-mist px-3 py-1.5 hover:border-shadow transition-colors touch-manipulation">
+                  Next →
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
