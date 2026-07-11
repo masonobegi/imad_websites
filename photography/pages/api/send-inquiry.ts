@@ -59,17 +59,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       `,
     })
 
-    await resend.emails.send({
-      from: FROM,
-      to: email,
-      reply_to: IMAD_EMAIL,
-      subject: `Your inquiry — ${esc(workTitle)}`,
-      html: `
-        <p>Thank you for reaching out about <strong>${esc(workTitle)}</strong>. Imad will be in touch soon.</p>
-        <p><strong>Your message:</strong><br/><span style="white-space:pre-wrap">${esc(message)}</span></p>
-        <p>— Imad Obegi<br/><a href="https://obgillustrator.com">OBGillustrator.com</a></p>
-      `,
-    })
   } catch (err) {
     console.error('Inquiry email error:', err)
     return res.status(500).json({ error: 'Failed to send' })
