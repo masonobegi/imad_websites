@@ -47,15 +47,16 @@ export default function Commissions({ formIntro }: Props) {
         <meta name="description" content="Request a custom painting, print, or design from Imad Obegi — watercolors, encaustics, photography, and more." />
       </Head>
 
-      <div className="max-w-2xl mx-auto px-5 sm:px-8 py-14 sm:py-20">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-16">
         <div className="mb-10">
           <p className="text-xs text-copper uppercase tracking-widest mb-3">Custom Work</p>
           <h1 className="font-serif text-4xl sm:text-5xl text-ink mb-4">Commission a Piece</h1>
-          <p className="text-mist text-base leading-relaxed">
+          <p className="text-mist text-base leading-relaxed max-w-2xl">
             {formIntro}
           </p>
         </div>
 
+        <div className="max-w-2xl">
         {status === 'sent' ? (
           <div className="border border-edge px-8 py-10 text-center">
             <p className="font-serif text-2xl text-ink mb-3">Request received</p>
@@ -140,6 +141,7 @@ export default function Commissions({ formIntro }: Props) {
             </p>
           </form>
         )}
+        </div>
       </div>
     </Layout>
   )

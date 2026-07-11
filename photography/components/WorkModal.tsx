@@ -223,8 +223,8 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
             <h2 className="font-serif text-lg sm:text-2xl text-edge leading-snug mb-4">{work.title}</h2>
             <p className="text-mist text-sm leading-relaxed mb-6">{work.description}</p>
 
-            <div className="space-y-0 border border-darkroom text-sm overflow-hidden">
-              <div className={`px-4 py-3 ${work.reprintAvailable ? 'border-b border-darkroom' : ''}`}>
+            <div className="space-y-0 border border-edge text-sm overflow-hidden">
+              <div className={`px-4 py-3 ${work.reprintAvailable ? 'border-b border-edge' : ''}`}>
                 <p className="text-xs text-mist uppercase tracking-wider mb-0.5">Original</p>
                 {work.available ? (
                   <p className="text-edge font-medium">
