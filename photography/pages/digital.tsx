@@ -105,6 +105,23 @@ export default function Digital({ intro, works }: Props) {
         )}
       </div>
 
+      {/* Web Design & Development — Mason Obegi */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-20 border-t border-edge pt-16">
+        <p className="text-xs text-copper uppercase tracking-widest mb-4">Web Design &amp; Development</p>
+        <h2 className="font-serif text-3xl text-ink mb-6">Built for artists, by a developer who gets it.</h2>
+        <div className="grid sm:grid-cols-2 gap-10">
+          <p className="text-mist leading-relaxed text-sm">
+            Mason Obegi is a full-stack software engineer specializing in custom e-commerce websites for independent artists and small businesses. He handles everything end-to-end — storefront design, payment processing, image management, custom domains, and deployment — so artists can focus on making work instead of managing technology. OBGillustrator.com was designed and built by Mason, from the ground up, using Next.js, Stripe, and a custom image pipeline built around Imad's specific workflow.
+          </p>
+          <p className="text-mist leading-relaxed text-sm">
+            Mason has shipped production applications across industries — from fine-art storefronts and booking platforms to real-time multiplayer games and data infrastructure tools. He currently works as a Quality Engineer at HP while taking on a select number of web projects for clients who want a site that actually works as hard as they do. If you're an artist or small business owner looking for a high-quality online presence, reach out at{' '}
+            <a href="mailto:mason.obegi@gmail.com" className="text-copper hover:underline">mason.obegi@gmail.com</a>
+            {' '}or visit{' '}
+            <a href="https://masonobegi.com" target="_blank" rel="noopener noreferrer" className="text-copper hover:underline">masonobegi.com</a>.
+          </p>
+        </div>
+      </div>
+
       {/* Full-size popup */}
       {popupWork && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
