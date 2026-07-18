@@ -192,7 +192,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
             href="/digital"
             className="flex items-center gap-2 text-copper text-sm flex-shrink-0 ml-6 hover:gap-3 transition-all duration-200"
           >
-            <span className="hidden sm:inline">Browse Digital</span>
+            <span className="hidden sm:inline">Browse Digital Services</span>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
             </svg>

@@ -251,7 +251,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
                     <span className="flex items-center gap-2">
                       {s.label}
                       {fitLabel(s.label) === 'best' && (
-                        <span className="text-[10px] text-emerald-400 font-medium leading-none">Best fit</span>
+                        <span className="text-[10px] text-emerald-400 font-medium leading-none">Not Cropped</span>
                       )}
                       {fitLabel(s.label) === 'crop' && (
                         <span className="text-[10px] text-amber-400 font-medium leading-none">Cropped</span>

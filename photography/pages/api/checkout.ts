@@ -14,6 +14,19 @@ async function getValidPrices(): Promise<Map<string, number>> {
   }
 }
 
+async function validateFineArtPrice(productId: string, size: string, clientPrice: number): Promise<boolean> {
+  try {
+    const workId = productId.endsWith('-reprint') ? productId.slice(0, -8) : productId
+    const work = await prisma.fineArtWork.findUnique({ where: { id: workId } })
+    if (!work) return false
+    const expected = size === 'Archival Reprint' ? work.reprintPrice : (work.originalPrice ?? work.price)
+    if (expected === null || expected === undefined) return false
+    return Math.abs(clientPrice - expected) <= 1.00
+  } catch {
+    return false
+  }
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') return res.status(405).end()
 
@@ -26,9 +39,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (typeof item.price !== 'number' || item.price <= 0) {
       return res.status(400).json({ error: 'Invalid item price' })
     }
-    const expected = validPrices.get(item.size)
-    if (expected !== undefined && Math.abs(item.price - expected) > 1.00) {
-      return res.status(400).json({ error: 'Price mismatch — please refresh and try again' })
+    if (item.size === 'Original' || item.size === 'Archival Reprint') {
+      const valid = await validateFineArtPrice(item.productId, item.size, item.price)
+      if (!valid) return res.status(400).json({ error: 'Price mismatch — please refresh and try again' })
+    } else {
+      const expected = validPrices.get(item.size)
+      if (expected !== undefined && Math.abs(item.price - expected) > 1.00) {
+        return res.status(400).json({ error: 'Price mismatch — please refresh and try again' })
+      }
     }
     if (typeof item.quantity !== 'number' || item.quantity < 1 || item.quantity > 20) {
       return res.status(400).json({ error: 'Invalid quantity' })
@@ -57,6 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       shipping_address_collection: {
         allowed_countries: ['US', 'CA', 'GB', 'AU', 'FR', 'DE'],
       },
+      automatic_tax: { enabled: true },
       success_url: `${siteUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${siteUrl}/shop`,
       metadata: { site: 'photography' },

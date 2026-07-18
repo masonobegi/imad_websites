@@ -31,7 +31,7 @@ export default function OilPaintings({ works }: Props) {
           </p>
           <h1 className="font-serif text-3xl text-ink mb-1">Oil Paintings</h1>
           <p className="text-mist text-sm max-w-md">
-            Plein air and studio oils. Original canvases from $950 · Archival watercolor paper reprints $95.
+            Plein air and studio Oils. High quality reprints available.
           </p>
         </div>
 

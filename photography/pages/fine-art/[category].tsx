@@ -64,7 +64,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                   onClick={() => setFilter('available')}
                   className={`text-xs px-3 py-1.5 border transition-colors ${filter === 'available' ? 'border-copper text-copper' : 'border-edge text-mist hover:border-shadow'}`}
                 >
-                  Available ({availableCount})
+                  Originals Available ({availableCount})
                 </button>
               </div>
             )}
@@ -103,7 +103,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                     {work.available && (
                       <div className="absolute top-2 right-2">
                         <span className="text-[9px] bg-copper text-darkroom px-1.5 py-0.5 uppercase tracking-widest font-medium">
-                          For Sale
+                          Original Available
                         </span>
                       </div>
                     )}

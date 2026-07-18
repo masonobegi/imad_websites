@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useCart } from './CartContext'
 
 export interface ProcessMedia {
   id: string
@@ -34,35 +35,62 @@ const ZOOM = 2.8
 interface LensState { x: number; y: number; cw: number; ch: number }
 
 export default function WorkModal({ works, initialIndex, category, categoryLabel, onClose }: Props) {
+  const { addItem } = useCart()
   const [idx, setIdx] = useState(initialIndex)
   const [subIdx, setSubIdx] = useState<number | null>(null)
   const [lens, setLens] = useState<LensState | null>(null)
+  const [addedOriginal, setAddedOriginal] = useState(false)
+  const [addedReprint, setAddedReprint] = useState(false)
+  const [activeInquiry, setActiveInquiry] = useState<'general' | null>(null)
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
-  const [activeInquiry, setActiveInquiry] = useState<'original' | 'reprint' | 'general' | null>(null)
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const work = works[idx]
   const hasPrev = idx > 0
   const hasNext = idx < works.length - 1
   const hasProcess = (work.processImages?.length ?? 0) > 0
 
-  const openInquiry = (type: 'original' | 'reprint' | 'general') => {
-    setActiveInquiry(type)
+  const handleAddOriginal = () => {
+    addItem({
+      productId: work.id,
+      productName: work.title,
+      category: `${categoryLabel} — Original`,
+      size: 'Original',
+      medium: categoryLabel,
+      price: work.price ?? 0,
+      quantity: 1,
+      image: `/fine-art/${category}/${work.filename}`,
+    })
+    setAddedOriginal(true)
+    setTimeout(() => setAddedOriginal(false), 2000)
+  }
+
+  const handleAddReprint = () => {
+    addItem({
+      productId: `${work.id}-reprint`,
+      productName: work.title,
+      category: `${categoryLabel} — Archival Reprint`,
+      size: 'Archival Reprint',
+      medium: work.reprintMedium || 'Archival paper',
+      price: work.reprintPrice ?? 0,
+      quantity: 1,
+      image: `/fine-art/${category}/${work.filename}`,
+    })
+    setAddedReprint(true)
+    setTimeout(() => setAddedReprint(false), 2000)
+  }
+
+  const openInquiry = () => {
+    setActiveInquiry('general')
     setStatus('idle')
-    if (type === 'original') {
-      setMessage(`Hi Imad,\n\nI'm interested in "${work.title}"${work.price ? ` ($${work.price.toLocaleString()})` : ''}. Is it still available?\n\nThank you`)
-    } else if (type === 'reprint') {
-      setMessage(`Hi Imad,\n\nI'm interested in an archival reprint of "${work.title}"${work.reprintPrice ? ` ($${work.reprintPrice.toLocaleString()})` : ''}. Could you share more details?\n\nThank you`)
-    } else {
-      setMessage(`Hi Imad,\n\nI admired "${work.title}" on your site and wanted to reach out.\n\nThank you`)
-    }
+    setMessage(`Hi Imad,\n\nI admired "${work.title}" on your site and wanted to reach out.\n\nThank you`)
   }
 
   const goPrev = useCallback(() => {
-    if (hasPrev) { setIdx(i => i - 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
+    if (hasPrev) { setIdx(i => i - 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle'); setAddedOriginal(false); setAddedReprint(false) }
   }, [hasPrev])
   const goNext = useCallback(() => {
-    if (hasNext) { setIdx(i => i + 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle') }
+    if (hasNext) { setIdx(i => i + 1); setLens(null); setSubIdx(null); setActiveInquiry(null); setStatus('idle'); setAddedOriginal(false); setAddedReprint(false) }
   }, [hasNext])
 
   const activeSrc = subIdx !== null && work.processImages?.[subIdx]
@@ -230,13 +258,13 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
                     )}
                     {work.originalSize && <p className="text-xs text-mist mt-0.5">{work.originalSize}</p>}
                   </div>
-                  {work.available ? (
-                    <button onClick={() => openInquiry('original')}
+                  {work.available && work.price ? (
+                    <button onClick={handleAddOriginal}
                       className="text-xs bg-copper text-darkroom px-3 py-1.5 uppercase tracking-wider hover:bg-amber-600 transition-colors flex-shrink-0">
-                      Inquire
+                      {addedOriginal ? 'Added ✓' : 'Add to Cart'}
                     </button>
                   ) : (
-                    <button onClick={() => openInquiry('general')}
+                    <button onClick={openInquiry}
                       className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
                       Contact
                     </button>
@@ -255,27 +283,30 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
                       </p>
                       {work.reprintMedium && <p className="text-xs text-mist mt-0.5">{work.reprintMedium}</p>}
                     </div>
-                    <button onClick={() => openInquiry('reprint')}
-                      className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
-                      Contact
-                    </button>
+                    {work.reprintPrice ? (
+                      <button onClick={handleAddReprint}
+                        className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
+                        {addedReprint ? 'Added ✓' : 'Add to Cart'}
+                      </button>
+                    ) : (
+                      <button onClick={openInquiry}
+                        className="text-xs border border-mist text-mist px-3 py-1.5 uppercase tracking-wider hover:border-edge hover:text-edge transition-colors flex-shrink-0">
+                        Contact
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Inquiry form — appears only after clicking a button */}
+            {/* Contact form — for works without a price set */}
             {activeInquiry && (
               <div className="mt-4 border-t border-darkroom pt-4">
                 {status === 'sent' ? (
                   <p className="text-sm text-copper">Message sent — Imad will be in touch soon.</p>
                 ) : (
                   <form onSubmit={handleSubmit} className="space-y-2">
-                    <p className="text-xs text-mist uppercase tracking-wider mb-1">
-                      {activeInquiry === 'original' ? 'Inquire about the original'
-                        : activeInquiry === 'reprint' ? 'Inquire about a reprint'
-                        : 'Send a message'}
-                    </p>
+                    <p className="text-xs text-mist uppercase tracking-wider mb-1">Send a message</p>
                     <input
                       type="email" required value={email} onChange={e => setEmail(e.target.value)}
                       placeholder="Your email"

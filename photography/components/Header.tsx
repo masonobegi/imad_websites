@@ -26,7 +26,10 @@ export default function Header({ dark = false }: HeaderProps) {
 
           {/* Logo */}
           <div>
-            <Link href="/" className={`font-serif text-xl sm:text-2xl ${text} tracking-wide ${hover} transition-colors`}>
+            <Link href="/" className={`font-serif text-xl sm:text-2xl ${text} tracking-wide ${hover} transition-colors inline-flex items-center gap-2`}>
+              <svg className="w-4 h-4 opacity-60 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+              </svg>
               Imad Obegi
             </Link>
             <p className={`text-xs ${sub} tracking-[0.15em] mt-0.5`}>OBGillustrator.com</p>
@@ -37,7 +40,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" className={`text-sm ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" className={`text-sm ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" className={`text-sm ${text} ${hover} transition-colors`}>Stickers</Link>
-            <Link href="/digital" className={`text-sm ${text} ${hover} transition-colors`}>Digital</Link>
+            <Link href="/digital" className={`text-sm ${text} ${hover} transition-colors`}>Digital Services</Link>
             <Link href="/process" className={`text-sm ${text} ${hover} transition-colors`}>Process</Link>
 
             <Link href="/about" className={`text-sm ${text} ${hover} transition-colors`}>About</Link>
@@ -105,7 +108,7 @@ export default function Header({ dark = false }: HeaderProps) {
             <Link href="/shop" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Photography</Link>
             <Link href="/fine-art" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Fine Art</Link>
             <Link href="/stickers" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Stickers</Link>
-            <Link href="/digital" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Digital Design</Link>
+            <Link href="/digital" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Digital Services</Link>
             <Link href="/process" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Art Process</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>About</Link>
             <Link href="/contact" onClick={() => setMenuOpen(false)} className={`text-base ${text} ${hover} transition-colors`}>Contact</Link>

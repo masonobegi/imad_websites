@@ -22,6 +22,7 @@ sharp.concurrency(1)
 // ── Config ──────────────────────────────────────────────────────────────────
 const SITE_URL = (process.env.SITE_URL || 'https://obgillustrator.com').replace(/\/$/, '')
 const ADMIN_SECRET = process.env.ADMIN_SECRET
+const ADMIN_COOKIE_ENV = process.env.ADMIN_COOKIE  // alternative: paste full cookie string from browser
 const MAX_PX = 2400
 const JPEG_QUALITY = 88
 
@@ -47,7 +48,23 @@ function createToken() {
   return Buffer.from(`${payload}:${sig}`).toString('base64')
 }
 
-const COOKIE = `obg_admin=${createToken()}`
+// Support two auth modes:
+// 1. ADMIN_SECRET env var → generates token (use with `railway run`)
+// 2. ADMIN_COOKIE env var → use cookie string directly from browser
+//    Get it from: browser DevTools → Application → Cookies → obg_admin value
+//    Then run: ADMIN_COOKIE="obg_admin=<paste-here>" node batch-upload.js
+let COOKIE
+if (ADMIN_COOKIE_ENV) {
+  // User pasted the full cookie string (either "obg_admin=..." or just the token)
+  COOKIE = ADMIN_COOKIE_ENV.startsWith('obg_admin=') ? ADMIN_COOKIE_ENV : `obg_admin=${ADMIN_COOKIE_ENV}`
+} else if (ADMIN_SECRET) {
+  COOKIE = `obg_admin=${createToken()}`
+} else {
+  console.error('Error: Set ADMIN_SECRET or ADMIN_COOKIE env var.')
+  console.error('  To get the cookie: log into /admin in your browser, open DevTools → Application → Cookies → copy obg_admin value')
+  console.error('  Then run: ADMIN_COOKIE="<paste-value>" node batch-upload.js')
+  process.exit(1)
+}
 
 // ── HTTP helpers ─────────────────────────────────────────────────────────────
 function request(method, urlPath, body) {

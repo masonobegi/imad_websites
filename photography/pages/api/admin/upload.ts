@@ -37,7 +37,7 @@ function buildWatermarkSvg(width: number, height: number): Buffer {
   const items: string[] = []
   for (let y = -extra; y < height + extra; y += gap) {
     for (let x = -extra; x < width + extra; x += gap * 3) {
-      items.push(`<text x="${x}" y="${y}" fill="rgba(255,255,255,0.45)" font-size="${fontSize}" font-family="Arial,sans-serif">${text}</text>`)
+      items.push(`<text x="${x}" y="${y}" fill="rgba(30,20,10,0.38)" stroke="rgba(255,255,255,0.25)" stroke-width="0.5" paint-order="stroke" font-size="${fontSize}" font-family="Arial,sans-serif">${text}</text>`)
     }
   }
   return Buffer.from(
@@ -96,13 +96,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (noWatermark.has(type)) {
         finalBuffer = ext === '.png'
           ? await img.png().toBuffer()
-          : await img.jpeg({ quality: 90 }).toBuffer()
+          : await img.jpeg({ quality: 95 }).toBuffer()
       } else {
         const wm = buildWatermarkSvg(w, h)
         const composed = img.composite([{ input: wm }])
         finalBuffer = ext === '.png'
           ? await composed.png().toBuffer()
-          : await composed.jpeg({ quality: 90 }).toBuffer()
+          : await composed.jpeg({ quality: 95 }).toBuffer()
       }
     } catch {
       console.warn('Sharp unavailable, saving without watermark for:', filename)

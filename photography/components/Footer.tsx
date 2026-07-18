@@ -7,7 +7,7 @@ const SECTIONS = [
   { href: '/shop',     label: 'Photography',       sub: 'Fine art prints' },
   { href: '/fine-art', label: 'Fine Art',           sub: 'Watercolors & encaustics' },
   { href: '/stickers', label: 'Stickers',           sub: 'via Sticker Mule' },
-  { href: '/digital',  label: 'Digital Design',     sub: 'Logos & illustration' },
+  { href: '/digital',  label: 'Digital Services',    sub: 'Logos & illustration' },
   { href: '/faq',      label: 'FAQ',                sub: 'Common questions' },
 ]
 

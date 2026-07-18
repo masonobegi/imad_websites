@@ -183,7 +183,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   // ── Save ────────────────────────────────────────────────────────────────────
 
   async function handleSave() {
-    if (!draft.title.trim()) { setError('Title is required'); return }
+    if (!draft.title.trim() && editKind !== 'sticker') { setError('Title is required'); return }
     if (editMode === 'add' && !uploadFile && editKind !== 'sticker' && editKind !== 'process') {
       setError('Please upload an image'); return
     }
@@ -195,7 +195,8 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
       let filename = (editItem as BasicWork)?.filename || ''
       if (uploadFile) {
         const ext = uploadFile.name.split('.').pop()?.toLowerCase() || 'jpg'
-        const newName = editMode === 'add' ? `${toSlug(draft.title)}.${ext}` : filename || `${toSlug(draft.title)}.${ext}`
+        const slugBase = draft.title.trim() ? toSlug(draft.title) : toSlug(uploadFile.name.replace(/\.[^.]+$/, ''))
+        const newName = editMode === 'add' ? `${slugBase}.${ext}` : filename || `${slugBase}.${ext}`
         const up = await fetch('/api/admin/upload', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ type: editKind, base64: uploadFile.base64, filename: newName, category: editKind === 'photo' ? draft.photoCategory : editCategory }),
