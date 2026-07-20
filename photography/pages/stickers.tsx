@@ -1,4 +1,4 @@
-import Head from 'next/head'
+﻿import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import Layout from '../components/Layout'
 
@@ -55,7 +55,7 @@ export default function Stickers({ stickers, heading, intro }: Props) {
               >
                 <div className="w-full aspect-square rounded-xl overflow-hidden bg-canvas/50 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center p-2">
                   <img
-                    src={`/stickers/${filename}`}
+                    src={`/stickers/${filename}?v=2`}
                     alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
                     className="w-full h-full object-contain select-none"
                     draggable={false}

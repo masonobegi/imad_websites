@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import AdminLayout from '../../components/AdminLayout'
@@ -387,7 +387,7 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
                       className={`relative rounded-xl overflow-hidden aspect-square transition-all ${
                         isHero ? 'ring-2 ring-amber-500 ring-offset-1 scale-105' : 'opacity-50 hover:opacity-100'
                       }`}>
-                      <img src={`/photos/${photo.category}/${photo.filename}`} alt={photo.title}
+                      <img src={`/photos/${photo.category}/${photo.filename}?v=2`} alt={photo.title}
                         className="w-full h-full object-cover" loading="lazy" />
                       {isHero && (
                         <div className="absolute inset-0 bg-amber-500/20 flex items-center justify-center">
@@ -421,7 +421,7 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
                       className={`relative rounded-xl overflow-hidden aspect-square transition-all ${
                         sel ? 'ring-2 ring-amber-500 ring-offset-1' : maxed ? 'opacity-25 cursor-not-allowed' : 'opacity-50 hover:opacity-100'
                       }`}>
-                      <img src={`/photos/${photo.category}/${photo.filename}`} alt={photo.title}
+                      <img src={`/photos/${photo.category}/${photo.filename}?v=2`} alt={photo.title}
                         className="w-full h-full object-cover" loading="lazy" />
                       {sel && (
                         <div className="absolute inset-0 bg-amber-500/25 flex items-start justify-end p-1">
@@ -468,7 +468,7 @@ export default function AdminSettings({ config: initialConfig, allPhotos, allWor
                             className={`relative rounded-xl overflow-hidden aspect-square transition-all text-left ${
                               sel ? 'ring-2 ring-amber-500 ring-offset-1' : maxed ? 'opacity-25 cursor-not-allowed' : 'opacity-50 hover:opacity-100'
                             }`}>
-                            <img src={`/fine-art/${folder}/${work.filename}`} alt={work.title}
+                            <img src={`/fine-art/${folder}/${work.filename}?v=2`} alt={work.title}
                               className="w-full h-full object-cover" loading="lazy" />
                             <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent px-1.5 pb-1.5 pt-4">
                               <p className="text-white text-[9px] leading-tight line-clamp-2">{work.title}</p>

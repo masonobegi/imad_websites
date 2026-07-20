@@ -1,4 +1,4 @@
-import Head from 'next/head'
+﻿import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
 import Layout from '../../components/Layout'
@@ -38,7 +38,7 @@ export default function FineArt({ headline, description, categories }: Props) {
           {categories.map(cat => (
             <Link
               key={cat.key}
-              href={`/fine-art/${cat.key}`}
+              href={`/fine-art/${cat.key}?v=2`}
               className="group border border-edge hover:border-shadow transition-colors"
             >
               {/* Preview grid */}
@@ -95,7 +95,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     key: meta.key,
     label: meta.label,
     description: siteConfig.fineArt[meta.configKey],
-    previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}`),
+    previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}?v=2`),
     count,
   }))
 

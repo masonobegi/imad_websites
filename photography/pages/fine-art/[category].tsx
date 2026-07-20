@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -93,7 +93,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                 >
                   <div className="relative overflow-hidden">
                     <img
-                      src={`/fine-art/${category}/${work.filename}`}
+                      src={`/fine-art/${category}/${work.filename}?v=2`}
                       alt={work.title}
                       className="w-full block transition-transform duration-700 group-hover:scale-[1.02] select-none"
                       draggable={false}

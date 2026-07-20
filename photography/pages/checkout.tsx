@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Layout from '../components/Layout'
 import { useCart } from '../components/CartContext'
 
@@ -49,7 +49,7 @@ export default function Checkout() {
                     <li key={item.id} className="flex gap-3">
                       <div className="w-14 h-14 bg-darkroom overflow-hidden flex-shrink-0">
                         <img
-                          src={`/photos/${item.category}/${item.image}`}
+                          src={`/photos/${item.category}/${item.image}?v=2`}
                           alt={item.productName}
                           className="w-full h-full object-cover photo-protected"
                         />

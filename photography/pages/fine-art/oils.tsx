@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next'
@@ -44,7 +44,7 @@ export default function OilPaintings({ works }: Props) {
               >
                 <div className="relative overflow-hidden bg-edge">
                   <img
-                    src={`/fine-art/oils/${work.filename}`}
+                    src={`/fine-art/oils/${work.filename}?v=2`}
                     alt={work.title}
                     className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
                     draggable={false}

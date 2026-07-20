@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+﻿import { useState, useEffect, useCallback, useRef } from 'react'
 import { Photo, PRINT_SIZES as DEFAULT_PRINT_SIZES, PRINT_MEDIUMS, PrintMedium } from '../lib/photos'
 import { useCart } from './CartContext'
 
@@ -149,7 +149,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
         >
           <img
             ref={imgRef}
-            src={`/photos/${photo.category}/${photo.filename}`}
+            src={`/photos/${photo.category}/${photo.filename}?v=2`}
             alt={photo.title}
             className="w-full h-full object-contain block select-none photo-protected"
             draggable={false}
@@ -171,7 +171,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
               }}
             >
               <img
-                src={`/photos/${photo.category}/${photo.filename}`}
+                src={`/photos/${photo.category}/${photo.filename}?v=2`}
                 alt=""
                 draggable={false}
                 className="absolute select-none photo-protected"

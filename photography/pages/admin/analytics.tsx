@@ -1,4 +1,4 @@
-import Head from 'next/head'
+﻿import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
@@ -25,9 +25,9 @@ const PAGE_NAMES: Record<string, string> = {
   '/photography/nature': 'Photography — Nature',
   '/photography/san-francisco': 'Photography — San Francisco Bay',
   '/fine-art': 'Fine Art',
-  '/fine-art/watercolors': 'Watercolors',
-  '/fine-art/encaustics': 'Encaustics',
-  '/fine-art/oils': 'Oil Paintings',
+  '/fine-art/watercolors?v=2': 'Watercolors',
+  '/fine-art/encaustics?v=2': 'Encaustics',
+  '/fine-art/oils?v=2': 'Oil Paintings',
   '/digital': 'Digital Design',
   '/stickers': 'Stickers',
   '/commissions': 'Commissions',

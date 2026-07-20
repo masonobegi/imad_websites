@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import Link from 'next/link'
@@ -56,7 +56,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
                 >
                   <div className="relative photo-wrapper overflow-hidden bg-canvas">
                     <img
-                      src={`/photos/${category}/${photo.filename}`}
+                      src={`/photos/${category}/${photo.filename}?v=2`}
                       alt={photo.title}
                       className="w-full block object-cover transition-transform duration-500 group-hover:scale-[1.03] photo-protected"
                       loading="lazy"
