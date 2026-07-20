@@ -93,7 +93,7 @@ export default function FineArtCategory({ category, categoryLabel, categoryDescr
                 >
                   <div className="relative overflow-hidden">
                     <img
-                      src={`/fine-art/${category}/${work.filename}?v=3`}
+                      src={`/fine-art/${category}/${work.filename}?v=4`}
                       alt={work.title}
                       className="w-full block transition-transform duration-700 group-hover:scale-[1.02] select-none"
                       draggable={false}

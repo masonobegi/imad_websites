@@ -149,7 +149,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
         >
           <img
             ref={imgRef}
-            src={`/photos/${photo.category}/${photo.filename}?v=3`}
+            src={`/photos/${photo.category}/${photo.filename}?v=4`}
             alt={photo.title}
             className="w-full h-full object-contain block select-none photo-protected"
             draggable={false}
@@ -171,7 +171,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
               }}
             >
               <img
-                src={`/photos/${photo.category}/${photo.filename}?v=3`}
+                src={`/photos/${photo.category}/${photo.filename}?v=4`}
                 alt=""
                 draggable={false}
                 className="absolute select-none photo-protected"

@@ -3,10 +3,10 @@ const fs = require('fs')
 
 // Try libre Open Sans (woff) first, fall back to system Arial for geometry.
 const candidates = [
-  'node_modules/@fontsource/open-sans/files/open-sans-latin-700-normal.woff',
   'node_modules/@fontsource/open-sans/files/open-sans-latin-400-normal.woff',
-  'C:/Windows/Fonts/arialbd.ttf',
+  'node_modules/@fontsource/open-sans/files/open-sans-latin-700-normal.woff',
   'C:/Windows/Fonts/arial.ttf',
+  'C:/Windows/Fonts/arialbd.ttf',
 ]
 
 let font, used
@@ -24,7 +24,7 @@ for (const c of candidates) {
 }
 if (!font) { console.error('No font could be loaded'); process.exit(1) }
 
-const text = 'OBGillustrator'
+const text = 'OBGillustrator.com'
 const REF = 100 // reference font size in px
 // Baseline at y=0, start at x=0
 const p = font.getPath(text, 0, 0, REF)

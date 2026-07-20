@@ -49,7 +49,7 @@ export default function Checkout() {
                     <li key={item.id} className="flex gap-3">
                       <div className="w-14 h-14 bg-darkroom overflow-hidden flex-shrink-0">
                         <img
-                          src={`/photos/${item.category}/${item.image}?v=3`}
+                          src={`/photos/${item.category}/${item.image}?v=4`}
                           alt={item.productName}
                           className="w-full h-full object-cover photo-protected"
                         />

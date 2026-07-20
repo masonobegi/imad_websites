@@ -50,13 +50,13 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Imad Obegi | OBGillustrator.com" />
         <meta property="og:description" content="Fine art photography prints by Imad Obegi. Nature, San Francisco Bay, and beyond — printed on archival metal or canvas, made to order." />
-        <meta property="og:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=3" />
+        <meta property="og:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=4" />
 
         {/* Twitter card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Imad Obegi | OBGillustrator.com" />
         <meta name="twitter:description" content="Fine art photography prints — nature, the San Francisco Bay, and beyond." />
-        <meta name="twitter:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=3" />
+        <meta name="twitter:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=4" />
 
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
       </Head>

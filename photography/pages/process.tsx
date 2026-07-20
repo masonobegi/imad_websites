@@ -65,7 +65,7 @@ export default function ProcessPage({ entries }: Props) {
                       className="aspect-square overflow-hidden bg-edge/20 hover:opacity-90 transition-opacity"
                     >
                       <img
-                        src={`/fine-art/process/${img.filename}?v=3`}
+                        src={`/fine-art/process/${img.filename}?v=4`}
                         alt={`${entry.title} — step ${idx + 1}`}
                         className="w-full h-full object-cover"
                       />
@@ -90,7 +90,7 @@ export default function ProcessPage({ entries }: Props) {
               Close ✕
             </button>
             <img
-              src={`/fine-art/process/${lightboxEntry.images[lightboxIdx].filename}?v=3`}
+              src={`/fine-art/process/${lightboxEntry.images[lightboxIdx].filename}?v=4`}
               alt={lightboxEntry.title}
               className="w-full max-h-[80vh] object-contain"
             />

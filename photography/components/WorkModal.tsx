@@ -59,7 +59,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
       medium: categoryLabel,
       price: work.price ?? 0,
       quantity: 1,
-      image: `/fine-art/${category}/${work.filename}?v=3`,
+      image: `/fine-art/${category}/${work.filename}?v=4`,
     })
     setAddedOriginal(true)
     setTimeout(() => setAddedOriginal(false), 2000)
@@ -74,7 +74,7 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
       medium: work.reprintMedium || 'Archival paper',
       price: work.reprintPrice ?? 0,
       quantity: 1,
-      image: `/fine-art/${category}/${work.filename}?v=3`,
+      image: `/fine-art/${category}/${work.filename}?v=4`,
     })
     setAddedReprint(true)
     setTimeout(() => setAddedReprint(false), 2000)
@@ -94,8 +94,8 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
   }, [hasNext])
 
   const activeSrc = subIdx !== null && work.processImages?.[subIdx]
-    ? `/fine-art/${category}/${work.processImages[subIdx].filename}?v=3`
-    : `/fine-art/${category}/${work.filename}?v=3`
+    ? `/fine-art/${category}/${work.processImages[subIdx].filename}?v=4`
+    : `/fine-art/${category}/${work.filename}?v=4`
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -193,13 +193,13 @@ export default function WorkModal({ works, initialIndex, category, categoryLabel
                 onClick={() => { setSubIdx(null); setLens(null) }}
                 className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === null ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
               >
-                <img src={`/fine-art/${category}/${work.filename}?v=3`} alt={work.title}
+                <img src={`/fine-art/${category}/${work.filename}?v=4`} alt={work.title}
                   className="w-full h-full object-cover" draggable={false} />
               </button>
               {work.processImages!.map((pm, i) => {
                 const ext = pm.filename.split('.').pop()?.toLowerCase() || ''
                 const isVideo = ['mp4', 'mov', 'webm', 'm4v'].includes(ext)
-                const pmSrc = `/fine-art/${category}/${pm.filename}?v=3`
+                const pmSrc = `/fine-art/${category}/${pm.filename}?v=4`
                 return (
                   <button key={pm.id} onClick={() => { setSubIdx(i); setLens(null) }} title={pm.title}
                     className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === i ? 'border-copper' : 'border-transparent hover:border-white/40'}`}

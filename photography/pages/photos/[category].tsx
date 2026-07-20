@@ -56,7 +56,7 @@ export default function GalleryPage({ category, categoryLabel, categoryDescripti
                 >
                   <div className="relative photo-wrapper overflow-hidden bg-canvas">
                     <img
-                      src={`/photos/${category}/${photo.filename}?v=3`}
+                      src={`/photos/${category}/${photo.filename}?v=4`}
                       alt={photo.title}
                       className="w-full block object-cover transition-transform duration-500 group-hover:scale-[1.03] photo-protected"
                       loading="lazy"

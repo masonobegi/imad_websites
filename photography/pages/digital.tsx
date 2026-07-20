@@ -71,7 +71,7 @@ export default function Digital({ intro, works }: Props) {
                 >
                   <div className="relative bg-white flex items-center justify-center min-h-[300px] sm:min-h-[360px] overflow-hidden border border-edge group-hover:border-shadow transition-colors duration-300">
                     <img
-                      src={d.src || `/digital/${d.filename}?v=3`}
+                      src={d.src || `/digital/${d.filename}?v=4`}
                       alt={d.title}
                       className="max-w-full max-h-[360px] w-auto object-contain select-none p-4 transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
@@ -156,7 +156,7 @@ export default function Digital({ intro, works }: Props) {
               </>
             )}
             <img
-              src={popupWork.src || `/digital/${popupWork.filename}?v=3`}
+              src={popupWork.src || `/digital/${popupWork.filename}?v=4`}
               alt={popupWork.title}
               className="w-full block select-none"
               draggable={false}
@@ -193,7 +193,7 @@ const STATIC_DESIGNS = [
   {
     id: 'static-jazz',
     filename: 'rhythms-of-leimert-park.jpg',
-    src: '/fine-art/oils/rhythms-of-leimert-park.jpg?v=3',
+    src: '/fine-art/oils/rhythms-of-leimert-park.jpg?v=4',
     title: 'Jazz Festival',
     subtitle: 'Winning Poster Design',
     description: '5th Annual Leimert Park Jazz Festival — Juried poster competition for the Leimert Park Jazz Festival.',
@@ -203,7 +203,7 @@ const STATIC_DESIGNS = [
   {
     id: 'static-notaries',
     filename: 'notaries-of-the-realm.jpg',
-    src: '/digital/notaries-of-the-realm.jpg?v=3',
+    src: '/digital/notaries-of-the-realm.jpg?v=4',
     title: 'Notaries of the Realm',
     subtitle: 'Logo Design',
     description: 'Client requested a distinctive, authoritative logo for a notary services firm. Designed to convey trust, professionalism, and a touch of classic elegance.',
@@ -211,7 +211,7 @@ const STATIC_DESIGNS = [
   {
     id: 'static-gumbo',
     filename: 'green-apples-gumbo.jpg',
-    src: '/digital/green-apples-gumbo.jpg?v=3',
+    src: '/digital/green-apples-gumbo.jpg?v=4',
     title: 'Green Apples Gumbo',
     subtitle: 'Logo Design',
     description: 'Client requested a fun, vibrant logo for a catering and food business blending Southern and California flavors. Final design captures the energy and warmth of the brand.',
@@ -219,7 +219,7 @@ const STATIC_DESIGNS = [
   {
     id: 'static-matchfoot',
     filename: 'matchfoot.jpg',
-    src: '/digital/matchfoot.jpg?v=3',
+    src: '/digital/matchfoot.jpg?v=4',
     title: 'Matchfoot',
     subtitle: 'Logo Design',
     description: 'Client requested a modern, sporty logo for a footwear and active lifestyle brand. Clean, bold design built for versatility across digital and print.',
@@ -237,7 +237,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     id: w.id, filename: w.filename, title: w.title,
     subtitle: w.originalSize, description: w.description,
     // Jazz Festival: use the full oil painting — much higher resolution than the poster scan
-    src: w.id === 'jazz-festival' ? '/fine-art/oils/rhythms-of-leimert-park.jpg?v=3' : undefined,
+    src: w.id === 'jazz-festival' ? '/fine-art/oils/rhythms-of-leimert-park.jpg?v=4' : undefined,
     externalUrl: w.awardUrl || undefined,
     externalLabel: w.awardTitle || undefined,
   }))
