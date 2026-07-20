@@ -38,7 +38,7 @@ export default function FineArt({ headline, description, categories }: Props) {
           {categories.map(cat => (
             <Link
               key={cat.key}
-              href={`/fine-art/${cat.key}?v=4`}
+              href={`/fine-art/${cat.key}?v=5`}
               className="group border border-edge hover:border-shadow transition-colors"
             >
               {/* Preview grid */}
@@ -95,7 +95,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     key: meta.key,
     label: meta.label,
     description: siteConfig.fineArt[meta.configKey],
-    previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}?v=4`),
+    previewImages: works.map(w => `/fine-art/${meta.folder}/${w.filename}?v=5`),
     count,
   }))
 

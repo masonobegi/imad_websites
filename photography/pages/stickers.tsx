@@ -55,7 +55,7 @@ export default function Stickers({ stickers, heading, intro }: Props) {
               >
                 <div className="w-full aspect-square rounded-xl overflow-hidden bg-canvas/50 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center p-2">
                   <img
-                    src={`/stickers/${filename}?v=4`}
+                    src={`/stickers/${filename}?v=5`}
                     alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
                     className="w-full h-full object-contain select-none"
                     draggable={false}

@@ -51,13 +51,13 @@ function toSlug(s: string) {
 }
 
 function imgUrl(kind: ModalKind | string, category: string, filename: string) {
-  if (kind === 'photo') return `/photos/${category}/${filename}?v=4`
-  if (kind === 'watercolor') return `/fine-art/watercolors/${filename}?v=4`
-  if (kind === 'encaustic') return `/fine-art/encaustics/${filename}?v=4`
-  if (kind === 'oil') return `/fine-art/oils/${filename}?v=4`
-  if (kind === 'digital') return `/digital/${filename}?v=4`
-  if (kind === 'process') return `/fine-art/process/${filename}?v=4`
-  if (kind === 'sticker') return `/stickers/${filename}?v=4`
+  if (kind === 'photo') return `/photos/${category}/${filename}?v=5`
+  if (kind === 'watercolor') return `/fine-art/watercolors/${filename}?v=5`
+  if (kind === 'encaustic') return `/fine-art/encaustics/${filename}?v=5`
+  if (kind === 'oil') return `/fine-art/oils/${filename}?v=5`
+  if (kind === 'digital') return `/digital/${filename}?v=5`
+  if (kind === 'process') return `/fine-art/process/${filename}?v=5`
+  if (kind === 'sticker') return `/stickers/${filename}?v=5`
   return ''
 }
 
@@ -738,7 +738,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
               onDrop={() => stickerDrop(i)}
               className={`group relative cursor-grab active:cursor-grabbing transition-all ${dragOverIdx === i ? 'ring-2 ring-amber-400 rounded-xl' : ''}`}>
               <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center">
-                <img src={`/stickers/${s}?v=4`} alt={s} className="w-full h-full object-contain p-2" loading="lazy" />
+                <img src={`/stickers/${s}?v=5`} alt={s} className="w-full h-full object-contain p-2" loading="lazy" />
               </div>
               <button onClick={() => setDeleteTarget({ type: 'sticker', id: s, label: s })}
                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
@@ -784,7 +784,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
               onDrop={() => dh.onDrop(i)}
               className={`flex gap-4 p-4 rounded-xl border-2 cursor-grab active:cursor-grabbing transition-all ${dragOverIdx === i ? 'border-amber-400 bg-amber-50' : 'border-gray-100 bg-gray-50'}`}>
               {entry.images[0] && (
-                <img src={`/fine-art/process/${entry.images[0].filename}?v=4`} alt={entry.title}
+                <img src={`/fine-art/process/${entry.images[0].filename}?v=5`} alt={entry.title}
                   className="w-20 h-20 object-cover rounded-lg flex-shrink-0" loading="lazy" />
               )}
               {!entry.images[0] && (
@@ -1187,7 +1187,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                       <div className="grid grid-cols-4 gap-2">
                         {paItems.map(pa => (
                           <div key={pa.id} className="relative group">
-                            <img src={`/fine-art/process/${pa.filename}?v=4`} alt={pa.id} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                            <img src={`/fine-art/process/${pa.filename}?v=5`} alt={pa.id} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
                             <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
                               className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
                           </div>
@@ -1306,9 +1306,9 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                           return (
                             <div key={pa.id} className="relative group">
                               {isVid ? (
-                                <video src={`/fine-art/${folder}/${pa.filename}?v=4`} className="aspect-square object-cover rounded-lg w-full" muted />
+                                <video src={`/fine-art/${folder}/${pa.filename}?v=5`} className="aspect-square object-cover rounded-lg w-full" muted />
                               ) : (
-                                <img src={`/fine-art/${folder}/${pa.filename}?v=4`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                                <img src={`/fine-art/${folder}/${pa.filename}?v=5`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
                               )}
                               <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
                                 className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
@@ -1384,7 +1384,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
                         <div className="grid grid-cols-4 gap-2">
                           {paItems.map(pa => (
                             <div key={pa.id} className="relative group">
-                              <img src={`/fine-art/oils/plein-air/${pa.filename}?v=4`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
+                              <img src={`/fine-art/oils/plein-air/${pa.filename}?v=5`} alt={pa.title} className="aspect-square object-cover rounded-lg w-full" loading="lazy" />
                               <button type="button" onClick={() => setPaItems(prev => prev.filter(p => p.id !== pa.id))}
                                 className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full w-5 h-5 text-xs leading-none opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
                             </div>

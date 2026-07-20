@@ -113,8 +113,8 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
   const hasNext = idx < works.length - 1
 
   const activeSrc = subIdx !== null
-    ? `/fine-art/oils/plein-air/${work.pleinAirImages[subIdx].filename}?v=4`
-    : `/fine-art/oils/${work.filename}?v=4`
+    ? `/fine-art/oils/plein-air/${work.pleinAirImages[subIdx].filename}?v=5`
+    : `/fine-art/oils/${work.filename}?v=5`
   const activeAlt = subIdx !== null ? work.pleinAirImages[subIdx].title : work.title
 
   const handleAddOriginal = () => {
@@ -126,7 +126,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
       medium: 'Oil on panel',
       price: work.originalPrice ?? 0,
       quantity: 1,
-      image: `/fine-art/oils/${work.filename}?v=4`,
+      image: `/fine-art/oils/${work.filename}?v=5`,
     })
     setAddedOriginal(true)
     setTimeout(() => setAddedOriginal(false), 2000)
@@ -141,7 +141,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
       medium: work.reprintMedium || 'Archival paper',
       price: work.reprintPrice ?? 0,
       quantity: 1,
-      image: `/fine-art/oils/${work.filename}?v=4`,
+      image: `/fine-art/oils/${work.filename}?v=5`,
     })
     setAddedReprint(true)
     setTimeout(() => setAddedReprint(false), 2000)
@@ -199,7 +199,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                 onClick={() => setSubIdx(null)}
                 className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === null ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
               >
-                <img src={`/fine-art/oils/${work.filename}?v=4`} alt={work.title}
+                <img src={`/fine-art/oils/${work.filename}?v=5`} alt={work.title}
                   className="w-full h-full object-cover" draggable={false} />
               </button>
               {work.pleinAirImages.map((pi, i) => (
@@ -209,7 +209,7 @@ export default function OilModal({ works, initialIndex, onClose }: Props) {
                   title={pi.title}
                   className={`w-14 h-14 overflow-hidden flex-shrink-0 border-2 transition-colors ${subIdx === i ? 'border-copper' : 'border-transparent hover:border-white/40'}`}
                 >
-                  <img src={`/fine-art/oils/plein-air/${pi.filename}?v=4`} alt={pi.title}
+                  <img src={`/fine-art/oils/plein-air/${pi.filename}?v=5`} alt={pi.title}
                     className="w-full h-full object-cover" draggable={false} />
                 </button>
               ))}

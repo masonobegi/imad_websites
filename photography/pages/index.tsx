@@ -61,7 +61,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
         <meta name="description" content="Photography prints by Imad Obegi — nature, wildlife, and the San Francisco Bay. Printed on archival metal or canvas. Made to order, ships flat." />
         <meta property="og:title" content="Imad Obegi | Fine Art Photography Prints" />
         <meta property="og:description" content="Nature, wildlife, and the San Francisco Bay — fine art prints on metal or canvas by Imad Obegi." />
-        <meta property="og:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=4" />
+        <meta property="og:image" content="https://obgillustrator.com/photos/nature/milky-way-over-joshua-tree.jpg?v=5" />
       </Head>
 
       {/* ── HERO ── */}
@@ -112,7 +112,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
               aria-label={`View ${photo.title}`}
             >
               <img
-                src={`/photos/${photo.category}/${photo.filename}?v=4`}
+                src={`/photos/${photo.category}/${photo.filename}?v=5`}
                 alt={photo.title}
                 className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 photo-protected"
                 loading="lazy"
@@ -203,7 +203,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
           {[
             {
               id: 'jazz',
-              src: '/fine-art/oils/rhythms-of-leimert-park.jpg?v=4',
+              src: '/fine-art/oils/rhythms-of-leimert-park.jpg?v=5',
               title: 'Jazz Festival',
               subtitle: 'Winning Poster Design',
               desc: 'Winning entry in the 5th Annual Leimert Park Jazz Festival juried poster competition. Drawn from his oil painting "Rhythms of Leimert Park," the design captures the energy and cultural spirit of one of Los Angeles\' most iconic music and arts events.',
@@ -211,21 +211,21 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
             },
             {
               id: 'notaries',
-              src: '/digital/notaries-of-the-realm.jpg?v=4',
+              src: '/digital/notaries-of-the-realm.jpg?v=5',
               title: 'Notaries of the Realm',
               subtitle: 'Logo Design',
               desc: 'Brand identity for a notary services firm seeking a distinctive, authoritative mark. The dragon pen motif combines heraldic imagery with legal precision — conveying trust, professionalism, and a touch of classic elegance that sets the firm apart.',
             },
             {
               id: 'gumbo',
-              src: '/digital/green-apples-gumbo.jpg?v=4',
+              src: '/digital/green-apples-gumbo.jpg?v=5',
               title: 'Green Apples Gumbo',
               subtitle: 'Logo Design',
               desc: 'Brand identity for a catering and food business blending Southern and California flavors. The playful apple character reflects warmth and approachability while the rich earth tones evoke the comfort of a home-cooked meal.',
             },
             {
               id: 'matchfoot',
-              src: '/digital/matchfoot.jpg?v=4',
+              src: '/digital/matchfoot.jpg?v=5',
               title: 'Matchfoot',
               subtitle: 'Logo Design',
               desc: 'Logo for a footwear and active lifestyle brand built for versatility across digital and print. Clean, bold, and sporty — the mark communicates movement and momentum and holds up at any size from app icon to storefront.',
@@ -288,7 +288,7 @@ export default function Home({ heroPhoto, previewPhotos, allPhotos, allOils, all
               className="group/sticker flex-shrink-0 w-44 sm:w-auto h-48 sm:h-56 overflow-hidden block relative bg-canvas flex items-center justify-center"
             >
               <img
-                src={`/stickers/${filename}?v=4`}
+                src={`/stickers/${filename}?v=5`}
                 alt={filename.replace(/\.[^.]+$/, '').replace(/-/g, ' ')}
                 className="w-full h-full object-contain p-4 group-hover/sticker:scale-105 transition-transform duration-500"
                 loading="lazy"
@@ -370,7 +370,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const cleanHero = await prisma.uploadedImage.findUnique({ where: { path: `hero/${heroPhotoRecord.id}.jpg` }, select: { path: true } })
   const heroPhoto = {
     ...heroPhotoRecord,
-    src: cleanHero ? `/hero/${heroPhotoRecord.id}.jpg?v=4` : `/photos/${heroPhotoRecord.category}/${heroPhotoRecord.filename}?v=4`,
+    src: cleanHero ? `/hero/${heroPhotoRecord.id}.jpg?v=5` : `/photos/${heroPhotoRecord.category}/${heroPhotoRecord.filename}?v=5`,
   }
 
   const picked: Photo[] = []
@@ -387,7 +387,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const featuredFineArt = siteConfig.featuredFineArt.map(({ id, type }) => {
     const work = allFineArt.find(w => w.id === id && w.type === type)
     if (!work) return null
-    return { id: work.id, type, imgPath: `/fine-art/${folderMap[type]}/${work.filename}?v=4`, title: work.title }
+    return { id: work.id, type, imgPath: `/fine-art/${folderMap[type]}/${work.filename}?v=5`, title: work.title }
   }).filter(Boolean) as FeaturedArt[]
 
   const allPhotos: Record<string, Photo[]> = {}
