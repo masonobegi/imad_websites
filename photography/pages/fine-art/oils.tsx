@@ -44,7 +44,7 @@ export default function OilPaintings({ works }: Props) {
               >
                 <div className="relative overflow-hidden bg-edge">
                   <img
-                    src={`/fine-art/oils/${work.filename}?v=2`}
+                    src={`/fine-art/oils/${work.filename}?v=3`}
                     alt={work.title}
                     className="w-full block transition-transform duration-500 group-hover:scale-[1.03] select-none"
                     draggable={false}

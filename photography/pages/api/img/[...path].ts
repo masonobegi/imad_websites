@@ -26,8 +26,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const etag = `"${image.updatedAt.getTime()}"`
     if (req.headers['if-none-match'] === etag) return res.status(304).end()
 
+    // no-cache = browser MAY store but MUST revalidate via ETag before reuse.
+    // This means a re-uploaded image (new updatedAt → new ETag) is picked up
+    // immediately; unchanged images return a tiny 304 so it stays fast.
     res.setHeader('Content-Type', image.mime)
-    res.setHeader('Cache-Control', 'public, max-age=31536000')
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate')
     res.setHeader('ETag', etag)
     res.send(image.data)
   } catch {

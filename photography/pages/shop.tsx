@@ -24,11 +24,11 @@ export default function Shop({ categories, previews, counts }: Props) {
           {Object.entries(categories).map(([slug, cat]) => {
             const preview = previews[slug]
             return (
-              <Link key={slug} href={`/photos/${slug}?v=2`} className="group block">
+              <Link key={slug} href={`/photos/${slug}?v=3`} className="group block">
                 <div className="bg-darkroom aspect-[4/3] mb-4 overflow-hidden relative photo-wrapper">
                   {preview ? (
                     <img
-                      src={`/photos/${slug}/${preview.filename}?v=2`}
+                      src={`/photos/${slug}/${preview.filename}?v=3`}
                       alt={cat.label}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 photo-protected"
                     />

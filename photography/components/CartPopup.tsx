@@ -49,7 +49,7 @@ export default function CartPopup({ onClose, dark = false }: CartPopupProps) {
                 <li key={item.id} className={`flex gap-3 pb-5 border-b ${divider} last:border-0`}>
                   <div className="w-14 h-14 bg-darkroom/20 rounded-sm overflow-hidden flex-shrink-0">
                     <img
-                      src={`/photos/${item.category}/${item.image}?v=2`}
+                      src={`/photos/${item.category}/${item.image}?v=3`}
                       alt={item.productName}
                       className="w-full h-full object-cover photo-protected"
                     />
