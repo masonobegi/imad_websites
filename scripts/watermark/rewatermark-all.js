@@ -184,53 +184,6 @@ async function main() {
   const { fineArt, photos, stickers } = res.body
   let totalDone = 0, totalSkipped = 0, totalErrors = 0
 
-  // DB-fetch fallback: when no local source file exists, pull the image from the
-  // site's own DB and re-run it through the upload API so the watermark is refreshed.
-  async function rewatermarkFromDb(filename, uploadType, categoryArg) {
-    const dirMap = {
-      photo: `photos/${categoryArg}`, watercolor: 'fine-art/watercolors',
-      encaustic: 'fine-art/encaustics', oil: 'fine-art/oils',
-      'oil-pleinair': 'fine-art/oils', sticker: 'stickers', digital: 'digital',
-    }
-    const imgPath = `${dirMap[uploadType] || uploadType}/${filename}`
-    const res = await request('GET', `/api/img/${imgPath}`)
-    if (typeof res.body === 'string' || res.status !== 200) {
-      // binary response — res.body might be raw; request() above parses JSON,
-      // so binary images 404 as JSON parse failures. Use raw fetch instead.
-      throw new Error(`DB fetch returned status ${res.status}`)
-    }
-    throw new Error('unexpected JSON body from image endpoint')
-  }
-
-  async function fetchDbBuffer(filename, uploadType, categoryArg) {
-    const dirMap = {
-      photo: `photos/${categoryArg}`, watercolor: 'fine-art/watercolors',
-      encaustic: 'fine-art/encaustics', oil: 'fine-art/oils',
-      'oil-pleinair': 'fine-art/oils', sticker: 'stickers', digital: 'digital',
-    }
-    const imgPath = `${dirMap[uploadType] || uploadType}/${filename}`
-    const full = `${SITE_URL}/api/img/${imgPath}`
-    const url = new URL(full)
-    const lib = url.protocol === 'https:' ? require('https') : require('http')
-    return new Promise((resolve, reject) => {
-      const req = lib.request({
-        hostname: url.hostname,
-        port: url.port || (url.protocol === 'https:' ? 443 : 80),
-        path: url.pathname, method: 'GET',
-        headers: { Cookie: COOKIE },
-        timeout: 60000,
-      }, (res) => {
-        if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}`))
-        const chunks = []
-        res.on('data', c => chunks.push(c))
-        res.on('end', () => resolve(Buffer.concat(chunks)))
-      })
-      req.on('error', reject)
-      req.on('timeout', () => { req.destroy(); reject(new Error('timeout')) })
-      req.end()
-    })
-  }
-
   async function processItems(label, items, uploadType, sourceDir, categoryArg) {
     console.log(`\n── ${label} ──`)
     const sourceList = buildSourceList(sourceDir)
@@ -239,22 +192,13 @@ async function main() {
       const filename = item.filename || item
       const srcPath = findSource(filename, sourceList)
       if (!srcPath) {
-        // No local source — fall back to fetching current DB image and re-watermarking
-        process.stdout.write(`  ${filename} (db-fallback) ... `)
-        try {
-          const buf = await fetchDbBuffer(filename, uploadType, categoryArg || '')
-          const up = await request('POST', '/api/admin/upload', {
-            type: uploadType,
-            base64: buf.toString('base64'),
-            filename,
-            category: categoryArg || '',
-          })
-          if (up.status === 200) { process.stdout.write('✓\n'); totalDone++ }
-          else { process.stdout.write(`✗ (${up.status}) ${JSON.stringify(up.body)}\n`); totalErrors++ }
-        } catch (e) {
-          process.stdout.write(`✗ db-fallback failed: ${e.message}\n`)
-          totalSkipped++
-        }
+        // No CLEAN local source — SKIP. Never re-watermark from the DB copy:
+        // the DB image is already watermarked, so re-watermarking it would
+        // stack a second (third, fourth...) watermark on top. Compounding
+        // watermarks is exactly the bug this avoids. These images must be
+        // re-uploaded through admin from a clean original instead.
+        console.log(`  SKIP ${filename} — no clean source (leave as-is, do NOT compound)`)
+        totalSkipped++
         continue
       }
       process.stdout.write(`  ${filename} ... `)
