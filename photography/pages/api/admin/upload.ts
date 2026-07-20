@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import path from 'path'
 import { requireAdmin } from '../../../lib/admin'
 import { prisma } from '../../../lib/prisma'
+import { buildWatermarkSvg } from '../../../lib/watermark'
 
 export const config = { api: { bodyParser: { sizeLimit: '20mb' } } }
 
@@ -29,21 +30,8 @@ function sanitizeCategory(cat: string): string {
   return cat.replace(/[^a-z0-9-]/gi, '').toLowerCase().slice(0, 50)
 }
 
-function buildWatermarkSvg(width: number, height: number): Buffer {
-  const text = 'OBGillustrator'
-  const fontSize = Math.max(14, Math.round(Math.min(width, height) / 28))
-  const gap = fontSize * 5
-  const extra = Math.max(width, height)
-  const items: string[] = []
-  for (let y = -extra; y < height + extra; y += gap) {
-    for (let x = -extra; x < width + extra; x += gap * 3) {
-      items.push(`<text x="${x}" y="${y}" fill="#FFFFFF" fill-opacity="0.45" font-size="${fontSize}" font-family="sans-serif">${text}</text>`)
-    }
-  }
-  return Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><g transform="rotate(-35 ${width / 2} ${height / 2})">${items.join('')}</g></svg>`
-  )
-}
+// buildWatermarkSvg is imported from lib/watermark — it embeds vector path
+// outlines (not <text>) so it renders correctly on the fontless production server.
 
 const ALLOWED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.heic', '.heif'])
 
