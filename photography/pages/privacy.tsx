@@ -11,7 +11,7 @@ export default function Privacy() {
       <div className="max-w-2xl mx-auto px-5 sm:px-10 py-16 sm:py-24">
         <p className="text-xs text-copper uppercase tracking-widest mb-4">Legal</p>
         <h1 className="font-serif text-4xl text-ink mb-2">Privacy Policy</h1>
-        <p className="text-xs text-mist mb-12">Last updated: July 18, 2026 · 1:00 PM PST</p>
+        <p className="text-xs text-mist mb-12">Last updated: July 20, 2026 · 2:30 PM PST</p>
 
         <div className="space-y-10 text-mist leading-relaxed">
 
