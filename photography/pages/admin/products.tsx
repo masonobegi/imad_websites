@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import AdminLayout from '../../components/AdminLayout'
@@ -22,6 +22,7 @@ interface OilWork extends BasicWork {
   award: { title: string; url: string } | null; pleinAirImages: PleinAirImage[]
 }
 interface Photo { id: string; filename: string; title: string; description: string; category: string }
+interface HashtagItem { id: string; title: string; type: string; category?: string; filename: string; tags: string[] }
 interface PageData {
   fineArt: { works: { watercolors: BasicWork[]; encaustics: BasicWork[]; oils: OilWork[]; digitals: BasicWork[] } }
   photos: { categories: Record<string, { label: string }>; photos: Record<string, Photo[]> }
@@ -30,7 +31,7 @@ interface PageData {
   process: ProcessEntry[]
 }
 
-type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers' | 'digital' | 'process'
+type Tab = 'photography' | 'watercolors' | 'encaustics' | 'oils' | 'stickers' | 'digital' | 'process' | 'hashtags'
 type ModalKind = 'photo' | 'watercolor' | 'encaustic' | 'oil' | 'sticker' | 'digital' | 'process'
 
 interface Draft {
@@ -94,6 +95,21 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   // Drag-to-reorder state
   const dragSrcRef = useRef<number | null>(null)
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null)
+
+  // Hashtags tab state
+  const [hashItems, setHashItems] = useState<HashtagItem[] | null>(null)
+  const [hashGenerating, setHashGenerating] = useState(false)
+  const [hashEditId, setHashEditId] = useState<string | null>(null)
+  const [hashEditTags, setHashEditTags] = useState<string[]>([])
+  const [hashSavingId, setHashSavingId] = useState<string | null>(null)
+  const [hashCopied, setHashCopied] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (tab === 'hashtags' && hashItems === null) {
+      fetch('/api/admin/hashtags').then(r => r.json()).then(setHashItems)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
 
   const fileRef = useRef<HTMLInputElement>(null)
   const paFileRef = useRef<HTMLInputElement>(null)
@@ -681,12 +697,31 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
   }
 
   function StickersTab() {
+    async function saveStickerReorder(filenames: string[]) {
+      await fetch('/api/admin/products', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'sticker', action: 'reorder', data: { ids: filenames } }),
+      })
+    }
+    function stickerDragStart(i: number) { dragSrcRef.current = i }
+    function stickerDragOver(e: React.DragEvent, i: number) { e.preventDefault(); setDragOverIdx(i) }
+    function stickerDragLeave() { setDragOverIdx(null) }
+    function stickerDrop(i: number) {
+      const src = dragSrcRef.current
+      if (src === null || src === i) { setDragOverIdx(null); return }
+      const next = [...data.stickers]
+      const [moved] = next.splice(src, 1)
+      next.splice(i, 0, moved)
+      setData(prev => ({ ...prev, stickers: next }))
+      saveStickerReorder(next)
+      dragSrcRef.current = null; setDragOverIdx(null)
+    }
     return (
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h2 className="font-semibold text-gray-900">Stickers</h2>
-            <p className="text-xs text-gray-400 mt-0.5">{data.stickers.length} designs · sold via Sticker Mule</p>
+            <p className="text-xs text-gray-400 mt-0.5">{data.stickers.length} designs · sold via Sticker Mule · drag to reorder</p>
           </div>
           <button onClick={() => openAdd('sticker')}
             className="flex items-center gap-1.5 text-sm text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-colors font-medium">
@@ -695,8 +730,13 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
           </button>
         </div>
         <div className="p-4 grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 gap-3">
-          {data.stickers.map(s => (
-            <div key={s} className="group relative">
+          {data.stickers.map((s, i) => (
+            <div key={s} draggable
+              onDragStart={() => stickerDragStart(i)}
+              onDragOver={e => stickerDragOver(e, i)}
+              onDragLeave={stickerDragLeave}
+              onDrop={() => stickerDrop(i)}
+              className={`group relative cursor-grab active:cursor-grabbing transition-all ${dragOverIdx === i ? 'ring-2 ring-amber-400 rounded-xl' : ''}`}>
               <div className="aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center">
                 <img src={`/stickers/${s}`} alt={s} className="w-full h-full object-contain p-2" loading="lazy" />
               </div>
@@ -826,6 +866,146 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     )
   }
 
+  function HashtagsTab() {
+    const typeLabel: Record<string, string> = {
+      watercolor: 'Watercolors', encaustic: 'Encaustics', oil: 'Oil Paintings',
+      photo: 'Photography', sticker: 'Stickers', digital: 'Digital',
+    }
+    const grouped: Record<string, HashtagItem[]> = {}
+    if (hashItems) {
+      hashItems.forEach(item => {
+        if (!grouped[item.type]) grouped[item.type] = []
+        grouped[item.type].push(item)
+      })
+    }
+
+    async function generateAll() {
+      setHashGenerating(true)
+      try {
+        const res = await fetch('/api/admin/hashtags', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'generate-all' }),
+        })
+        const d = await res.json()
+        setHashItems(d.items)
+      } finally { setHashGenerating(false) }
+    }
+
+    async function saveTags(item: HashtagItem) {
+      setHashSavingId(item.id)
+      try {
+        await fetch('/api/admin/hashtags', {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: item.type, id: item.id, tags: hashEditTags }),
+        })
+        setHashItems(prev => prev?.map(i => i.id === item.id ? { ...i, tags: hashEditTags } : i) || null)
+        setHashEditId(null)
+      } finally { setHashSavingId(null) }
+    }
+
+    function copyTags(tags: string[], id: string) {
+      navigator.clipboard.writeText(tags.join(' '))
+      setHashCopied(id)
+      setTimeout(() => setHashCopied(null), 2000)
+    }
+
+    function copyAll() {
+      if (!hashItems) return
+      const all = [...new Set(hashItems.flatMap(i => i.tags))].join(' ')
+      navigator.clipboard.writeText(all)
+      setHashCopied('all')
+      setTimeout(() => setHashCopied(null), 2000)
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Hashtags</h2>
+            <p className="text-xs text-gray-400 mt-0.5">5 per product · for social media · not shown on site</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={copyAll}
+              className="text-xs border border-gray-200 text-gray-600 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+              {hashCopied === 'all' ? 'Copied!' : 'Copy All'}
+            </button>
+            <button onClick={generateAll} disabled={hashGenerating}
+              className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-60 font-medium">
+              {hashGenerating ? 'Generating…' : 'Generate All'}
+            </button>
+          </div>
+        </div>
+        {!hashItems ? (
+          <div className="text-center py-16 text-gray-300 text-sm">Loading…</div>
+        ) : (
+          Object.entries(grouped).map(([type, typeItems]) => (
+            <div key={type} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="px-6 py-3 border-b border-gray-100">
+                <h3 className="font-semibold text-gray-800 text-sm">
+                  {typeLabel[type] || type} <span className="font-normal text-gray-400">({typeItems.length})</span>
+                </h3>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {typeItems.map(item => (
+                  <div key={item.id} className="px-4 py-3 flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                      <img src={imgUrl(item.type, item.category || '', item.filename)}
+                        alt={item.title} className="w-full h-full object-cover" />
+                    </div>
+                    <p className="text-sm text-gray-700 w-32 flex-shrink-0 truncate">{item.title}</p>
+                    <div className="flex-1 min-w-0">
+                      {hashEditId === item.id ? (
+                        <input
+                          value={hashEditTags.join(' ')}
+                          onChange={e => setHashEditTags(e.target.value.split(/\s+/).filter(Boolean))}
+                          className="w-full text-xs border border-amber-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-2 focus:ring-amber-400 font-mono"
+                          autoFocus
+                        />
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {item.tags.length === 0
+                            ? <span className="text-xs text-gray-300 italic">No tags — click Generate All</span>
+                            : item.tags.map(tag => (
+                              <span key={tag} className="text-[11px] bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded font-mono">{tag}</span>
+                            ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-1 flex-shrink-0">
+                      {hashEditId === item.id ? (
+                        <>
+                          <button onClick={() => saveTags(item)} disabled={hashSavingId === item.id}
+                            className="text-xs bg-emerald-500 text-white px-2.5 py-1.5 rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-60">
+                            {hashSavingId === item.id ? '…' : 'Save'}
+                          </button>
+                          <button onClick={() => setHashEditId(null)}
+                            className="text-xs border border-gray-200 text-gray-500 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button onClick={() => { setHashEditId(item.id); setHashEditTags(item.tags) }}
+                            className="text-xs border border-gray-200 text-gray-500 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                            Edit
+                          </button>
+                          <button onClick={() => copyTags(item.tags, item.id)}
+                            className="text-xs border border-gray-200 text-gray-500 px-2.5 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                            {hashCopied === item.id ? '✓' : 'Copy'}
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    )
+  }
+
   // ── Render ───────────────────────────────────────────────────────────────────
 
   const TABS: { key: Tab; label: string; count?: number }[] = [
@@ -836,6 +1016,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
     { key: 'stickers', label: 'Stickers', count: data.stickers.length },
     { key: 'digital', label: 'Digital', count: data.fineArt.works.digitals.length },
     { key: 'process', label: 'Process', count: (data.process || []).length },
+    { key: 'hashtags', label: 'Hashtags' },
   ]
 
   return (
@@ -883,6 +1064,7 @@ export default function AdminProducts({ initialData }: { initialData: PageData }
         {tab === 'stickers' && StickersTab()}
         {tab === 'digital' && DigitalTab()}
         {tab === 'process' && ProcessTab()}
+        {tab === 'hashtags' && HashtagsTab()}
       </div>
 
       {/* ── New Category modal ──────────────────────────────────────────────── */}

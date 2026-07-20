@@ -37,7 +37,7 @@ function buildWatermarkSvg(width: number, height: number): Buffer {
   const items: string[] = []
   for (let y = -extra; y < height + extra; y += gap) {
     for (let x = -extra; x < width + extra; x += gap * 3) {
-      items.push(`<text x="${x}" y="${y}" fill="rgba(30,20,10,0.38)" stroke="rgba(255,255,255,0.25)" stroke-width="0.5" paint-order="stroke" font-size="${fontSize}" font-family="Arial,sans-serif">${text}</text>`)
+      items.push(`<text x="${x}" y="${y}" fill="rgba(50,35,20,0.42)" font-size="${fontSize}" font-family="Arial,sans-serif">${text}</text>`)
     }
   }
   return Buffer.from(

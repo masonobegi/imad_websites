@@ -23,6 +23,7 @@ model FineArtWork {
   awardTitle       String?
   awardUrl         String?
   sortOrder        Int             @default(0)
+  tags             String[]        @default([])
   pleinAirImages   PleinAirImage[]
   createdAt        DateTime        @default(now())
 }
@@ -43,6 +44,7 @@ model Photo {
   description String   @default("")
   category    String
   sortOrder   Int      @default(0)
+  tags        String[] @default([])
   createdAt   DateTime @default(now())
 }
 
@@ -61,9 +63,10 @@ model PrintSize {
 }
 
 model Sticker {
-  id        String @id @default(cuid())
-  filename  String @unique
-  sortOrder Int    @default(0)
+  id        String   @id @default(cuid())
+  filename  String   @unique
+  sortOrder Int      @default(0)
+  tags      String[] @default([])
 }
 
 model SiteConfig {
