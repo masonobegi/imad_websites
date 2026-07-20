@@ -21,8 +21,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!image) return res.status(404).end()
 
+    // ETag based on last-updated timestamp — browsers revalidate automatically
+    // when an image is re-uploaded, without needing to clear cache manually.
+    const etag = `"${image.updatedAt.getTime()}"`
+    if (req.headers['if-none-match'] === etag) return res.status(304).end()
+
     res.setHeader('Content-Type', image.mime)
-    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable')
+    res.setHeader('Cache-Control', 'public, max-age=31536000')
+    res.setHeader('ETag', etag)
     res.send(image.data)
   } catch {
     res.status(500).end()

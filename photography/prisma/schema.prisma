@@ -79,6 +79,7 @@ model UploadedImage {
   data      Bytes
   mime      String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ArtProcess {
