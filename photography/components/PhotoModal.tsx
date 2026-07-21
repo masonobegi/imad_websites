@@ -32,7 +32,10 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
   const [added, setAdded] = useState(false)
   const [lens, setLens] = useState<LensState | null>(null)
   const [photoDims, setPhotoDims] = useState<{ w: number; h: number } | null>(null)
+  const [cropPreview, setCropPreview] = useState(true)
+  const [wrap, setWrap] = useState<{ cw: number; ch: number } | null>(null)
   const imgRef = useRef<HTMLImageElement>(null)
+  const wrapRef = useRef<HTMLDivElement>(null)
   const { addItem } = useCart()
 
   const PRINT_SIZES = printSizes || DEFAULT_PRINT_SIZES
@@ -80,6 +83,45 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
     if (diff >= 0.25) return 'crop'
     return null
   }
+
+  // Measure the photo container so we can map the crop rectangle onto the
+  // letterboxed (object-contain) image precisely as it renders.
+  useEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+    const update = () => setWrap({ cw: el.clientWidth, ch: el.clientHeight })
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  // Crop rectangle for the selected size, in on-screen pixels within the
+  // photo container. The print ratio is oriented to match the photo, then
+  // centered — matching how the print would actually be cropped.
+  const cropBox = (() => {
+    if (!photoDims || !wrap) return null
+    const pr = parsePrintRatio(selectedSize.label)
+    if (!pr) return null
+    const { w: pw, h: ph } = photoDims
+    const { cw, ch } = wrap
+    if (!cw || !ch) return null
+    const photoAR = pw / ph
+    const targetAR = photoAR >= 1 ? pr : 1 / pr // print aspect oriented to photo
+    const scale = Math.min(cw / pw, ch / ph)
+    const dispW = pw * scale, dispH = ph * scale
+    const offX = (cw - dispW) / 2, offY = (ch - dispH) / 2
+    let cropW: number, cropH: number
+    if (photoAR > targetAR) { cropH = ph; cropW = ph * targetAR } // trim sides
+    else { cropW = pw; cropH = pw / targetAR }                    // trim top/bottom
+    cropW = Math.min(cropW, pw); cropH = Math.min(cropH, ph)
+    const boxW = (cropW / pw) * dispW
+    const boxH = (cropH / ph) * dispH
+    const boxLeft = offX + (dispW - boxW) / 2
+    const boxTop = offY + (dispH - boxH) / 2
+    const isFull = Math.abs(cropW - pw) < 1 && Math.abs(cropH - ph) < 1
+    return { boxLeft, boxTop, boxW, boxH, isFull }
+  })()
 
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -141,6 +183,7 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
 
         {/* Photo area — hover to magnify */}
         <div
+          ref={wrapRef}
           className="sm:w-[62%] flex-shrink-0 bg-darkroom relative photo-wrapper select-none touch-none h-[42vh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex items-center justify-center"
           style={{ cursor: lens ? 'none' : 'crosshair' }}
           onPointerMove={handlePointerMove}
@@ -158,6 +201,42 @@ export default function PhotoModal({ photos, initialIndex, onClose, onAddedToCar
               if (img) setPhotoDims({ w: img.naturalWidth, h: img.naturalHeight })
             }}
           />
+
+          {/* Crop preview overlay — bright inside the print area, darkened
+              outside. Shows exactly what the selected size keeps when printed. */}
+          {cropPreview && cropBox && (
+            <div
+              className="absolute pointer-events-none z-[15]"
+              style={{
+                left: cropBox.boxLeft,
+                top: cropBox.boxTop,
+                width: cropBox.boxW,
+                height: cropBox.boxH,
+                boxShadow: cropBox.isFull ? 'none' : '0 0 0 9999px rgba(0,0,0,0.55)',
+                outline: '1.5px solid rgba(255,255,255,0.9)',
+                outlineOffset: '-1px',
+              }}
+            >
+              <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 leading-none tracking-wide">
+                {selectedSize.label}{cropBox.isFull ? ' · full frame' : ' crop'}
+              </span>
+            </div>
+          )}
+
+          {/* Crop-preview toggle */}
+          <button
+            onClick={() => setCropPreview(v => !v)}
+            onPointerEnter={() => setLens(null)}
+            onPointerMove={e => e.stopPropagation()}
+            className="absolute top-3 left-3 z-40 flex items-center gap-1.5 bg-black/55 hover:bg-black/80 text-white text-[11px] px-2.5 py-1.5 tracking-wide transition-colors touch-manipulation"
+            style={{ cursor: 'pointer' }}
+            aria-pressed={!cropPreview}
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 2v14a2 2 0 002 2h14M2 6h14a2 2 0 012 2v14" />
+            </svg>
+            {cropPreview ? 'No Crop' : 'Show Crop'}
+          </button>
 
           {/* Magnifier lens (desktop) */}
           {lens && (
