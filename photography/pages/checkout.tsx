@@ -103,6 +103,12 @@ export default function Checkout() {
                 <p className="text-xs text-mist text-center">
                   Secure checkout powered by Stripe. Prints ship flat within 1–2 weeks.
                 </p>
+                <p className="text-xs text-mist text-center">
+                  By ordering you agree to our{' '}
+                  <a href="/refunds" className="text-copper hover:underline">Refund Policy</a>,{' '}
+                  <a href="/shipping" className="text-copper hover:underline">Shipping Policy</a>, and{' '}
+                  <a href="/tos" className="text-copper hover:underline">Terms</a>.
+                </p>
               </div>
             </div>
 

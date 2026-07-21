@@ -32,7 +32,7 @@ export default function Terms() {
 
           <section>
             <h2 className="font-serif text-xl text-ink mb-3">Print orders</h2>
-            <p className="mb-3">Photography prints are made to order. All sales are final once production has begun. If your order arrives damaged, contact <a href="mailto:imadobegi@gmail.com" className="text-copper hover:text-shadow transition-colors">imadobegi@gmail.com</a> within 7 days of delivery with photos of the damage and we will arrange a replacement.</p>
+            <p className="mb-3">Photography prints are made to order. Refunds, replacements, cancellations, and damaged-item claims are governed by our <Link href="/refunds" className="text-copper hover:text-shadow transition-colors">Refund &amp; Return Policy</Link>, and delivery is governed by our <Link href="/shipping" className="text-copper hover:text-shadow transition-colors">Shipping Policy</Link>.</p>
             <p>To fulfill print orders, your name and shipping address are shared with Bay Photo Lab or other third-party fulfillment partners. This information is used solely to produce and ship your order.</p>
           </section>
 
@@ -58,7 +58,9 @@ export default function Terms() {
 
         </div>
 
-        <div className="mt-12 pt-8 border-t border-edge text-sm text-mist">
+        <div className="mt-12 pt-8 border-t border-edge text-sm text-mist flex flex-wrap gap-x-6 gap-y-2">
+          <Link href="/refunds" className="hover:text-copper transition-colors">Refund &amp; Return Policy →</Link>
+          <Link href="/shipping" className="hover:text-copper transition-colors">Shipping Policy →</Link>
           <Link href="/privacy" className="hover:text-copper transition-colors">Privacy Policy →</Link>
         </div>
       </div>

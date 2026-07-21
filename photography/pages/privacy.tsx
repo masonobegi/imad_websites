@@ -50,7 +50,9 @@ export default function Privacy() {
 
         </div>
 
-        <div className="mt-12 pt-8 border-t border-edge text-sm text-mist">
+        <div className="mt-12 pt-8 border-t border-edge text-sm text-mist flex flex-wrap gap-x-6 gap-y-2">
+          <Link href="/refunds" className="hover:text-copper transition-colors">Refund &amp; Return Policy →</Link>
+          <Link href="/shipping" className="hover:text-copper transition-colors">Shipping Policy →</Link>
           <Link href="/tos" className="hover:text-copper transition-colors">Terms of Service →</Link>
         </div>
       </div>
